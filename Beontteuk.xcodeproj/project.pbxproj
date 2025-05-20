@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		149B2A4A2DDC2661005EA674 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 149B2A492DDC2661005EA674 /* .gitignore */; };
+		149B2D0C2DDC3546005EA674 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D0B2DDC3546005EA674 /* RxCocoa */; };
+		149B2D0E2DDC3546005EA674 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D0D2DDC3546005EA674 /* RxRelay */; };
+		149B2D102DDC3546005EA674 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D0F2DDC3546005EA674 /* RxSwift */; };
+		149B2D132DDC3553005EA674 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D122DDC3553005EA674 /* SnapKit */; };
+		149B2D162DDC355E005EA674 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D152DDC355E005EA674 /* Then */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +75,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				149B2D162DDC355E005EA674 /* Then in Frameworks */,
+				149B2D102DDC3546005EA674 /* RxSwift in Frameworks */,
+				149B2D132DDC3553005EA674 /* SnapKit in Frameworks */,
+				149B2D0E2DDC3546005EA674 /* RxRelay in Frameworks */,
+				149B2D0C2DDC3546005EA674 /* RxCocoa in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +141,11 @@
 			);
 			name = Beontteuk;
 			packageProductDependencies = (
+				149B2D0B2DDC3546005EA674 /* RxCocoa */,
+				149B2D0D2DDC3546005EA674 /* RxRelay */,
+				149B2D0F2DDC3546005EA674 /* RxSwift */,
+				149B2D122DDC3553005EA674 /* SnapKit */,
+				149B2D152DDC355E005EA674 /* Then */,
 			);
 			productName = Alarm;
 			productReference = 149B2A122DDC263A005EA674 /* Beontteuk.app */;
@@ -214,6 +229,11 @@
 			);
 			mainGroup = 149B2A092DDC263A005EA674;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				149B2D112DDC3553005EA674 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				149B2D142DDC355E005EA674 /* XCRemoteSwiftPackageReference "Then" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 149B2A132DDC263A005EA674 /* Products */;
 			projectDirPath = "";
@@ -578,6 +598,61 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.9.0;
+			};
+		};
+		149B2D112DDC3553005EA674 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		149B2D142DDC355E005EA674 /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		149B2D0B2DDC3546005EA674 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		149B2D0D2DDC3546005EA674 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		149B2D0F2DDC3546005EA674 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		149B2D122DDC3553005EA674 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 149B2D112DDC3553005EA674 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		149B2D152DDC355E005EA674 /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 149B2D142DDC355E005EA674 /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 149B2A0A2DDC263A005EA674 /* Project object */;
 }
