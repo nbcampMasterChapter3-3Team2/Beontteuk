@@ -27,10 +27,7 @@ final class CustomUIBarButtonItem: UIBarButtonItem {
             $0.backgroundColor = .neutral100
             $0.layer.cornerRadius = size / 2
 
-            $0.layer.shadowColor = UIColor.black.cgColor
-            $0.layer.shadowOpacity = 0.25
-            $0.layer.shadowRadius = 5
-            $0.layer.shadowOffset = CGSize(width: 1, height: 2.5)
+            $0.setShadow(type: .small)
 
         }
 
