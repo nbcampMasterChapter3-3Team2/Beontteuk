@@ -19,7 +19,6 @@ final class DefaultButton: UIButton {
         case .reset, .start, .lap, .stop, .cancel:
             config.baseForegroundColor = type.fgColor
             config.baseBackgroundColor = type.bgColor
-            config.cornerStyle = .capsule
             config.attributedTitle = {
                 var attributedTitle = AttributedString(type.text)
                 attributedTitle.font = UIFont.systemFont(ofSize: type.fontSize, weight: .medium)
@@ -28,6 +27,9 @@ final class DefaultButton: UIButton {
             config.titleAlignment = .center
 
             self.configuration = config
+            self.layer.cornerRadius = 16
+            self.clipsToBounds = true
+
             self.snp.makeConstraints {
                 $0.height.equalTo(type.height)
             }
