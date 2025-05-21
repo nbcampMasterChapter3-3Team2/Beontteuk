@@ -1,0 +1,73 @@
+//
+//  TimerRecentCell.swift
+//  Beontteuk
+//
+//  Created by 곽다은 on 5/20/25.
+//
+
+import UIKit
+import SnapKit
+import Then
+
+final class TimerRecentCell: BaseTableViewCell {
+
+    // MARK: - UI Components
+
+    private let labelStackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.alignment = .leading
+    }
+
+    private let timeLabel = UILabel().then {
+        $0.textColor = .neutral1000
+        $0.font = .systemFont(ofSize: 50, weight: .medium)
+    }
+
+    private let timeKRLabel = UILabel().then {
+        $0.textColor = .neutral1000
+        $0.font = .systemFont(ofSize: 20, weight: .medium)
+    }
+
+    private let startButton = UIButton().then {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 35, weight: .regular)
+        let playImage = UIImage(systemName: "play.fill", withConfiguration: imageConfig)
+        $0.setImage(playImage, for: .normal)
+        $0.tintColor = .primary300
+    }
+
+    private let circleView = UIView().then {
+        $0.backgroundColor = .primary200
+        $0.layer.cornerRadius = 35
+    }
+
+    // MARK: - Layout Helper
+
+    override func setLayout() {
+        contentView.addSubviews(labelStackView, circleView)
+
+        labelStackView.addArrangedSubviews(timeLabel, timeKRLabel)
+
+        circleView.addSubviews(startButton)
+
+        labelStackView.snp.makeConstraints {
+            $0.verticalEdges.leading.equalToSuperview().inset(20)
+        }
+
+        circleView.snp.makeConstraints {$0.leading.equalTo(labelStackView.snp.trailing).offset(20)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.centerY.equalTo(labelStackView)
+            $0.size.equalTo(70)
+        }
+
+        startButton.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+    }
+
+    // MARK: - Methods
+
+    func configureCell(time: String, timeKR: String) {
+        timeLabel.text = time
+        timeKRLabel.text = timeKR
+    }
+}
