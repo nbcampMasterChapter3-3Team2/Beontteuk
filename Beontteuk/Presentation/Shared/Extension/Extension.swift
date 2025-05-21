@@ -46,6 +46,26 @@ extension UIView {
             .compactMap { $0 as? CAGradientLayer }
             .forEach { $0.frame = bounds }
     }
+
+    /// layer에 그림자를 적용합니다.
+    func setShadow(type: ShadowSize) {
+        layer.shadowColor = UIColor.neutral1000.cgColor
+        layer.shadowRadius = 5
+        layer.shadowOffset = type.offset
+        layer.shadowOpacity = 0.25
+    }
+
+    enum ShadowSize {
+        case large
+        case small
+
+        var offset: CGSize {
+            switch self {
+            case .large: .init(width: 2, height: 5)
+            case .small: .init(width: 1, height: 2.5)
+            }
+        }
+    }
 }
 
 extension UIStackView {
