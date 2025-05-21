@@ -21,7 +21,13 @@ class BaseView: UIView {
         setStyles()
         setLayout()
     }
-    
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // 뷰의 bounds가 변경될 때마다 gradient.frame을 갱신
+        refreshGradient()
+    }
+
     override func removeFromSuperview() {
         super.removeFromSuperview()
         print("🧵 \(viewName) has been successfully Removed")
