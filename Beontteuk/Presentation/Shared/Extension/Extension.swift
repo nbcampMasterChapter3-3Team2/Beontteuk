@@ -97,9 +97,3 @@ extension UIStackView {
         }
     }
 }
-
-extension UIButton {
-    func updateShadow() {
-        self.updateShadowPath()
-    }
-}
