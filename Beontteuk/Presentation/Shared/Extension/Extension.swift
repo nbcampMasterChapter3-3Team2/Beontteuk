@@ -49,9 +49,7 @@ extension UIView {
 
     /// View의 Layer에 그림자를 적용합니다.
     ///
-    /// 이 메서드만드로는 shadowPath가 적용되지 않아, 매 프레임마다 shadowPath를 결정하게 되어 GPU 부하가 커지기 때문에 View의 bounds가 결정된 후 path를 설정해주어야 합니다. 즉, layoutSubViews에서 updateShadowPath()를 꼭 호출해주어야 합니다.
-    ///
-    /// 예시:
+    /// 이 메서드를 호출하는 것만으로는 shadowPath가 적용되지 않아, 매 프레임마다 shadowPath를 결정하게 되어 GPU 부하가 커지기 때문에 View의 bounds가 결정된 후 path를 설정해주어야 합니다. 즉, layoutSubViews에서 updateShadowPath()를 꼭 호출해주어야 합니다. 예시:
     ///
     /// ```swift
     /// let myView: UIView() = {
