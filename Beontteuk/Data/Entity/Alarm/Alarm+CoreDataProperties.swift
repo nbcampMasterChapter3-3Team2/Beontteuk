@@ -19,7 +19,7 @@ import CoreData
  최종적으로 repeatDayNames을 joined 해준 joinedRepeatDayNames을 사용하시면 됩니다.
  
  isSnoozeEnabled은 애플 알람 앱에서 제공하는 9분 뒤 다시 알람 기능입니다.
- 따로 사용을 안하신다면 false 값을 대입해주면 될 것 같습니다.
+ 따로 사용을 안하신다면 false 값을 대입해주면 될 것 같습니다. (기본 값 false 적용)
  
  dateComponents는 알람을 위한 DateComponents 값 입니다.
  DateComponents는 고정된 시각을 반복적으로 울리는데 사용됩니다.

@@ -17,7 +17,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
     }
 
     /// 알람 리스트 불러오기
-    func fetchAll() -> [Alarm] {
+    func fetchAllAlarm() -> [Alarm] {
         let request: NSFetchRequest<Alarm> = Alarm.fetchRequest()
         request.sortDescriptors = [
             NSSortDescriptor(key: "hour", ascending: true),
@@ -26,39 +26,57 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         return (try? context.fetch(request)) ?? []
     }
 
-    /// 알람 생성 및 저장
-    func save(_ alarm: Alarm) {
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                print("❌ Failed to save Alarm: \(error)")
-            }
-        }
+    /// 알람 생성
+    func createAlarm(hour: Int,
+                     minute: Int,
+                     repeatDays: String?,
+                     label: String?,
+                     soundName: String?) -> Alarm {
+        let alarm = Alarm(context: context)
+        alarm.id = UUID()
+        alarm.hour = Int16(hour)
+        alarm.minute = Int16(minute)
+        alarm.repeatDays = repeatDays
+        alarm.label = label
+        alarm.isEnabled = true
+        alarm.soundName = soundName
+        alarm.isSnoozeEnabled = false
+        return alarm
     }
 
     /// 알람 삭제
-    func delete(_ alarm: Alarm) {
+    func deleteAlarm(_ alarm: Alarm) {
         context.delete(alarm)
         do {
             try context.save()
         } catch {
-            print("❌ Failed to delete Alarm: \(error)")
+            print("❌ 알람 삭제에 실패하였습니다.: \(error)")
         }
     }
 
     /// 알람 토글 전환
-    func toggle(_ alarm: Alarm) {
+    func toggleAlarm(_ alarm: Alarm) {
         alarm.isEnabled.toggle()
         do {
             try context.save()
         } catch {
-            print("❌ Failed to toggle Alarm: \(error)")
+            print("❌ 알람 on/off 변경에 실패하였습니다.: \(error)")
+        }
+    }
+    
+    /// 알람 저장
+    func saveAlarm(_ alarm: Alarm) {
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                print("❌ 알람 저장에 실패하였습니다.: \(error)")
+            }
         }
     }
 }
 
-//MARK: - ViewModel 사용 예시
+//MARK: - ViewModel 사용 예시 (UseCase 미적용)
 /*
  class AlarmViewModel {
      private let repository: AlarmRepositoryInterface
@@ -67,13 +85,9 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
          self.repository = repository
      }
 
-     func addAlarm(hour: Int, minute: Int) {
-         let alarm = Alarm(context: CoreDataStack.shared.context)
-         alarm.id = UUID()
-         alarm.hour = Int16(hour)
-         alarm.minute = Int16(minute)
-         alarm.isEnabled = true
-         repository.save(alarm)
+     func addAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?) {
+         let alarm = repository.createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?)
+         repository.saveAlarm(alarm)
      }
  }
  */
