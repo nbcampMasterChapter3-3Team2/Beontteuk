@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(Timer)
+@objc(CDTimer)
 public class CDTimer: NSManagedObject {
     public enum Key {
         static let id = "id"

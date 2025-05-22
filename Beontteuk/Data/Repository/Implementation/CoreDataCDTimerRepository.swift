@@ -96,8 +96,8 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
         timer.hour = Int16(hour)
         timer.minute = Int16(minute)
         timer.second = Int16(second)
-        timer.isRecent = true
         timer.isRunning = false
+        timer.isRecent = true
         timer.createdAt = Date()
         return timer
     }

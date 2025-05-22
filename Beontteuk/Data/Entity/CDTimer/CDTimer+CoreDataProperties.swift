@@ -32,7 +32,7 @@ import CoreData
 extension CDTimer {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CDTimer> {
-        return NSFetchRequest<CDTimer>(entityName: "Timer")
+        return NSFetchRequest<CDTimer>(entityName: "CDTimer")
     }
 
     @NSManaged public var id: UUID?             // 고유 식별자

@@ -20,10 +20,13 @@ protocol WorldClockRepositoryInterface {
 
     // MARK: - 추가 및 삭제
     /// 새 도시 항목 추가
-    func createCity(cityName: String, timeZoneIdentifier: String)
+    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClock
 
     /// 도시 항목 삭제
     func deleteCity(clock: WorldClock)
+    
+    /// 도시 항목 저장
+    func saveCity(_ city: WorldClock)
 
     // MARK: - 정렬 및 순서
     /// 주어진 항목의 정렬 순서를 업데이트
