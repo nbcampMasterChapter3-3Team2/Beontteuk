@@ -9,7 +9,7 @@ import UIKit
 import Then
 import SnapKit
 
-final class StopWatchView: UIView {
+final class StopWatchView: BaseView {
 
     // MARK: - UI Components
 
@@ -36,52 +36,25 @@ final class StopWatchView: UIView {
 
     let tableView = UITableView().then {
         $0.register(LapCell.self, forCellReuseIdentifier: LapCell.className)
-        $0.backgroundColor = .background500
+        $0.backgroundColor = .clear
         $0.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         $0.showsVerticalScrollIndicator = false
     }
 
-    // MARK: - Initializer, Deinit, requiered
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setStyle()
-        setHierarchy()
-        setLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: - Style Helper
 
-    private func setStyle() {
-        backgroundColor = .background500
-    }
-
-    // MARK: - Hierarchy Helper
-
-    private func setHierarchy() {
-        [
-            iconImageView,
-            timerLabel,
-            stackView,
-            tableView
-        ]
-            .forEach { addSubviews($0) }
-
-        [
-            resetButton,
-            startButton
-        ]
-            .forEach { stackView.addArrangedSubview($0) }
-
+    override func setStyles() {
+        super.setStyles()
+        backgroundColor = .clear
     }
 
     // MARK: - Layout Helper
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+        addSubviews(iconImageView, timerLabel, stackView, tableView)
+        stackView.addArrangedSubviews(resetButton, startButton)
+
         iconImageView.snp.makeConstraints {
             $0.size.equalTo(242)
             $0.top.equalTo(36)

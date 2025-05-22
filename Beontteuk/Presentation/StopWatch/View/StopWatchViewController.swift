@@ -10,7 +10,7 @@ import Then
 import SnapKit
 import RxCocoa
 
-final class StopWatchViewController: UIViewController {
+final class StopWatchViewController: BaseViewController {
 
     // MARK: - Properties
 
@@ -24,31 +24,22 @@ final class StopWatchViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setStyle()
-        setHierarchy()
-        setLayout()
-        setDelegate()
         setDataSource()
     }
 
     // MARK: - Style Helper
 
-    private func setStyle() {
+    override func setStyles() {
+        super.setStyles()
         view.backgroundColor = .background500
-    }
-
-    // MARK: - Hierarchy Helper
-
-    private func setHierarchy() {
-        [
-            stopWatchView
-        ]
-            .forEach { view.addSubviews($0) }
     }
 
     // MARK: - Layout Helper
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+        view.addSubviews(stopWatchView)
+
         stopWatchView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.directionalHorizontalEdges.bottom.equalToSuperview()
@@ -57,7 +48,7 @@ final class StopWatchViewController: UIViewController {
 
     // MARK: - Delegate Helper
 
-    private func setDelegate() {
+    override func setDelegates() {
         stopWatchView.tableView.delegate = self
     }
 
@@ -69,6 +60,11 @@ final class StopWatchViewController: UIViewController {
 }
 
 extension StopWatchViewController: UITableViewDataSource {
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        45
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.items.count
     }
