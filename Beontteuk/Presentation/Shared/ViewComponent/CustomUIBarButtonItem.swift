@@ -14,7 +14,7 @@ import Then
 final class CustomUIBarButtonItem: UIBarButtonItem {
 
     convenience init(type: NavigationButtonType) {
-        let button = UIButton().then {
+        let button = ShadowButton().then {
 
             $0.tintColor = .primary300
             let size: CGFloat = 40
@@ -23,7 +23,6 @@ final class CustomUIBarButtonItem: UIBarButtonItem {
             $0.layer.cornerRadius = size / 2
 
             $0.setShadow(type: .small)
-            $0.updateShadow()
         }
 
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
@@ -47,9 +46,10 @@ final class CustomUIBarButtonItem: UIBarButtonItem {
             button.setImage(checkMark, for: .normal)
             button.addAction(UIAction { _ in action() }, for: .touchUpInside)
         }
-
         self.init(customView: button)
     }
+
+
 }
 
 extension CustomUIBarButtonItem {
