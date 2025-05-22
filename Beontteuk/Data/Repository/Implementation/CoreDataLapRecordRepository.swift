@@ -39,7 +39,7 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
         do {
             try context.save()
         } catch {
-            print("❌ 랩 삭제에 실패하였습니다.: \(error)")
+            print("❌ 랩 삭제를 실패하였습니다.: \(error)")
         }
     }
     
@@ -49,7 +49,7 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
         do {
             try context.save()
         } catch {
-            print("❌ 랩 전체 삭제에 실패하였습니다.: \(error)")
+            print("❌ 랩 전체 삭제를 실패하였습니다.: \(error)")
         }
     }
     
@@ -58,7 +58,7 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
             do {
                 try context.save()
             } catch {
-                print("❌ 랩 저장에 실패하였습니다.: \(error)")
+                print("❌ 랩 저장을 실패하였습니다.: \(error)")
             }
         }
     }
@@ -78,7 +78,7 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
 
      func addLap(for session: StopWatchSession, lapIndex: Int, lapTime: Double, absoluteTime: Double) {
          let lap = repository.createLap(for session: session, lapIndex: Int, lapTime: Double, absoluteTime: Double)
-         repository2.saveLap(lap)
+         repository2.saveLap(lap) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }
  */

@@ -41,7 +41,7 @@ final class CoreDataStopWatchRepository: StopWatchSessionRepositoryInterface {
         do {
             try context.save()
         } catch {
-            print("❌ 세션 삭제에 실패하였습니다.: \(error)")
+            print("❌ 세션 삭제를 실패하였습니다.: \(error)")
         }
     }
     
@@ -51,7 +51,7 @@ final class CoreDataStopWatchRepository: StopWatchSessionRepositoryInterface {
             do {
                 try context.save()
             } catch {
-                print("❌ 세션 저장에 실패하였습니다.: \(error)")
+                print("❌ 세션 저장을 실패하였습니다.: \(error)")
             }
         }
     }
@@ -68,7 +68,7 @@ final class CoreDataStopWatchRepository: StopWatchSessionRepositoryInterface {
 
      func addSession() {
          let session = repository.createSession()
-         repository.saveSession(session)
+         repository.saveSession(session) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }
  */

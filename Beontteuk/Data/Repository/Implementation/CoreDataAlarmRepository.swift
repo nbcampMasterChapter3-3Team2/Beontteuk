@@ -50,7 +50,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         do {
             try context.save()
         } catch {
-            print("❌ 알람 삭제에 실패하였습니다.: \(error)")
+            print("❌ 알람 삭제를 실패하였습니다.: \(error)")
         }
     }
 
@@ -60,7 +60,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         do {
             try context.save()
         } catch {
-            print("❌ 알람 on/off 변경에 실패하였습니다.: \(error)")
+            print("❌ 알람 on/off 변경을 실패하였습니다.: \(error)")
         }
     }
     
@@ -70,7 +70,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
             do {
                 try context.save()
             } catch {
-                print("❌ 알람 저장에 실패하였습니다.: \(error)")
+                print("❌ 알람 저장을 실패하였습니다.: \(error)")
             }
         }
     }
@@ -87,7 +87,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
 
      func addAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?) {
          let alarm = repository.createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?)
-         repository.saveAlarm(alarm)
+         repository.saveAlarm(alarm) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }
  */

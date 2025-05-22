@@ -1,5 +1,5 @@
 //
-//  Timer+CoreDataClass.swift
+//  CDTimer+CoreDataClass.swift
 //  Beontteuk
 //
 //  Created by 백래훈 on 5/21/25.
@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 @objc(Timer)
-public class Timer: NSManagedObject {
+public class CDTimer: NSManagedObject {
     public enum Key {
         static let id = "id"
         static let hour = "hour"
