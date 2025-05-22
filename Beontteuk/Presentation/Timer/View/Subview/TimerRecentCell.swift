@@ -19,12 +19,12 @@ final class TimerRecentCell: BaseTableViewCell {
     }
 
     private let timeLabel = UILabel().then {
-        $0.textColor = .neutral1000
+        $0.textColor = .neutral300
         $0.font = .systemFont(ofSize: 50, weight: .medium)
     }
 
     private let timeKRLabel = UILabel().then {
-        $0.textColor = .neutral1000
+        $0.textColor = .neutral300
         $0.font = .systemFont(ofSize: 20, weight: .medium)
     }
 

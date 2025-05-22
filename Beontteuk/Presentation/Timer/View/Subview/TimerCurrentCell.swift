@@ -44,6 +44,18 @@ final class TimerCurrentCell: BaseTableViewCell {
         $0.strokeEnd = 1.0
     }
 
+    // MARK: - Init, Deinit, required
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        updateState(to: .running)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+    
     // MARK: - Layout Cycles
 
     override func layoutSubviews() {
@@ -100,8 +112,28 @@ final class TimerCurrentCell: BaseTableViewCell {
         updateProgress(value: progress)
     }
 
+    func updateState(to state: TimerState) {
+        timeLabel.textColor = state.labelColor
+        timeKRLabel.textColor = state.labelColor
+        controlButton.isSelected = state == .running
+    }
+
     /// value: 0~1 사이의 값으로 진행도를 나타냄
     func updateProgress(value: CGFloat) {
         progressLayer.strokeEnd = value
+    }
+}
+
+extension TimerCurrentCell {
+    enum TimerState {
+        case running
+        case pause
+
+        var labelColor: UIColor {
+            switch self {
+            case .running: .neutral1000
+            case .pause: .neutral300
+            }
+        }
     }
 }
