@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum TimerSection: Hashable, CaseIterable {
+    case current
+    case recent
+}
+
 enum TimerItem: Hashable {
     case current(CurrentTimer)
     case recent(RecentTimer)

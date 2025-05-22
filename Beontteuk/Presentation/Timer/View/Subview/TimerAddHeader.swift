@@ -96,7 +96,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
 
         timeStackView.snp.removeConstraints()
         timeStackView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(timePicker.rowSize(forComponent: 0).width / 2 + 28)
+            $0.leading.equalToSuperview().inset(timePicker.rowSize(forComponent: 0).width / 2 + 36)
             $0.centerY.equalToSuperview()
             $0.width.equalToSuperview().inset(8)
         }
@@ -118,7 +118,9 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         timeStackView.addArrangedSubviews(hourLabel, munuteLabel, secondLabel)
 
         idleStackView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalToSuperview()
+            $0.directionalHorizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(32)
         }
 
         bellImageView.snp.makeConstraints {
@@ -126,7 +128,9 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         }
 
         addStackView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalToSuperview()
+            $0.directionalHorizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(32)
         }
     }
 }

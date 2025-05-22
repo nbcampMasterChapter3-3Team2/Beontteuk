@@ -11,18 +11,13 @@ import Then
 
 final class TimerView: BaseView {
 
-    enum TimerSection: Hashable, CaseIterable {
-        case current
-        case recent
-    }
-
     // MARK: - Properties
 
     private var dataSource: UITableViewDiffableDataSource<TimerSection, TimerItem>?
 
     // MARK: - UI Components
 
-    private let tableView = UITableView().then {
+    private let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.backgroundColor = .clear
         $0.register(TimerCurrentCell.self, forCellReuseIdentifier: TimerCurrentCell.className)
         $0.register(TimerRecentCell.self, forCellReuseIdentifier: TimerRecentCell.className)
@@ -46,10 +41,12 @@ final class TimerView: BaseView {
         addSubviews(tableView)
 
         tableView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide)
-            $0.directionalHorizontalEdges.bottom.equalToSuperview()
+            $0.top.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview()
         }
     }
+
+    // MARK: - DataSource Helper
 
     private func setDataSource() {
         dataSource = .init(tableView: tableView, cellProvider: { tableView, indexPath, item in
@@ -90,5 +87,11 @@ final class TimerView: BaseView {
         snapshot.appendItems(TimerItem.currentItems, toSection: .current)
         snapshot.appendItems(TimerItem.recentItems, toSection: .recent)
         dataSource?.apply(snapshot)
+    }
+
+    // MARK: - Methods
+
+    func setTableViewDelegate(_ delegate: UITableViewDelegate) {
+        tableView.delegate = delegate
     }
 }
