@@ -23,7 +23,6 @@ final class AlarmViewController: BaseViewController {
     }
 
     override func viewDidLoad() {
-        print("load2")
         super.viewDidLoad()
         setNavigationItem()
         setTableHeader()

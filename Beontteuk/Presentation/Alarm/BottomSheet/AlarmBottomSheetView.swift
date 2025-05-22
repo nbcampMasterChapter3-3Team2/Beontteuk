@@ -26,11 +26,9 @@ final class AlarmBottomSheetView: BaseView {
     let tableView = UITableView(frame: .zero, style: .insetGrouped).then {
         $0.register(AlarmBottomSheetTableViewCell.self, forCellReuseIdentifier: AlarmBottomSheetTableViewCell.className)
         $0.isScrollEnabled = false
-       $0.rowHeight = UITableView.automaticDimension
+        $0.rowHeight = UITableView.automaticDimension
         $0.backgroundColor = .clear
-
     }
-
 
     override func setLayout() {
         addSubviews(timePicker, tableView)
