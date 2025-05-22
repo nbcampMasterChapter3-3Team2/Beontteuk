@@ -31,7 +31,6 @@ final class AlarmViewController: BaseViewController {
 
     private func setNavigationItem() {
         navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
-            print("EDIT")
         }))
     }
 

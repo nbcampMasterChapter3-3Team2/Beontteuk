@@ -52,14 +52,12 @@ final class AlarmBottomSheetViewController: BaseViewController {
 
     @objc
     private func didTapCancel() {
-        NSLog("didTap : Cancel")
         dismiss(animated: true)
     }
 
     @objc
     private func didTapSave() {
         // 저장 로직 호출
-        NSLog("didTap : Save Button")
         dismiss(animated: true)
     }
 }
