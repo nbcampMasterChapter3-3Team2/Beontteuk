@@ -15,30 +15,26 @@ final class DefaultButton: UIButton {
 
         var config = UIButton.Configuration.plain()
 
-        switch type {
-        case .reset, .start, .lap, .stop, .cancel:
-            config.baseForegroundColor = type.fgColor
-            config.titleAlignment = .center
-            config.attributedTitle = {
-                var attributedTitle = AttributedString(type.text)
-                attributedTitle.font = UIFont.systemFont(
-                    ofSize: type.fontSize,
-                    weight: .medium
-                )
-                return attributedTitle
-            }()
+        config.baseForegroundColor = type.fgColor
+        config.titleAlignment = .center
+        config.attributedTitle = {
+            var attributedTitle = AttributedString(type.text)
+            attributedTitle.font = UIFont.systemFont(
+                ofSize: type.fontSize,
+                weight: .medium
+            )
+            return attributedTitle
+        }()
 
-            self.configuration = config
-            self.layer.cornerRadius = 16
-            self.backgroundColor = type.bgColor
-            self.setShadow(type: .large)
+        self.configuration = config
+        self.layer.cornerRadius = 16
+        self.backgroundColor = type.bgColor
 
-            self.snp.makeConstraints {
-                $0.height.equalTo(type.height)
-            }
+        self.snp.makeConstraints {
+            $0.height.equalTo(type.height)
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

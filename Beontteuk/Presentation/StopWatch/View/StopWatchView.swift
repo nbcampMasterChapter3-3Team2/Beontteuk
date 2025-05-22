@@ -30,9 +30,13 @@ final class StopWatchView: BaseView {
         $0.spacing = 24
     }
 
-    let resetButton = DefaultButton(type: .lap)
+    let resetButton = DefaultButton(type: .lap).then {
+        $0.setShadow(type: .large)
+    }
 
-    let startButton = DefaultButton(type: .start)
+    let startButton = DefaultButton(type: .start).then {
+        $0.setShadow(type: .large)
+    }
 
     let tableView = UITableView().then {
         $0.register(LapCell.self, forCellReuseIdentifier: LapCell.className)
@@ -50,8 +54,14 @@ final class StopWatchView: BaseView {
 
     // MARK: - Layout Helper
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateShadowPath()
+    }
+
     override func setLayout() {
         super.setLayout()
+        
         addSubviews(iconImageView, timerLabel, stackView, tableView)
         stackView.addArrangedSubviews(resetButton, startButton)
 
