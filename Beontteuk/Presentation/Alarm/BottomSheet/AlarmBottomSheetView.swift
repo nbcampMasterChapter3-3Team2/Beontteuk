@@ -17,7 +17,7 @@ final class AlarmBottomSheetView: BaseView {
         $0.preferredDatePickerStyle = .wheels
         $0.datePickerMode = .time
         $0.minuteInterval = 1
-        $0.locale = Locale(identifier: "ko_KR")
+        $0.locale = Locale.autoupdatingCurrent
         // 다크모드 전환시에도 글자 색 고정
         $0.setValue(UIColor.neutral1000, forKeyPath: "textColor")
     }
