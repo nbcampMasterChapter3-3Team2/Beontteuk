@@ -10,11 +10,15 @@ import UIKit
 import SnapKit
 import Then
 import RxSwift
+import RxCocoa
 
 final class AlarmBottomSheetViewController: BaseViewController {
 
+    typealias Option = AlarmBottomSheetTableViewCell.Option
 
     private let bottomSheetView = AlarmBottomSheetView()
+    private var selections: [Option: String] = [:]
+    private var snoozeEnabled: Bool = true
 
     override func loadView() {
         view = bottomSheetView
@@ -22,35 +26,42 @@ final class AlarmBottomSheetViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.titleView = NavigationItemType.title.view()
-        // cancel 버튼에 didTapCancel(_:) 연결
-          navigationItem.leftBarButtonItem = UIBarButtonItem(
-              customView: NavigationItemType.cancel(
-                  target: self,
-                  action: #selector(didTapCancel)
-              ).view()
-          )
-
-          // save 버튼에 didTapSave(_:) 연결
-          navigationItem.rightBarButtonItem = UIBarButtonItem(
-              customView: NavigationItemType.save(
-                  target: self,
-                  action: #selector(didTapSave)
-              ).view()
-          )
+        setNavigationItem()
+        bottomSheetView.tableView.dataSource = self
+        bottomSheetView.tableView.delegate = self
     }
 
+    private func setNavigationItem() {
+        navigationItem.titleView = NavigationItemType.title.view()
+        // cancel 버튼에 didTapCancel(_:) 연결
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            customView: NavigationItemType.cancel(
+                target: self,
+                action: #selector(didTapCancel)
+            ).view()
+        )
 
+        // save 버튼에 didTapSave(_:) 연결
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            customView: NavigationItemType.save(
+                target: self,
+                action: #selector(didTapSave)
+            ).view()
+        )
+    }
 
     @objc
-        private func didTapCancel() {
-            dismiss(animated: true)
-        }
+    private func didTapCancel() {
+        NSLog("didTap : Cancel")
+        dismiss(animated: true)
+    }
 
-        @objc
-        private func didTapSave() {
-            // 저장 로직 호출
-        }
+    @objc
+    private func didTapSave() {
+        // 저장 로직 호출
+        NSLog("didTap : Save Button")
+        dismiss(animated: true)
+    }
 }
 
 extension AlarmBottomSheetViewController {
@@ -86,4 +97,58 @@ extension AlarmBottomSheetViewController {
             }
         }
     }
+
 }
+
+// MARK: - UITableViewDataSource
+extension AlarmBottomSheetViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        Option.allCases.count
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let option = Option.allCases[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: AlarmBottomSheetTableViewCell.className, for: indexPath) as! AlarmBottomSheetTableViewCell
+        cell.configure(
+            option: option,
+            detail: selections[option],
+            isOn: snoozeEnabled
+        )
+        // 토글 변경 콜백
+        cell.snoozeChanged = { [weak self] isOn in
+            self?.snoozeEnabled = isOn
+        }
+        // 레이블 변경 콜백
+        cell.labelChanged = { [weak self] text in
+            self?.selections[.label] = text
+        }
+
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension AlarmBottomSheetViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let option = Option.allCases[indexPath.row]
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        switch option {
+        case .repeat:
+            // 반복 선택 화면으로 push or present
+            break
+        case .label:
+            // 레이블 입력 UI 띄우기
+            break
+        case .sound:
+            // 사운드 선택 화면 띄우기
+            break
+        case .snooze:
+            // 스위치라 별도 처리 없음
+            break
+        }
+    }
+}
+
