@@ -45,11 +45,11 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         textField.delegate = self
         toggleSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Life Cycle
     override func setStyles() {
         selectionStyle = .none
@@ -104,32 +104,33 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         titleLabel.text = option.title
 
         // 일단 모두 숨김
-        detailLabel.isHidden    = true
-        textField.isHidden      = true
-        toggleSwitch.isHidden   = true
+        detailLabel.isHidden = true
+        textField.isHidden = true
+        toggleSwitch.isHidden = true
 
         switch option {
         case .repeat, .sound:
             selectionStyle = .default
             accessoryType = .disclosureIndicator
             detailLabel.text = detail ?? option.detailText
-            detailLabel.isHidden    = false
+            detailLabel.isHidden = false
 
         case .label:
             textField.placeholder = option.detailText
-            textField.text        = detail
-            textField.delegate    = self
-            textField.isHidden    = false
+            textField.text = detail
+            textField.delegate = self
+            textField.isHidden = false
 
         case .snooze:
-            toggleSwitch.isOn      = isOn
-            toggleSwitch.isHidden  = false
+            toggleSwitch.isOn = isOn
+            toggleSwitch.isHidden = false
         }
     }
 
     // MARK: - Actions
     @objc private func switchValueChanged(_ sender: UISwitch) {
         snoozeChanged?(sender.isOn)
+        print("TTT : \(sender.isOn)")
     }
 }
 
@@ -140,8 +141,8 @@ extension AlarmBottomSheetTableViewCell {
         var title: String {
             switch self {
             case .repeat: return "반복"
-            case .label:  return "레이블"
-            case .sound:  return "사운드"
+            case .label: return "레이블"
+            case .sound: return "사운드"
             case .snooze: return "다시 알림"
             }
         }
@@ -149,8 +150,8 @@ extension AlarmBottomSheetTableViewCell {
         var detailText: String {
             switch self {
             case .repeat: return "안 함"
-            case .label:  return "알람"
-            case .sound:  return "노래제목"
+            case .label: return "알람"
+            case .sound: return "노래제목"
             case .snooze: return ""
             }
         }
