@@ -85,6 +85,9 @@ extension AlarmViewController: UITableViewDataSource {
         let time = String(format: "%02d:%02d", alarm.hour, alarm.minute)
         let amPm = alarm.hour < 12 ? "AM" : "PM"
         cell.configure(time: time, amPm: amPm, detail: alarm.repeatText, isOn: alarm.isOn)
+        cell.alarmChanged = { isOn in
+            cell.configureLabelColor(to: isOn)
+        }
         return cell
 
     }

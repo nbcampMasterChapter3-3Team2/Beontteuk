@@ -11,6 +11,7 @@ import Then
 import RxSwift
 
 final class AlarmTableViewListTypeCell: BaseTableViewCell {
+    var alarmChanged: ((Bool) -> Void)?
 
     private let timeLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 50, weight: .medium)
@@ -27,8 +28,18 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         $0.textColor = .neutral300
     }
 
-    private let alarmSwitch = UISwitch().then {
+    private let toggleSwitch = UISwitch().then {
         $0.onTintColor = .primary500
+    }
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.overrideUserInterfaceStyle = .light
+        toggleSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func setStyles() {
@@ -41,7 +52,7 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
             timeLabel,
             amPmLabel,
             detailLabel,
-            alarmSwitch
+            toggleSwitch
         )
 
         timeLabel.snp.makeConstraints {
@@ -58,7 +69,7 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
             $0.leading.equalTo(timeLabel)
         }
 
-        alarmSwitch.snp.makeConstraints {
+        toggleSwitch.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().inset(16)
         }
@@ -73,6 +84,24 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         timeLabel.text = time
         amPmLabel.text = amPm
         detailLabel.text = detail
-        alarmSwitch.isOn = isOn
+        toggleSwitch.isOn = isOn
+        configureLabelColor(to: toggleSwitch.isOn)
+    }
+
+    func configureLabelColor(to toggleSwitchValue: Bool) {
+        if toggleSwitchValue {
+            timeLabel.textColor = .neutral1000
+            amPmLabel.textColor = .neutral1000
+            detailLabel.textColor = .neutral1000
+        } else {
+            timeLabel.textColor = .neutral300
+            amPmLabel.textColor = .neutral300
+            detailLabel.textColor = .neutral300
+        }
+    }
+
+    // MARK: - Actions
+    @objc private func switchValueChanged(_ sender: UISwitch) {
+        alarmChanged?(sender.isOn)
     }
 }
