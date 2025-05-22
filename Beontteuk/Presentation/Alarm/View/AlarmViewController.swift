@@ -90,24 +90,3 @@ extension AlarmViewController: UITableViewDataSource {
     }
 
 }
-
-//extension AlarmViewController: UITableViewDelegate {
-//    func tableView(_ tableView: UITableView,
-//        viewForHeaderInSection section: Int) -> UIView? {
-//        let header = tableView.dequeueReusableHeaderFooterView(
-//            withIdentifier: AlarmTableViewHeaderCell.className
-//        ) as! AlarmTableViewHeaderCell
-//
-//        header.onAddTap = { [weak self] in
-//            self?.didOnAddTap()
-//            NSLog("Touch")
-//        }
-//
-//        return header
-//    }
-//
-//    func tableView(_ tableView: UITableView,
-//        heightForHeaderInSection section: Int) -> CGFloat {
-//        return 320 // 컨텐츠 전부 보여줄 높이
-//    }
-//}
