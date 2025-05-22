@@ -12,7 +12,8 @@ import Then
 
 final class AlarmView: BaseView {
 
-    lazy var tableView = UITableView(frame: .zero, style: .grouped).then {
+    // TODO: ViewModel 작업시 private로 변경하기
+    let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.register(AlarmTableViewListTypeCell.self, forCellReuseIdentifier: AlarmTableViewListTypeCell.className)
         $0.register(AlarmTableViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: AlarmTableViewHeaderCell.className)
 
@@ -20,11 +21,6 @@ final class AlarmView: BaseView {
         $0.separatorStyle = .singleLine
         $0.backgroundColor = .clear
         $0.rowHeight = 125
-    }
-
-    
-    override func setStyles() {
-
     }
 
     override func setLayout() {

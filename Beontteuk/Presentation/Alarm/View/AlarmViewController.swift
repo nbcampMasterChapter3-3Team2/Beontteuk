@@ -18,25 +18,21 @@ final class AlarmViewController: BaseViewController {
     private let alarmView = AlarmView()
     private var alarms: [Alarm] = Alarm.mockList
 
-
     override func loadView() {
         view = alarmView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
-            print("EDIT")
-        }))
+        setNavigationItem()
         alarmView.tableView.dataSource = self
         alarmView.tableView.delegate = self
     }
 
-    override func setStyles() {
-
-    }
-
-    override func setLayout() {
+    private func setNavigationItem() {
+        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
+            print("EDIT")
+        }))
     }
 
     private func didOnAddTap() {
