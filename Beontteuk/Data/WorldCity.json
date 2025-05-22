@@ -1,0 +1,152 @@
+[
+  {
+      "cityName": "Seoul",
+      "timeZoneIdentifier": "Asia/Seoul",
+      "country": "KR"
+  },
+  {
+      "cityName": "New York",
+      "timeZoneIdentifier": "America/New_York",
+      "country": "US"
+  },
+  {
+      "cityName": "London",
+      "timeZoneIdentifier": "Europe/London",
+      "country": "GB"
+  },
+  {
+      "cityName": "Tokyo",
+      "timeZoneIdentifier": "Asia/Tokyo",
+      "country": "JP"
+  },
+  {
+      "cityName": "Paris",
+      "timeZoneIdentifier": "Europe/Paris",
+      "country": "FR"
+  },
+  {
+      "cityName": "Los Angeles",
+      "timeZoneIdentifier": "America/Los_Angeles",
+      "country": "US"
+  },
+  {
+      "cityName": "Beijing",
+      "timeZoneIdentifier": "Asia/Shanghai",
+      "country": "CN"
+  },
+  {
+      "cityName": "Moscow",
+      "timeZoneIdentifier": "Europe/Moscow",
+      "country": "RU"
+  },
+  {
+      "cityName": "Sydney",
+      "timeZoneIdentifier": "Australia/Sydney",
+      "country": "AU"
+  },
+  {
+      "cityName": "Cairo",
+      "timeZoneIdentifier": "Africa/Cairo",
+      "country": "EG"
+  },
+  {
+      "cityName": "Dubai",
+      "timeZoneIdentifier": "Asia/Dubai",
+      "country": "AE"
+  },
+  {
+      "cityName": "Berlin",
+      "timeZoneIdentifier": "Europe/Berlin",
+      "country": "DE"
+  },
+  {
+      "cityName": "Singapore",
+      "timeZoneIdentifier": "Asia/Singapore",
+      "country": "SG"
+  },
+  {
+      "cityName": "Toronto",
+      "timeZoneIdentifier": "America/Toronto",
+      "country": "CA"
+  },
+  {
+      "cityName": "São Paulo",
+      "timeZoneIdentifier": "America/Sao_Paulo",
+      "country": "BR"
+  },
+  {
+      "cityName": "Johannesburg",
+      "timeZoneIdentifier": "Africa/Johannesburg",
+      "country": "ZA"
+  },
+  {
+      "cityName": "Bangkok",
+      "timeZoneIdentifier": "Asia/Bangkok",
+      "country": "TH"
+  },
+  {
+      "cityName": "Mexico City",
+      "timeZoneIdentifier": "America/Mexico_City",
+      "country": "MX"
+  },
+  {
+      "cityName": "Istanbul",
+      "timeZoneIdentifier": "Europe/Istanbul",
+      "country": "TR"
+  },
+  {
+      "cityName": "Rome",
+      "timeZoneIdentifier": "Europe/Rome",
+      "country": "IT"
+  },
+  {
+      "cityName": "Madrid",
+      "timeZoneIdentifier": "Europe/Madrid",
+      "country": "ES"
+  },
+  {
+      "cityName": "Mumbai",
+      "timeZoneIdentifier": "Asia/Kolkata",
+      "country": "IN"
+  },
+  {
+      "cityName": "Buenos Aires",
+      "timeZoneIdentifier": "America/Argentina/Buenos_Aires",
+      "country": "AR"
+  },
+  {
+      "cityName": "Chicago",
+      "timeZoneIdentifier": "America/Chicago",
+      "country": "US"
+  },
+  {
+      "cityName": "San Francisco",
+      "timeZoneIdentifier": "America/Los_Angeles",
+      "country": "US"
+  },
+  {
+      "cityName": "Vancouver",
+      "timeZoneIdentifier": "America/Vancouver",
+      "country": "CA"
+  },
+  {
+      "cityName": "Jakarta",
+      "timeZoneIdentifier": "Asia/Jakarta",
+      "country": "ID"
+  },
+  {
+      "cityName": "Lagos",
+      "timeZoneIdentifier": "Africa/Lagos",
+      "country": "NG"
+  },
+  {
+      "cityName": "Tehran",
+      "timeZoneIdentifier": "Asia/Tehran",
+      "country": "IR"
+  },
+  {
+      "cityName": "Honolulu",
+      "timeZoneIdentifier": "Pacific/Honolulu",
+      "country": "US"
+  }
+]
