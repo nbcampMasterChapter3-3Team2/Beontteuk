@@ -130,7 +130,6 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     // MARK: - Actions
     @objc private func switchValueChanged(_ sender: UISwitch) {
         snoozeChanged?(sender.isOn)
-        print("TTT : \(sender.isOn)")
     }
 }
 
