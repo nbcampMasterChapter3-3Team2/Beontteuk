@@ -52,6 +52,12 @@ final class TimerCurrentCell: BaseTableViewCell {
         setProgressPath()
     }
 
+    // MARK: - Style Helper
+
+    override func setStyles() {
+        backgroundColor = .clear
+    }
+
     // MARK: - Layout Helper
 
     override func setLayout() {

@@ -40,6 +40,12 @@ final class TimerRecentCell: BaseTableViewCell {
         $0.layer.cornerRadius = 35
     }
 
+    // MARK: - Style Helper
+
+    override func setStyles() {
+        backgroundColor = .clear
+    }
+
     // MARK: - Layout Helper
 
     override func setLayout() {
