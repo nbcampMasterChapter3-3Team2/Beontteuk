@@ -10,10 +10,6 @@ import UIKit
 import SnapKit
 import Then
 
-enum NavigationButtonType {
-    case edit(action: () -> Void)
-    case check(action: () -> Void)
-}
 
 final class CustomUIBarButtonItem: UIBarButtonItem {
 
@@ -54,5 +50,12 @@ final class CustomUIBarButtonItem: UIBarButtonItem {
         }
 
         self.init(customView: button)
+    }
+}
+
+extension CustomUIBarButtonItem {
+    enum NavigationButtonType {
+        case edit(action: () -> Void)
+        case check(action: () -> Void)
     }
 }
