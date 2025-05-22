@@ -28,6 +28,7 @@ final class AlarmTableViewHeaderCell: BaseTableViewHeaderFooterView {
 
     private let addButton = AddButton(type: .alarm).then {
         $0.setShadow(type: .large)
+        $0.updateShadow()
     }
 
     override func setLayout() {
