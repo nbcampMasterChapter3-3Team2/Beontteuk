@@ -86,6 +86,7 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         detailLabel.text = detail
         toggleSwitch.isOn = isOn
         configureLabelColor(to: toggleSwitch.isOn)
+        configureLocale()
     }
 
     func configureLabelColor(to toggleSwitchValue: Bool) {
@@ -97,6 +98,14 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
             timeLabel.textColor = .neutral300
             amPmLabel.textColor = .neutral300
             detailLabel.textColor = .neutral300
+        }
+    }
+
+    private func configureLocale() {
+        if Locale.autoupdatingCurrent.uses24HourClock {
+            amPmLabel.isHidden = true
+        } else {
+            amPmLabel.isHidden = false
         }
     }
 

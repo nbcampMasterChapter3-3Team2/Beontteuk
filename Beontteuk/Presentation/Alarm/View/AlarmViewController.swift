@@ -27,6 +27,13 @@ final class AlarmViewController: BaseViewController {
         setNavigationItem()
         setTableHeader()
         alarmView.tableView.dataSource = self
+
+        NotificationCenter.default.rx
+            .notification(UIApplication.willEnterForegroundNotification)
+            .subscribe(onNext: { [weak self] _ in
+            self?.alarmView.tableView.reloadData()
+        })
+            .disposed(by: disposeBag)
     }
 
     private func setNavigationItem() {

@@ -97,3 +97,10 @@ extension UIStackView {
         }
     }
 }
+
+extension Locale {
+    var uses24HourClock: Bool {
+        let format = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: self) ?? ""
+        return !format.contains("a")
+    }
+}
