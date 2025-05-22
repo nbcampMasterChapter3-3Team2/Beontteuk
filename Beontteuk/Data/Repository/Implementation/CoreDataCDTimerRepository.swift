@@ -137,7 +137,7 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
      }
 
      func addTimer(hour: Int, minute: Int, second: Int, label: String?, soundName: String?) {
-         let cdTimer = repository.createTimer(hour: Int, minute: Int, second: Int, label: String?, soundName: String?)
+         let cdTimer = repository.createTimer(hour: hour, minute: minute, second: second, label: label, soundName: soundName)
          repository.saveTimer(cdTimer) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }

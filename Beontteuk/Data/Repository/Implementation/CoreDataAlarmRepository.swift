@@ -64,7 +64,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         }
     }
     
-    /// 알람 저장
+    /// 알람 저장 (생성 및 수정 시 활용)
     func saveAlarm(_ alarm: Alarm) {
         if context.hasChanges {
             do {
@@ -86,7 +86,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
      }
 
      func addAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?) {
-         let alarm = repository.createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?)
+         let alarm = repository.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName)
          repository.saveAlarm(alarm) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }

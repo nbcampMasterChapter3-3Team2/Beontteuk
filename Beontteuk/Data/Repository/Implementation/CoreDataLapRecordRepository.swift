@@ -77,7 +77,7 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
      }
 
      func addLap(for session: StopWatchSession, lapIndex: Int, lapTime: Double, absoluteTime: Double) {
-         let lap = repository.createLap(for session: session, lapIndex: Int, lapTime: Double, absoluteTime: Double)
+         let lap = repository.createLap(for session: session, lapIndex: lapIndex, lapTime: lapTime, absoluteTime: absoluteTime)
          repository2.saveLap(lap) // 항상 CoreData에 변경 사항이 생긴 경우 꼭 save 메서드 호출
      }
  }
