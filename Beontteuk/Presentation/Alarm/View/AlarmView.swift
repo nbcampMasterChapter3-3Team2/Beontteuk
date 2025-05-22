@@ -15,8 +15,6 @@ final class AlarmView: BaseView {
     // TODO: ViewModel 작업시 private로 변경하기
     let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.register(AlarmTableViewListTypeCell.self, forCellReuseIdentifier: AlarmTableViewListTypeCell.className)
-        $0.register(AlarmTableViewHeaderCell.self, forHeaderFooterViewReuseIdentifier: AlarmTableViewHeaderCell.className)
-
         $0.isEditing = false
         $0.separatorStyle = .singleLine
         $0.backgroundColor = .clear

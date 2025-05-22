@@ -23,10 +23,11 @@ final class AlarmViewController: BaseViewController {
     }
 
     override func viewDidLoad() {
+        print("load2")
         super.viewDidLoad()
         setNavigationItem()
+        setTableHeader()
         alarmView.tableView.dataSource = self
-        alarmView.tableView.delegate = self
     }
 
     private func setNavigationItem() {
@@ -47,6 +48,24 @@ final class AlarmViewController: BaseViewController {
 
         present(nav, animated: true)
     }
+
+    /// 헤더를 재사용할 경우 onAddTap 이벤트 연결이 끊김
+    /// 한번만 선언해서 재사용 안되게 변경
+     private func setTableHeader() {
+         let header = AlarmTableViewHeaderCell(
+             reuseIdentifier: AlarmTableViewHeaderCell.className
+         )
+         header.onAddTap = { [weak self] in
+             self?.didOnAddTap()
+         }
+         header.frame = CGRect(
+             x: 0,
+             y: 0,
+             width: alarmView.tableView.bounds.width,
+             height: 320
+         )
+         alarmView.tableView.tableHeaderView = header
+     }
 
 
 }
@@ -72,23 +91,23 @@ extension AlarmViewController: UITableViewDataSource {
 
 }
 
-extension AlarmViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView,
-        viewForHeaderInSection section: Int) -> UIView? {
-        let header = tableView.dequeueReusableHeaderFooterView(
-            withIdentifier: AlarmTableViewHeaderCell.className
-        ) as! AlarmTableViewHeaderCell
-
-        header.onAddTap = { [weak self] in
-            self?.didOnAddTap()
-            NSLog("Touch")
-        }
-
-        return header
-    }
-
-    func tableView(_ tableView: UITableView,
-        heightForHeaderInSection section: Int) -> CGFloat {
-        return 320 // 컨텐츠 전부 보여줄 높이
-    }
-}
+//extension AlarmViewController: UITableViewDelegate {
+//    func tableView(_ tableView: UITableView,
+//        viewForHeaderInSection section: Int) -> UIView? {
+//        let header = tableView.dequeueReusableHeaderFooterView(
+//            withIdentifier: AlarmTableViewHeaderCell.className
+//        ) as! AlarmTableViewHeaderCell
+//
+//        header.onAddTap = { [weak self] in
+//            self?.didOnAddTap()
+//            NSLog("Touch")
+//        }
+//
+//        return header
+//    }
+//
+//    func tableView(_ tableView: UITableView,
+//        heightForHeaderInSection section: Int) -> CGFloat {
+//        return 320 // 컨텐츠 전부 보여줄 높이
+//    }
+//}
