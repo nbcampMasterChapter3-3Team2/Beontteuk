@@ -22,9 +22,9 @@ final class AddButton: UIButton {
 
     private func setStyles() {
         layer.cornerRadius = 16
-        clipsToBounds = true
+        backgroundColor = .neutral100
 
-        var config = UIButton.Configuration.filled()
+        var config = UIButton.Configuration.plain()
 
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .medium)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)?
@@ -37,7 +37,6 @@ final class AddButton: UIButton {
         ]))
         config.attributedTitle = attributedTitle
 
-        config.baseBackgroundColor = .neutral100
         config.imagePadding = 8
         config.contentInsets = .init(top: 12, leading: 24, bottom: 12, trailing: 24)
 
@@ -58,3 +57,4 @@ extension AddButton {
         }
     }
 }
+

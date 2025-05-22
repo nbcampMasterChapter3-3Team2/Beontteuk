@@ -47,12 +47,34 @@ extension UIView {
             .forEach { $0.frame = bounds }
     }
 
-    /// layer에 그림자를 적용합니다.
+    /// View의 Layer에 그림자를 적용합니다.
+    ///
+    /// 이 메서드를 호출하는 것만으로는 shadowPath가 적용되지 않아, 매 프레임마다 shadowPath를 결정하게 되어 GPU 부하가 커지기 때문에 View의 bounds가 결정된 후 path를 설정해주어야 합니다. 즉, layoutSubViews에서 updateShadowPath()를 꼭 호출해주어야 합니다. 예시:
+    ///
+    /// ```swift
+    /// let myView: UIView() = {
+    ///     let view = UIView()
+    ///     view.setShadow(type: .large)
+    ///     return view
+    /// }()
+    ///
+    /// override func layoutSubviews() {
+    ///     super.layoutSubviews()
+    ///     myView.updateShadowPath()
+    /// }
+    /// ```
     func setShadow(type: ShadowSize) {
         layer.shadowColor = UIColor.neutral1000.cgColor
         layer.shadowRadius = 5
         layer.shadowOffset = type.offset
         layer.shadowOpacity = 0.25
+    }
+
+    func updateShadowPath() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
+        }
     }
 
     enum ShadowSize {
