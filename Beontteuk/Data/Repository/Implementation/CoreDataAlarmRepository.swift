@@ -17,8 +17,8 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
     }
 
     /// 알람 리스트 불러오기
-    func fetchAllAlarm() -> [Alarm] {
-        let request: NSFetchRequest<Alarm> = Alarm.fetchRequest()
+    func fetchAllAlarm() -> [CDAlarm] {
+        let request: NSFetchRequest<CDAlarm> = CDAlarm.fetchRequest()
         request.sortDescriptors = [
             NSSortDescriptor(key: "hour", ascending: true),
             NSSortDescriptor(key: "minute", ascending: true)
@@ -31,8 +31,8 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
                      minute: Int,
                      repeatDays: String?,
                      label: String?,
-                     soundName: String?) -> Alarm {
-        let alarm = Alarm(context: context)
+                     soundName: String?) -> CDAlarm {
+        let alarm = CDAlarm(context: context)
         alarm.id = UUID()
         alarm.hour = Int16(hour)
         alarm.minute = Int16(minute)
@@ -45,7 +45,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
     }
 
     /// 알람 삭제
-    func deleteAlarm(_ alarm: Alarm) {
+    func deleteAlarm(_ alarm: CDAlarm) {
         context.delete(alarm)
         do {
             try context.save()
@@ -55,7 +55,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
     }
 
     /// 알람 토글 전환
-    func toggleAlarm(_ alarm: Alarm) {
+    func toggleAlarm(_ alarm: CDAlarm) {
         alarm.isEnabled.toggle()
         do {
             try context.save()
@@ -65,7 +65,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
     }
     
     /// 알람 저장 (생성 및 수정 시 활용)
-    func saveAlarm(_ alarm: Alarm) {
+    func saveAlarm(_ alarm: CDAlarm) {
         if context.hasChanges {
             do {
                 try context.save()
