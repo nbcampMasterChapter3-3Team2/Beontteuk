@@ -24,5 +24,6 @@ public class Alarm: NSManagedObject {
         static let repeatDayIndexes = "repeatDayIndexes"
         static let repeatDayNames = "repeatDayNames"
         static let joinedRepeatDayNames = "joinedRepeatDayNames"
+        static let dateComponents = "dateComponents"
     }
 }

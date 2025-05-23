@@ -19,5 +19,7 @@ public class StopWatchSession: NSManagedObject {
         static let createdAt = "createdAt"
         
         static let laps = "laps"
+        
+        static let totalElapsed = "totalElapsed"
     }
 }

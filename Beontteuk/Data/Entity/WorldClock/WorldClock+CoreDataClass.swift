@@ -17,5 +17,7 @@ public class WorldClock: NSManagedObject {
         static let timeZoneIdentifier = "timeZoneIdentifier"
         static let createdAt = "createdAt"
         static let orderIndex = "orderIndex"
+        
+        static let currentLocalTime = "currentLocalTime"
     }
 }

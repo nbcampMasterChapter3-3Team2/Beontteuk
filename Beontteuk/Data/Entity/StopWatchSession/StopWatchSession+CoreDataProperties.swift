@@ -39,6 +39,14 @@ extension StopWatchSession {
     @NSManaged public var createdAt: Date?              // 스톱워치 생성 시각
     
     @NSManaged public var laps: NSSet?                  // 랩 기록 저장 및 조회용 관계 필드
+    
+    var totalElapsed: TimeInterval {
+        if isRunning {
+            return elapsedBeforePause + Date().timeIntervalSince(startTime!)
+        } else {
+            return elapsedBeforePause
+        }
+    }
 }
 
 // MARK: Generated accessors for laps

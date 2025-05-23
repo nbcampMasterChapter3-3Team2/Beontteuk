@@ -70,11 +70,6 @@ extension Alarm {
     var dateComponents: DateComponents {
         DateComponents(hour: Int(hour), minute: Int(minute))
     }
-    
-    /// 고유값 확인
-    var identifier: String {
-        id?.uuidString ?? UUID().uuidString
-    }
 
 }
 
