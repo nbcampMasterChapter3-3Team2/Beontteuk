@@ -38,8 +38,8 @@ final class TabBarController: UITabBarController {
     }
     
     private func setTabBarItems() {
-        let alarmViewController = UINavigationController(rootViewController: ViewController())
-        let stopWatchViewController = UINavigationController(rootViewController: ViewController())
+        let alarmViewController = UINavigationController(rootViewController: AlarmViewController())
+        let stopWatchViewController = StopWatchViewController()
         let timerViewController = UINavigationController(rootViewController: ViewController())
         let worldClockViewController = UINavigationController(rootViewController: WorldClockViewController())
         
