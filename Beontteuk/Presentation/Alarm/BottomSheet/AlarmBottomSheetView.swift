@@ -10,8 +10,11 @@ import UIKit
 import SnapKit
 import Then
 import RxSwift
+import RxCocoa
 
 final class AlarmBottomSheetView: BaseView {
+
+    var dateChanged: ControlProperty<Date> { timePicker.rx.date }
 
     private let timePicker = UIDatePicker().then {
         $0.preferredDatePickerStyle = .wheels
@@ -22,8 +25,7 @@ final class AlarmBottomSheetView: BaseView {
         $0.setValue(UIColor.neutral1000, forKeyPath: "textColor")
     }
 
-    // TODO: ViewModel 작업시 private로 변경하기
-    let tableView = UITableView(frame: .zero, style: .insetGrouped).then {
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped).then {
         $0.register(AlarmBottomSheetTableViewCell.self, forCellReuseIdentifier: AlarmBottomSheetTableViewCell.className)
         $0.isScrollEnabled = false
         $0.rowHeight = UITableView.automaticDimension
@@ -42,5 +44,9 @@ final class AlarmBottomSheetView: BaseView {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
+    }
+
+    func getTableView() -> UITableView {
+        return tableView
     }
 }

@@ -9,8 +9,17 @@
 import UIKit
 import SnapKit
 import Then
+import RxCocoa
 
 final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
+
+    var snoozeToggled: ControlProperty<Bool> {
+         toggleSwitch.rx.value
+     }
+     // 텍스트 필드 텍스트를 방출
+     var labelText: ControlProperty<String?> {
+         textField.rx.text
+     }
 
     // MARK: - UI Components
     private let titleLabel = UILabel().then {
@@ -35,15 +44,9 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         $0.isHidden = true
     }
 
-    // 클로저 or 델리게이트로 스위치/텍스트 변경 콜백
-    var snoozeChanged: ((Bool) -> Void)?
-    var labelChanged: ((String?) -> Void)?
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.overrideUserInterfaceStyle = .light
-        textField.delegate = self
-        toggleSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
     }
 
     required init?(coder: NSCoder) {
@@ -97,7 +100,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
     ///   - isOn: snooze 스위치 상태
     func configure(
-        option: Option,
+        option: AlarmSheetTableOption,
         detail: String?,
         isOn: Bool
     ) {
@@ -118,7 +121,6 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         case .label:
             textField.placeholder = option.detailText
             textField.text = detail
-            textField.delegate = self
             textField.isHidden = false
 
         case .snooze:
