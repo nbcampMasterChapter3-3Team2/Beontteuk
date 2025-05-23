@@ -25,6 +25,7 @@ final class TimerViewController: BaseViewController {
         super.viewDidLoad()
 
         timerView.setTableViewDelegate(self)
+        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {}))
     }
 }
 
