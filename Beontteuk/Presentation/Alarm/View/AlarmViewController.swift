@@ -21,6 +21,21 @@ final class AlarmViewController: BaseViewController {
         view = alarmView
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setNavigationItem()
+        setTableHeader()
+        viewModel.action.onNext(.viewDidLoad)
+
+        // 앱이 포그라운드로 돌아올 때 리로드 트리거
+        NotificationCenter.default.rx
+            .notification(UIApplication.willEnterForegroundNotification)
+            .subscribe(with: self) { owner, _ in
+                owner.alarmView.getTableView().reloadData()
+            }
+            .disposed(by: disposeBag)
+    }
+
     override func bindViewModel() {
         viewModel.state.alarmsRelay
             .bind(to: alarmView.getTableView().rx.items(
@@ -55,38 +70,10 @@ final class AlarmViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
 
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setNavigationItem()
-        setTableHeader()
-        viewModel.action.onNext(.viewDidLoad)
-
-        // 앱이 포그라운드로 돌아올 때 리로드 트리거
-        NotificationCenter.default.rx
-            .notification(UIApplication.willEnterForegroundNotification)
-            .subscribe(onNext: { [weak self] _ in
-            self?.alarmView.getTableView().reloadData()
-        })
-            .disposed(by: disposeBag)
-    }
-
     private func setNavigationItem() {
         navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
             // 편집 모드 진입 로직
         }))
-    }
-
-    private func didOnAddTap() {
-        let bottomSheet = AlarmBottomSheetViewController()
-        let nav = UINavigationController(rootViewController: bottomSheet)
-        nav.modalPresentationStyle = .pageSheet
-        if let sheet = bottomSheet.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = false
-            sheet.preferredCornerRadius = 16
-        }
-        present(nav, animated: true)
     }
 
     private func setTableHeader() {
@@ -104,4 +91,18 @@ final class AlarmViewController: BaseViewController {
         )
         alarmView.getTableView().tableHeaderView = header
     }
+
+    private func didOnAddTap() {
+        let bottomSheet = AlarmBottomSheetViewController()
+        let nav = UINavigationController(rootViewController: bottomSheet)
+        nav.modalPresentationStyle = .pageSheet
+        if let sheet = bottomSheet.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = false
+            sheet.preferredCornerRadius = 16
+        }
+        present(nav, animated: true)
+    }
+
+
 }

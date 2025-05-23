@@ -64,9 +64,9 @@ final class AlarmTableViewHeaderCell: BaseTableViewHeaderFooterView {
 
     private func bind() {
         addButton.rx.tap
-            .bind(onNext: { [weak self] _ in
-            self?.onAddTap?()
-        })
+            .bind(with: self) { owner, _ in
+                owner.onAddTap?()
+            }
             .disposed(by: disposeBag)
     }
 
