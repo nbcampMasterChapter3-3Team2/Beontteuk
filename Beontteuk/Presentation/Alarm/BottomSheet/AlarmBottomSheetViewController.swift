@@ -46,7 +46,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 cellIdentifier: AlarmBottomSheetTableViewCell.className,
                 cellType: AlarmBottomSheetTableViewCell.self
             )) { [weak self] row, option, cell in
-            guard let self = self else { return }
+            guard let self else { return }
             let detail = self.viewModel.state.selections.value[option]
             let isOn = self.viewModel.state.snoozeEnabled.value
 
