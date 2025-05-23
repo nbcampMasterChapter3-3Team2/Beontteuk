@@ -13,8 +13,10 @@ import Then
 final class WorldClockView: BaseView {
     //MARK: UI Components
     private let worldClockTableView = UITableView().then {
-        $0.register(<#T##nib: UINib?##UINib?#>, forCellReuseIdentifier: <#T##String#>)
-        $0.register(<#T##nib: UINib?##UINib?#>, forHeaderFooterViewReuseIdentifier: <#T##String#>)
+        $0.register(WorldClockTableViewCell.self, forCellReuseIdentifier: WorldClockTableViewCell.className)
+        $0.register(WorldClockTableHeaderView.self, forHeaderFooterViewReuseIdentifier: WorldClockTableHeaderView.className)
+        $0.backgroundColor = .clear
+        $0.tableHeaderView = WorldClockTableHeaderView()
     }
     
     //MARK: SetStyles

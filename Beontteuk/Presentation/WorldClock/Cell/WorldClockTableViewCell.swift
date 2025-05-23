@@ -13,13 +13,11 @@ import Then
 final class WorldClockTableViewCell: BaseTableViewCell {
     //MARK: UI Components
     let dayTimeLabel = UILabel().then {
-        $0.text = "오늘, -8시간"
         $0.font = .systemFont(ofSize: 13, weight: .regular)
         $0.textColor = .systemGray
     }
     
     let cityLabel = UILabel().then {
-        $0.text = "런던"
         $0.font = .systemFont(ofSize: 25, weight: .regular)
         $0.textColor = .label
     }
@@ -31,8 +29,7 @@ final class WorldClockTableViewCell: BaseTableViewCell {
     }
     
     let clockLabel = UILabel().then {
-        $0.text = "09:00"
-        $0.font = .systemFont(ofSize: 50, weight: .regular)
+        $0.font = .systemFont(ofSize: 55, weight: .light)
         $0.textColor = .label
     }
     
@@ -40,14 +37,17 @@ final class WorldClockTableViewCell: BaseTableViewCell {
     override func setStyles() {
         super.setStyles()
         
-        self.contentView.addSubviews(verticalStackView, clockLabel)
-        self.verticalStackView.addArrangedSubviews(dayTimeLabel, cityLabel)
+        self.selectionStyle = .none
+        self.backgroundColor = .clear
         
     }
     
     //MARK: SetLayout
     override func setLayout() {
         super.setLayout()
+        
+        self.contentView.addSubviews(verticalStackView, clockLabel)
+        self.verticalStackView.addArrangedSubviews(dayTimeLabel, cityLabel)
         
         verticalStackView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
@@ -56,7 +56,13 @@ final class WorldClockTableViewCell: BaseTableViewCell {
         
         clockLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().offset(-16)
-            $0.centerY.equalToSuperview()
+            $0.verticalEdges.equalToSuperview().inset(8)
         }
+    }
+    
+    func configureCell(with: WorldClockDummy) {
+        self.dayTimeLabel.text = with.timeDifference
+        self.cityLabel.text = with.city
+        self.clockLabel.text = with.time
     }
 }

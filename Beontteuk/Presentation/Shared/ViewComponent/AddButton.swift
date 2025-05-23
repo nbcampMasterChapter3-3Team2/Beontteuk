@@ -41,6 +41,7 @@ final class AddButton: UIButton {
         config.contentInsets = .init(top: 12, leading: 24, bottom: 12, trailing: 24)
 
         self.configuration = config
+        self.setNeedsUpdateConfiguration()
     }
 }
 
@@ -59,4 +60,3 @@ extension AddButton {
         }
     }
 }
-
