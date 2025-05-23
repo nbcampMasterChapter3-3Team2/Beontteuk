@@ -1,5 +1,5 @@
 //
-//  Alarm+CoreDataClass.swift
+//  CDAlarm+CoreDataClass.swift
 //  Beontteuk
 //
 //  Created by 백래훈 on 5/21/25.
@@ -9,8 +9,8 @@
 import Foundation
 import CoreData
 
-@objc(Alarm)
-public class Alarm: NSManagedObject {
+@objc(CDAlarm)
+public class CDAlarm: NSManagedObject {
     public enum Key {
         static let id = "id"
         static let hour = "hour"

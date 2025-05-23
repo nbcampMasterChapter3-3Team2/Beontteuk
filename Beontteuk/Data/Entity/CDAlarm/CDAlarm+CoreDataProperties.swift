@@ -1,5 +1,5 @@
 //
-//  Alarm+CoreDataProperties.swift
+//  CDAlarm+CoreDataProperties.swift
 //  Beontteuk
 //
 //  Created by 백래훈 on 5/21/25.
@@ -29,10 +29,10 @@ import CoreData
  !사용 시 문제 발생은 언제든 말씀해주세요!
  */
 
-extension Alarm {
+extension CDAlarm {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Alarm> {
-        return NSFetchRequest<Alarm>(entityName: "Alarm")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<CDAlarm> {
+        return NSFetchRequest<CDAlarm>(entityName: "CDAlarm")
     }
 
     @NSManaged public var id: UUID?                 // 고유 식별자
@@ -73,6 +73,6 @@ extension Alarm {
 
 }
 
-extension Alarm : Identifiable {
+extension CDAlarm : Identifiable {
 
 }
