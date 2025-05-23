@@ -9,17 +9,17 @@ import Foundation
 
 protocol AlarmRepositoryInterface {
     /// 저장되어 있는 모든 알람 불러오기
-    func fetchAllAlarm() -> [Alarm]
+    func fetchAllAlarm() -> [CDAlarm]
     /// 알람 생성
     func createAlarm(hour: Int,
                      minute: Int,
                      repeatDays: String?,
                      label: String?,
-                     soundName: String?) -> Alarm
+                     soundName: String?) -> CDAlarm
     /// 알람 삭제
-    func deleteAlarm(_ alarm: Alarm)
+    func deleteAlarm(_ alarm: CDAlarm)
     /// 알람 on/off 변경
-    func toggleAlarm(_ alarm: Alarm)
+    func toggleAlarm(_ alarm: CDAlarm)
     /// 알람 변경사항 저장
-    func saveAlarm(_ alarm: Alarm)
+    func saveAlarm(_ alarm: CDAlarm)
 }
