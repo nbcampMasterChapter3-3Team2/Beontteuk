@@ -93,13 +93,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         addButton.updateShadowPath()
         cancelButton.updateShadowPath()
         startButton.updateShadowPath()
-
-        timeStackView.snp.removeConstraints()
-        timeStackView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(timePicker.rowSize(forComponent: 0).width / 2 + 36)
-            $0.centerY.equalToSuperview()
-            $0.width.equalToSuperview().inset(8)
-        }
+        layoutTimeStackView()
     }
 
     // MARK: - Layout Helper
@@ -124,13 +118,30 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         }
 
         bellImageView.snp.makeConstraints {
-            $0.size.equalTo(190)
+            $0.height.equalTo(190)
         }
 
         addStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.directionalHorizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview().inset(32)
+        }
+
+        timeStackView.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(timePicker.rowSize(forComponent: 0).width / 2 + 36)
+            $0.centerY.equalToSuperview()
+            $0.width.equalToSuperview().inset(8)
+        }
+    }
+
+    // MARK: - Methods
+
+    private func layoutTimeStackView() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            timeStackView.snp.updateConstraints {
+                $0.leading.equalToSuperview().inset(self.timePicker.rowSize(forComponent: 0).width / 2 + 36)
+            }
         }
     }
 }
