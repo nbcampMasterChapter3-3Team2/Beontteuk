@@ -12,32 +12,68 @@ import Then
 import RxSwift
 import RxCocoa
 
-
 final class AlarmViewController: BaseViewController {
 
     private let alarmView = AlarmView()
-    private var alarms: [Alarm] = Alarm.mockList
+    private let viewModel = AlarmViewModel()
 
     override func loadView() {
         view = alarmView
     }
 
+    override func bindViewModel() {
+        viewModel.state.alarmsRelay
+            .bind(to: alarmView.getTableView().rx.items(
+                cellIdentifier: AlarmTableViewListTypeCell.className,
+                cellType: AlarmTableViewListTypeCell.self
+            )) { row, alarm, cell in
+                let label = alarm.label ?? "알람"
+                let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
+
+                cell.configure(hour: alarm.hour,
+                               minute: alarm.minute,
+                               detail: label + repeatDays,
+                               isEnabled: alarm.isEnabled)
+
+                cell.alarmChanged = { isOn in
+                    cell.configureLabelColor(to: isOn)
+                }
+        }
+            .disposed(by: disposeBag)
+
+
+        viewModel.state.nextAlarmRelay
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .subscribe(with: self) { owner, hasNext in
+                if let header = owner.alarmView
+                    .getTableView()
+                    .tableHeaderView as? AlarmTableViewHeaderCell {
+                    header.configureHasNextAlarm(to: hasNext)
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationItem()
         setTableHeader()
-        alarmView.tableView.dataSource = self
+        viewModel.action.onNext(.viewDidLoad)
 
+        // 앱이 포그라운드로 돌아올 때 리로드 트리거
         NotificationCenter.default.rx
             .notification(UIApplication.willEnterForegroundNotification)
             .subscribe(onNext: { [weak self] _ in
-            self?.alarmView.tableView.reloadData()
+            self?.alarmView.getTableView().reloadData()
         })
             .disposed(by: disposeBag)
     }
 
     private func setNavigationItem() {
         navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
+            // 편집 모드 진입 로직
         }))
     }
 
@@ -50,51 +86,22 @@ final class AlarmViewController: BaseViewController {
             sheet.prefersGrabberVisible = false
             sheet.preferredCornerRadius = 16
         }
-
         present(nav, animated: true)
     }
 
-    /// 헤더를 재사용할 경우 onAddTap 이벤트 연결이 끊김
-    /// 한번만 선언해서 재사용 안되게 변경
-     private func setTableHeader() {
-         let header = AlarmTableViewHeaderCell(
-             reuseIdentifier: AlarmTableViewHeaderCell.className
-         )
-         header.onAddTap = { [weak self] in
-             self?.didOnAddTap()
-         }
-         header.frame = CGRect(
-             x: 0,
-             y: 0,
-             width: alarmView.tableView.bounds.width,
-             height: 320
-         )
-         alarmView.tableView.tableHeaderView = header
-     }
-
-
-}
-extension AlarmViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return alarms.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: AlarmTableViewListTypeCell.className, for: indexPath) as! AlarmTableViewListTypeCell
-        let alarm = alarms[indexPath.row]
-        let time = String(format: "%02d:%02d", alarm.hour, alarm.minute)
-        let amPm = alarm.hour < 12 ? "AM" : "PM"
-        cell.configure(time: time, amPm: amPm, detail: alarm.repeatText, isOn: alarm.isOn)
-        cell.alarmChanged = { isOn in
-            cell.configureLabelColor(to: isOn)
+    private func setTableHeader() {
+        let header = AlarmTableViewHeaderCell(
+            reuseIdentifier: AlarmTableViewHeaderCell.className
+        )
+        header.onAddTap = { [weak self] in
+            self?.didOnAddTap()
         }
-        return cell
-
+        header.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: alarmView.getTableView().bounds.width,
+            height: 320
+        )
+        alarmView.getTableView().tableHeaderView = header
     }
-
 }
