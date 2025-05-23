@@ -11,7 +11,7 @@ extension NSObject {
     var className: String {
         NSStringFromClass(self.classForCoder).components(separatedBy: ".").last!
     }
-    
+
     static var className: String {
         NSStringFromClass(self.classForCoder()).components(separatedBy: ".").last!
     }
@@ -25,7 +25,7 @@ extension UIView {
     }
 
     func applyGradient() {
-        let colors:[UIColor] = [.background200, .background500]
+        let colors: [UIColor] = [.background200, .background500]
         let startPoint = CGPoint(x: 0, y: 0)
         let endPoint = CGPoint(x: 1, y: 1)
         let locations: [NSNumber]? = nil
@@ -95,6 +95,13 @@ extension UIStackView {
         views.forEach {
             self.addArrangedSubview($0)
         }
+    }
+}
+
+extension Locale {
+    var uses24HourClock: Bool {
+        let format = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: self) ?? ""
+        return !format.contains("a")
     }
 }
 
