@@ -1,6 +1,6 @@
 //
 //  SceneDelegate.swift
-//  Alarm
+//  Beontteuk
 //
 //  Created by 백래훈 on 5/20/25.
 //
