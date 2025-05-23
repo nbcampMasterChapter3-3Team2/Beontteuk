@@ -16,7 +16,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     // Idle
     private let idleStackView = UIStackView().then {
         $0.axis = .vertical
-        $0.spacing = 32
+        $0.spacing = 20
         $0.isHidden = true
     }
 
@@ -112,23 +112,32 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         timeStackView.addArrangedSubviews(hourLabel, munuteLabel, secondLabel)
 
         idleStackView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.directionalHorizontalEdges.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().inset(32)
+            $0.top.equalToSuperview().inset(32)
+            $0.directionalHorizontalEdges.equalToSuperview().inset(16).priority(.high)
+            $0.height.equalTo(270)
         }
 
         bellImageView.snp.makeConstraints {
             $0.height.equalTo(190)
         }
 
+        addButton.snp.makeConstraints {
+            $0.height.equalTo(60)
+        }
+
         addStackView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.directionalHorizontalEdges.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().inset(32)
+            $0.top.equalToSuperview().inset(32)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(270)
+        }
+
+        timePicker.snp.makeConstraints {
+            $0.height.equalTo(190)
         }
 
         timeStackView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(timePicker.rowSize(forComponent: 0).width / 2 + 36)
+            let inset = timePicker.rowSize(forComponent: 0).width / 2 + 36
+            $0.leading.equalToSuperview().inset(inset)
             $0.centerY.equalToSuperview()
             $0.width.equalToSuperview().inset(8)
         }
@@ -144,10 +153,17 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
             }
         }
     }
+
+    // MARK: - Methods
+
+    func updateState(to state: AddState) {
+        idleStackView.isHidden = state != .idle
+        addStackView.isHidden = state != .add
+    }
 }
 
 extension TimerAddHeader {
-    enum State {
+    enum AddState {
         case idle
         case add
     }

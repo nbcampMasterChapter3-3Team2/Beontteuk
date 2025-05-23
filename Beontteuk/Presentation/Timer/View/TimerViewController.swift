@@ -52,11 +52,11 @@ extension TimerViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let section = TimerSection.allCases[section]
         switch section {
-        case .current: return 300
-        case .recent: return 40
+        case .current: return 334
+        case .recent: return 44
         }
     }
 }

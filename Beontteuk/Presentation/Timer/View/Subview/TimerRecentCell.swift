@@ -44,6 +44,7 @@ final class TimerRecentCell: BaseTableViewCell {
 
     override func setStyles() {
         backgroundColor = .clear
+        selectionStyle = .none
     }
 
     // MARK: - Layout Helper
