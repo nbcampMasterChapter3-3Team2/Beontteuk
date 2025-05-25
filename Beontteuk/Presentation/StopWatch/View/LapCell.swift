@@ -68,10 +68,6 @@ final class LapCell: BaseTableViewCell {
 
     // MARK: - Methods
 
-    func configureItems(_ lapModel: LapTestModel) {
-        self.lapLabel.text = lapModel.lap
-        self.lappedTimeLabel.text = lapModel.lappedTime
-        self.timeIntervalLabel.text = lapModel.timeInterval
-    }
+    func configureItems() { }
 }
 

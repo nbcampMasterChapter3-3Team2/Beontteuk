@@ -30,11 +30,11 @@ final class StopWatchView: BaseView {
         $0.spacing = 24
     }
 
-    let resetButton = DefaultButton(type: .lap).then {
+    let leftButton = DefaultButton(type: .lap).then {
         $0.setShadow(type: .large)
     }
 
-    let startButton = DefaultButton(type: .start).then {
+    let rightButton = DefaultButton(type: .start).then {
         $0.setShadow(type: .large)
     }
 
@@ -63,7 +63,7 @@ final class StopWatchView: BaseView {
         super.setLayout()
         
         addSubviews(iconImageView, timerLabel, stackView, tableView)
-        stackView.addArrangedSubviews(resetButton, startButton)
+        stackView.addArrangedSubviews(leftButton, rightButton)
 
         iconImageView.snp.makeConstraints {
             $0.size.equalTo(242)
