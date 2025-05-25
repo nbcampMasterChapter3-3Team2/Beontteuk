@@ -13,9 +13,7 @@ import CoreData
 public class CDTimer: NSManagedObject {
     public enum Key {
         static let id = "id"
-        static let hour = "hour"
-        static let minute = "minute"
-        static let second = "second"
+        static let remainSecond = "remainSecond"
         static let totalSecond = "totalSecond"
         static let label = "label"
         static let soundName = "soundName"
