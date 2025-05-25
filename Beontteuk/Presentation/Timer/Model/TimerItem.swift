@@ -31,18 +31,6 @@ enum TimerItem: Hashable {
             return nil
         }
     }
-
-    static let activeItems: [TimerItem] = [
-        .active(ActiveTimer(id: UUID(), remainTime: 7, totalTime: 10, isRunning: true, endTime: nil)),
-        .active(ActiveTimer(id: UUID(), remainTime: 11231, totalTime: 16544, isRunning: true, endTime: nil)),
-        .active(ActiveTimer(id: UUID(), remainTime: 345, totalTime: 400, isRunning: true, endTime: nil)),
-    ]
-
-    static let recentItems: [TimerItem] = [
-        .recent(RecentTimer(id: UUID(), totalTime: 123)),
-        .recent(RecentTimer(id: UUID(), totalTime: 7)),
-        .recent(RecentTimer(id: UUID(), totalTime: 123456)),
-    ]
 }
 
 struct ActiveTimer: Hashable {

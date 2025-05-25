@@ -87,8 +87,6 @@ final class TimerView: BaseView {
 
         guard var snapshot = dataSource?.snapshot() else { return }
         snapshot.appendSections(TimerSection.allCases)
-        snapshot.appendItems(TimerItem.activeItems, toSection: .active)
-        snapshot.appendItems(TimerItem.recentItems, toSection: .recent)
         dataSource?.apply(snapshot)
     }
 
