@@ -39,6 +39,7 @@ extension CDTimer {
     @NSManaged public var hour: Int16           // 설정된 시간 (시)
     @NSManaged public var minute: Int16         // 설정된 시간 (분)
     @NSManaged public var second: Int16         // 설정된 시간 (초)
+    @NSManaged public var totalSecond: Double   // 타이머 최초 설정 시 시, 분, 초 -> 초로 계산
     @NSManaged public var label: String?        // 사용자가 입력한 라벨
     @NSManaged public var soundName: String?    // 사운드 이름
     @NSManaged public var createdAt: Date?      // 최초 생성 시간

@@ -16,6 +16,7 @@ public class CDTimer: NSManagedObject {
         static let hour = "hour"
         static let minute = "minute"
         static let second = "second"
+        static let totalSecond = "totalSecond"
         static let label = "label"
         static let soundName = "soundName"
         static let createdAt = "createdAt"

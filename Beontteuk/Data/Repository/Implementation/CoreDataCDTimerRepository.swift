@@ -25,6 +25,7 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
         timer.hour = Int16(hour)
         timer.minute = Int16(minute)
         timer.second = Int16(second)
+        timer.totalSecond = Double(hour * 3600 + minute * 60 + second)
         timer.label = label
         timer.soundName = soundName
         timer.isRunning = true
