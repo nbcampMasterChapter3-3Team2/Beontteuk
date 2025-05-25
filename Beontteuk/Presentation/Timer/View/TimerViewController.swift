@@ -8,24 +8,64 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 
 final class TimerViewController: BaseViewController {
+
+    // MARK: - Properties
+
+    private let viewModel: TimerViewModel
 
     // MARK: - UI Components
 
     private let timerView = TimerView()
 
+    // MARK: - Init, Deinit, required
+
+    init(viewModel: TimerViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+    
     // MARK: - View Life Cycle
 
     override func loadView() {
         view = timerView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: - Style Helper
 
-        timerView.setTableViewDelegate(self)
+    override func setStyles() {
         navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {}))
+    }
+
+    // MARK: - Delegate Helper
+
+    override func setDelegates() {
+        timerView.setTableViewDelegate(self)
+    }
+
+    // MARK: - Bind
+
+    override func bindViewModel() {
+        viewModel.action.onNext(.viewDidLoad)
+
+        viewModel.state.activeTimers
+            .bind(with: self) { owner, timers in
+                owner.timerView.updateSnapshot(with: timers, to: .active)
+            }
+            .disposed(by: disposeBag)
+
+        viewModel.state.recentTimers
+            .bind(with: self) { owner, timers in
+                owner.timerView.updateSnapshot(with: timers, to: .recent)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
@@ -33,7 +73,7 @@ extension TimerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = TimerSection.allCases[section]
         switch section {
-        case .current:
+        case .active:
             let header = TimerAddHeader()
             return header
         case .recent:
@@ -56,7 +96,7 @@ extension TimerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let section = TimerSection.allCases[section]
         switch section {
-        case .current: return 334
+        case .active: return 334
         case .recent: return 44
         }
     }
