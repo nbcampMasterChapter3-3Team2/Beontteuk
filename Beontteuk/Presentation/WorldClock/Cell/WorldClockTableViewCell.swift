@@ -29,7 +29,7 @@ final class WorldClockTableViewCell: BaseTableViewCell {
     }
     
     let clockLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 55, weight: .light)
+        $0.font = .lightFont()
         $0.textColor = .label
     }
     
