@@ -50,6 +50,7 @@ final class AlarmTableViewHeaderCell: BaseTableViewHeaderFooterView {
         addButton.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(20)
             $0.directionalHorizontalEdges.equalToSuperview().inset(20).priority(.high)
+            $0.height.equalTo(60)
         }
     }
 
