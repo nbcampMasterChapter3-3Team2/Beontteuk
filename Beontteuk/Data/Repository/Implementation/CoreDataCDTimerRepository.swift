@@ -22,9 +22,8 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     func createTimer(hour: Int, minute: Int, second: Int, label: String?, soundName: String?) -> CDTimer {
         let timer = CDTimer(context: context)
         timer.id = UUID()
-        timer.hour = Int16(hour)
-        timer.minute = Int16(minute)
-        timer.second = Int16(second)
+        timer.remainSecond = Double(hour * 3600 + minute * 60 + second)
+        timer.totalSecond = Double(hour * 3600 + minute * 60 + second)
         timer.label = label
         timer.soundName = soundName
         timer.isRunning = true
@@ -93,9 +92,7 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     func createRecentItem(hour: Int, minute: Int, second: Int) -> CDTimer {
         let timer = CDTimer(context: context)
         timer.id = UUID()
-        timer.hour = Int16(hour)
-        timer.minute = Int16(minute)
-        timer.second = Int16(second)
+        timer.totalSecond = Double(hour * 3600 + minute * 60 + second)
         timer.isRunning = false
         timer.isRecent = true
         timer.createdAt = Date()
@@ -114,15 +111,14 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     func duplicateRecentItemAndStart(_ recent: CDTimer) -> CDTimer {
         let timer = CDTimer(context: context)
         timer.id = UUID()
-        timer.hour = recent.hour
-        timer.minute = recent.minute
-        timer.second = recent.second
+        timer.remainSecond = recent.totalSecond
+        timer.totalSecond = recent.totalSecond
         timer.label = recent.label
         timer.soundName = recent.soundName
         timer.isRunning = true
         timer.isRecent = false
         timer.createdAt = Date()
-        timer.endTime = Date().addingTimeInterval(Double(timer.hour * 3600 + timer.minute * 60 + timer.second))
+        timer.endTime = Date().addingTimeInterval(recent.totalSecond)
         return timer
     }
 }
