@@ -13,14 +13,16 @@ final class TimerViewModel: ViewModelProtocol {
     enum Action {
         case viewDidLoad
         case didTapAddButton
-        case didTapStartButton(h: Int, m: Int, s: Int)
+        case didTapStartButton
         case didTapCancelButton
+        case didChangeTimePicker((Int, Int))
     }
 
     struct State {
         let activeTimers = BehaviorRelay<[TimerItem]>(value: [])
         let recentTimers = BehaviorRelay<[TimerItem]>(value: [])
         let showTimePicker = PublishRelay<Bool>()
+        let selectedTime = BehaviorRelay<[Int:Int]>(value: [0: 0, 1: 0, 2: 0])
     }
 
     // MARK: - Properties
@@ -48,11 +50,13 @@ final class TimerViewModel: ViewModelProtocol {
                     owner.loadTimers()
                 case .didTapAddButton:
                     owner.state.showTimePicker.accept(true)
-                case .didTapStartButton(let h, let m, let s):
-                    owner.createTimerThenStart(h, m, s)
-                    owner.addRecentTimer(h, m, s)
+                case .didTapStartButton:
+                    owner.createTimerThenStart()
+                    owner.addRecentTimer()
                 case .didTapCancelButton:
                     owner.state.showTimePicker.accept(false)
+                case .didChangeTimePicker((let component, let value)):
+                    owner.changeSelectedTime(component, value)
                 }
             }
             .disposed(by: disposeBag)
@@ -88,7 +92,9 @@ final class TimerViewModel: ViewModelProtocol {
         state.recentTimers.accept(recentTimers)
     }
 
-    private func createTimerThenStart(_ h: Int, _ m: Int, _ s: Int) {
+    private func createTimerThenStart() {
+        let time = state.selectedTime.value
+        guard let h = time[0], let m = time[1], let s = time[2] else { return }
         let cdTimer = useCase.addTimer(h, m, s)
         let timerItem = TimerItem.active(ActiveTimer(
             id: cdTimer.id ?? UUID(),
@@ -100,10 +106,18 @@ final class TimerViewModel: ViewModelProtocol {
         state.activeTimers.accept(state.activeTimers.value + [timerItem])
     }
 
-    private func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) {
+    private func addRecentTimer() {
+        let time = state.selectedTime.value
+        guard let h = time[0], let m = time[1], let s = time[2] else { return }
         guard let cdTimer = useCase.addRecentTimer(h, m, s) else { return }
         let recentTimer = RecentTimer(id: cdTimer.id ?? UUID(), totalTime: cdTimer.totalSecond)
         let timerItem = TimerItem.recent(recentTimer)
         state.recentTimers.accept(state.recentTimers.value + [timerItem])
+    }
+
+    private func changeSelectedTime(_ component: Int, _ value: Int) {
+        var selectedTime = state.selectedTime.value
+        selectedTime[component] = value
+        state.selectedTime.accept(selectedTime)
     }
 }

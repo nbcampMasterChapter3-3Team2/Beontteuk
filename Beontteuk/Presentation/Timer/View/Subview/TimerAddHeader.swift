@@ -18,6 +18,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     let didTapAddButton = PublishRelay<Void>()
     let didTapStartButton = PublishRelay<(h: Int, m: Int, s: Int)>()
     let didTapCancelButton = PublishRelay<Void>()
+    let didChangeTimePicker = PublishRelay<(component: Int, value: Int)>()
 
     // MARK: - UI Components
 
@@ -175,6 +176,13 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, _ in
                 owner.didTapCancelButton.accept(())
+            }
+            .disposed(by: disposeBag)
+
+        timePicker.rx.itemSelected
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, picker in
+                owner.didChangeTimePicker.accept((picker.component, picker.row))
             }
             .disposed(by: disposeBag)
     }

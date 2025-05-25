@@ -93,12 +93,15 @@ extension TimerViewController: UITableViewDelegate {
 
             header.didTapStartButton
                 .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapStartButton)
+                }
+                .disposed(by: disposeBag)
+
+            header.didChangeTimePicker
+                .asDriver(onErrorDriveWith: .empty())
                 .drive(with: self) { owner, time in
-                    owner.viewModel.action.onNext(.didTapStartButton(
-                        h: time.h,
-                        m: time.m,
-                        s: time.s
-                    ))
+                    owner.viewModel.action.onNext(.didChangeTimePicker(time))
                 }
                 .disposed(by: disposeBag)
 
