@@ -10,9 +10,34 @@ import SnapKit
 
 final class DefaultButton: UIButton {
 
-    init(type: DefaultButtonType) {
-        super.init(frame: .zero)
+    // MARK: - Properties
+    
+    private var type: DefaultButtonType
 
+    // MARK: - Initializer, Deinit, requiered
+
+    init(type: DefaultButtonType) {
+        self.type = type
+        super.init(frame: .zero)
+        configureDefaultButton()
+        setLayout()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Layout Helper
+
+    private func setLayout() {
+        self.snp.makeConstraints {
+            $0.height.equalTo(type.height)
+        }
+    }
+
+    // MARK: - Methods
+
+    private func configureDefaultButton() {
         var config = UIButton.Configuration.plain()
 
         config.baseForegroundColor = type.fgColor
@@ -29,14 +54,12 @@ final class DefaultButton: UIButton {
         self.configuration = config
         self.layer.cornerRadius = 16
         self.backgroundColor = type.bgColor
-
-        self.snp.makeConstraints {
-            $0.height.equalTo(type.height)
-        }
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    ///
+    func updateButtonType(type: DefaultButtonType) {
+        self.type = type
+        configureDefaultButton()
     }
 }
 
