@@ -8,7 +8,6 @@
 import UIKit
 import SnapKit
 import Then
-import RxSwift
 import RxCocoa
 
 final class TimerViewController: BaseViewController {
@@ -56,13 +55,15 @@ final class TimerViewController: BaseViewController {
         viewModel.action.onNext(.viewDidLoad)
 
         viewModel.state.activeTimers
-            .bind(with: self) { owner, timers in
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, timers in
                 owner.timerView.updateSnapshot(with: timers, to: .active)
             }
             .disposed(by: disposeBag)
 
         viewModel.state.recentTimers
-            .bind(with: self) { owner, timers in
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, timers in
                 owner.timerView.updateSnapshot(with: timers, to: .recent)
             }
             .disposed(by: disposeBag)
@@ -75,6 +76,28 @@ extension TimerViewController: UITableViewDelegate {
         switch section {
         case .active:
             let header = TimerAddHeader()
+
+            header.didTapAddButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapAddButton)
+                }
+                .disposed(by: header.disposeBag)
+
+            header.didTapCancelButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapCancelButton)
+                }
+                .disposed(by: header.disposeBag)
+
+            viewModel.state.showTimePicker
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, isShow in
+                    header.showTimePicker(isShow)
+                }
+                .disposed(by: header.disposeBag)
+
             return header
         case .recent:
             let label = UILabel().then {

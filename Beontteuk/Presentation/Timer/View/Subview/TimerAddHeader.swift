@@ -8,8 +8,16 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 
 final class TimerAddHeader: BaseTableViewHeaderFooterView {
+
+    // MARK: - Properties
+
+    let didTapAddButton = PublishRelay<Void>()
+    let didTapStartButton = PublishRelay<(Int, Int, Int)>()
+    let didTapCancelButton = PublishRelay<Void>()
 
     // MARK: - UI Components
 
@@ -17,7 +25,6 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     private let idleStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 20
-        $0.isHidden = true
     }
 
     private let bellImageView = UIImageView().then {
@@ -33,7 +40,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     private let addStackView = UIStackView().then {
         $0.axis = .vertical
         $0.spacing = 20
-        $0.isHidden = false
+        $0.isHidden = true
     }
 
     private let timePicker = UIPickerView()
@@ -79,6 +86,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
 
         timePicker.delegate = self
         timePicker.dataSource = self
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -143,6 +151,34 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         }
     }
 
+    // MARK: - Bind
+
+    private func bind() {
+        addButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, _ in
+                owner.didTapAddButton.accept(())
+            }
+            .disposed(by: disposeBag)
+
+        startButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, _ in
+                let h = owner.timePicker.selectedRow(inComponent: 0)
+                let m = owner.timePicker.selectedRow(inComponent: 1)
+                let s = owner.timePicker.selectedRow(inComponent: 2)
+                owner.didTapStartButton.accept((h, m, s))
+            }
+            .disposed(by: disposeBag)
+
+        cancelButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, _ in
+                owner.didTapCancelButton.accept(())
+            }
+            .disposed(by: disposeBag)
+    }
+
     // MARK: - Methods
 
     private func layoutTimeStackView() {
@@ -156,16 +192,9 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
 
     // MARK: - Methods
 
-    func updateState(to state: AddState) {
-        idleStackView.isHidden = state != .idle
-        addStackView.isHidden = state != .add
-    }
-}
-
-extension TimerAddHeader {
-    enum AddState {
-        case idle
-        case add
+    func showTimePicker(_ isShow: Bool) {
+        idleStackView.isHidden = isShow
+        addStackView.isHidden = !isShow
     }
 }
 

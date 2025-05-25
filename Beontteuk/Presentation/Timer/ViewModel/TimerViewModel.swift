@@ -12,11 +12,15 @@ import RxRelay
 final class TimerViewModel: ViewModelProtocol {
     enum Action {
         case viewDidLoad
+        case didTapAddButton
+        case didTapStartButton
+        case didTapCancelButton
     }
 
     struct State {
         let activeTimers = BehaviorRelay<[TimerItem]>(value: [])
         let recentTimers = BehaviorRelay<[TimerItem]>(value: [])
+        let showTimePicker = PublishRelay<Bool>()
     }
 
     // MARK: - Properties
@@ -42,6 +46,12 @@ final class TimerViewModel: ViewModelProtocol {
                 switch action {
                 case .viewDidLoad:
                     owner.loadTimers()
+                case .didTapAddButton:
+                    owner.state.showTimePicker.accept(true)
+                case .didTapStartButton:
+                    ()
+                case .didTapCancelButton:
+                    owner.state.showTimePicker.accept(false)
                 }
             }
             .disposed(by: disposeBag)
