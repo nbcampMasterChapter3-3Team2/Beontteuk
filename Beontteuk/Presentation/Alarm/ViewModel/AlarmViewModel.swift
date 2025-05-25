@@ -13,11 +13,13 @@ final class AlarmViewModel: ViewModelProtocol {
     enum Action {
         case viewDidLoad
         case toggle(index: Int, isOn: Bool)
+        case setEditingMode(isEditing: Bool)
     }
 
     struct State {
         let alarmsRelay = BehaviorRelay<[AlarmMock]>(value: [])
         let nextAlarmRelay = BehaviorRelay<Bool>(value: false)
+        let isEditingRelay = BehaviorRelay<Bool>(value: false)
     }
 
     private let actionSubject = PublishSubject<Action>()
@@ -39,6 +41,8 @@ final class AlarmViewModel: ViewModelProtocol {
                 list = AlarmMock.mockList
             case .toggle(_, _):
                 break
+            case .setEditingMode(let isEditing):
+                owner.state.isEditingRelay.accept(isEditing)
             }
             owner.state.alarmsRelay.accept(list)
             let hasNext = owner.isNextAlarm(from: list)

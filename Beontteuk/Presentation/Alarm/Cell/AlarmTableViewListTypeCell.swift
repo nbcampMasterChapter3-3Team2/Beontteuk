@@ -110,6 +110,16 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         }
     }
 
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        let targetAlpha: CGFloat = editing ? 0 : 1
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.toggleSwitch.alpha = targetAlpha
+            }
+        }
+    }
+
     // MARK: - Actions
     @objc private func switchValueChanged(_ sender: UISwitch) {
         alarmChanged?(sender.isOn)

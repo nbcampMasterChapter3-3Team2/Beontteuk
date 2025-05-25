@@ -31,49 +31,76 @@ final class AlarmViewController: BaseViewController {
         NotificationCenter.default.rx
             .notification(UIApplication.willEnterForegroundNotification)
             .subscribe(with: self) { owner, _ in
-                owner.alarmView.getTableView().reloadData()
-            }
+            owner.alarmView.getTableView().reloadData()
+        }
             .disposed(by: disposeBag)
     }
 
     override func bindViewModel() {
+        // 알람 리스트 바인딩
         viewModel.state.alarmsRelay
             .bind(to: alarmView.getTableView().rx.items(
                 cellIdentifier: AlarmTableViewListTypeCell.className,
                 cellType: AlarmTableViewListTypeCell.self
             )) { row, alarm, cell in
-                let label = alarm.label ?? "알람"
-                let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
-
-                cell.configure(hour: alarm.hour,
-                               minute: alarm.minute,
-                               detail: label + repeatDays,
-                               isEnabled: alarm.isEnabled)
-
-                cell.alarmChanged = { isOn in
-                    cell.configureLabelColor(to: isOn)
-                }
+            let label = alarm.label ?? "알람"
+            let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
+            cell.configure(
+                hour: alarm.hour,
+                minute: alarm.minute,
+                detail: label + repeatDays,
+                isEnabled: alarm.isEnabled
+            )
+            cell.alarmChanged = { isOn in
+                cell.configureLabelColor(to: isOn)
+            }
         }
             .disposed(by: disposeBag)
 
-
+        // 다음 알람 유무 헤더 업데이트
         viewModel.state.nextAlarmRelay
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .subscribe(with: self) { owner, hasNext in
-                if let header = owner.alarmView
-                    .getTableView()
-                    .tableHeaderView as? AlarmTableViewHeaderCell {
-                    header.configureHasNextAlarm(to: hasNext)
-                }
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] hasNext in
+            guard let header = self?.alarmView
+                .getTableView()
+                .tableHeaderView as? AlarmTableViewHeaderCell else { return }
+            header.configureHasNextAlarm(to: hasNext)
+        })
+            .disposed(by: disposeBag)
+
+        viewModel.state.isEditingRelay
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isEditing in
+            guard
+                let self = self,
+                let barItem = self.navigationItem.leftBarButtonItem
+            as? CustomUIBarButtonItem
+                else { return }
+
+            let tableView = self.alarmView.getTableView()
+            DispatchQueue.main.async {
+                tableView.setEditing(isEditing, animated: true)
             }
+
+            let newType: CustomUIBarButtonItem.NavigationButtonType =
+                isEditing ? .check : .edit
+            barItem.updateType(newType)
+        })
             .disposed(by: disposeBag)
     }
 
     private func setNavigationItem() {
-        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {
-            // 편집 모드 진입 로직
-        }))
+        let barItem = CustomUIBarButtonItem(type: .edit)
+        navigationItem.leftBarButtonItem = barItem
+        guard let btn = barItem.customView as? UIButton else { return }
+
+        // 탭 시 현재 isEditingRelay 값 반전하여 Action 전송
+        btn.rx.tap
+            .withLatestFrom(viewModel.state.isEditingRelay)
+            .map { !$0 }
+            .map(AlarmViewModel.Action.setEditingMode(isEditing:))
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
     }
 
     private func setTableHeader() {
@@ -103,6 +130,5 @@ final class AlarmViewController: BaseViewController {
         }
         present(nav, animated: true)
     }
-
 
 }
