@@ -16,7 +16,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     // MARK: - Properties
 
     let didTapAddButton = PublishRelay<Void>()
-    let didTapStartButton = PublishRelay<(h: Int, m: Int, s: Int)>()
+    let didTapStartButton = PublishRelay<Void>()
     let didTapCancelButton = PublishRelay<Void>()
     let didChangeTimePicker = PublishRelay<(component: Int, value: Int)>()
 
@@ -165,10 +165,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
         startButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, _ in
-                let h = owner.timePicker.selectedRow(inComponent: 0)
-                let m = owner.timePicker.selectedRow(inComponent: 1)
-                let s = owner.timePicker.selectedRow(inComponent: 2)
-                owner.didTapStartButton.accept((h, m, s))
+                owner.didTapStartButton.accept(())
             }
             .disposed(by: disposeBag)
 
@@ -203,6 +200,10 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     func showTimePicker(_ isShow: Bool) {
         idleStackView.isHidden = isShow
         addStackView.isHidden = !isShow
+    }
+
+    func updateStartButtonState(_ isEnabled: Bool) {
+        startButton.isEnabled = isEnabled
     }
 }
 

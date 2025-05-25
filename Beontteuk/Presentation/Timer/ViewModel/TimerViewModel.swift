@@ -23,6 +23,7 @@ final class TimerViewModel: ViewModelProtocol {
         let recentTimers = BehaviorRelay<[TimerItem]>(value: [])
         let showTimePicker = PublishRelay<Bool>()
         let selectedTime = BehaviorRelay<[Int:Int]>(value: [0: 0, 1: 0, 2: 0])
+        let canStartTimer = PublishRelay<Bool>()
     }
 
     // MARK: - Properties
@@ -57,6 +58,7 @@ final class TimerViewModel: ViewModelProtocol {
                     owner.state.showTimePicker.accept(false)
                 case .didChangeTimePicker((let component, let value)):
                     owner.changeSelectedTime(component, value)
+                    owner.setCanStartTimer()
                 }
             }
             .disposed(by: disposeBag)
@@ -119,5 +121,10 @@ final class TimerViewModel: ViewModelProtocol {
         var selectedTime = state.selectedTime.value
         selectedTime[component] = value
         state.selectedTime.accept(selectedTime)
+    }
+
+    private func setCanStartTimer() {
+        let isEnabled = state.selectedTime.value.values.contains { $0 != 0 }
+        state.canStartTimer.accept(isEnabled)
     }
 }
