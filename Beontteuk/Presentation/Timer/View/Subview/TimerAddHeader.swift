@@ -16,7 +16,7 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     // MARK: - Properties
 
     let didTapAddButton = PublishRelay<Void>()
-    let didTapStartButton = PublishRelay<(Int, Int, Int)>()
+    let didTapStartButton = PublishRelay<(h: Int, m: Int, s: Int)>()
     let didTapCancelButton = PublishRelay<Void>()
 
     // MARK: - UI Components

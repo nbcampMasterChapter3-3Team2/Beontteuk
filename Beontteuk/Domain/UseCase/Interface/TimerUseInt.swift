@@ -10,4 +10,6 @@ import Foundation
 protocol TimerUseInt {
     func getActiveTimers() -> [CDTimer]
     func getRecentTimers() -> [CDTimer]
+    func addTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer
+    func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer?
 }

@@ -91,6 +91,17 @@ extension TimerViewController: UITableViewDelegate {
                 }
                 .disposed(by: header.disposeBag)
 
+            header.didTapStartButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, time in
+                    owner.viewModel.action.onNext(.didTapStartButton(
+                        h: time.h,
+                        m: time.m,
+                        s: time.s
+                    ))
+                }
+                .disposed(by: disposeBag)
+
             viewModel.state.showTimePicker
                 .asDriver(onErrorDriveWith: .empty())
                 .drive(with: self) { owner, isShow in
