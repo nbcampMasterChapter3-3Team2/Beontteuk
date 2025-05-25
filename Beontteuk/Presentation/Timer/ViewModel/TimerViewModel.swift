@@ -23,6 +23,7 @@ final class TimerViewModel: ViewModelProtocol {
         let recentTimers = BehaviorRelay<[TimerItem]>(value: [])
         let showTimePicker = PublishRelay<Bool>()
         let selectedTime = BehaviorRelay<[Int:Int]>(value: [0: 0, 1: 0, 2: 0])
+        let shouldResetTimePicker = PublishRelay<Void>()
         let canStartTimer = PublishRelay<Bool>()
     }
 
@@ -50,10 +51,11 @@ final class TimerViewModel: ViewModelProtocol {
                 case .viewDidLoad:
                     owner.loadTimers()
                 case .didTapAddButton:
-                    owner.state.showTimePicker.accept(true)
+                    owner.initializeTimeSelection()
                 case .didTapStartButton:
                     owner.createTimerThenStart()
                     owner.addRecentTimer()
+                    owner.state.showTimePicker.accept(false)
                 case .didTapCancelButton:
                     owner.state.showTimePicker.accept(false)
                 case .didChangeTimePicker((let component, let value)):
@@ -69,6 +71,13 @@ final class TimerViewModel: ViewModelProtocol {
     private func loadTimers() {
         loadActiveTimers()
         loadRecentTimers()
+    }
+
+    private func initializeTimeSelection() {
+        state.shouldResetTimePicker.accept(())
+        state.selectedTime.accept([0: 0, 1: 0, 2: 0])
+        state.canStartTimer.accept(false)
+        state.showTimePicker.accept(true)
     }
 
     private func loadActiveTimers() {

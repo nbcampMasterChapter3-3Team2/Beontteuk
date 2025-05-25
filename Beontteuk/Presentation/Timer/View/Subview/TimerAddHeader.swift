@@ -205,6 +205,12 @@ final class TimerAddHeader: BaseTableViewHeaderFooterView {
     func updateStartButtonState(_ isEnabled: Bool) {
         startButton.isEnabled = isEnabled
     }
+
+    func resetTimePicker() {
+        for component in 0..<timePicker.numberOfComponents {
+            timePicker.selectRow(0, inComponent: component, animated: false)
+        }
+    }
 }
 
 extension TimerAddHeader: UIPickerViewDelegate, UIPickerViewDataSource {

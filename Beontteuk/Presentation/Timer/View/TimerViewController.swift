@@ -120,6 +120,13 @@ extension TimerViewController: UITableViewDelegate {
                 }
                 .disposed(by: header.disposeBag)
 
+            viewModel.state.shouldResetTimePicker
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    header.resetTimePicker()
+                }
+                .disposed(by: header.disposeBag)
+
             return header
         case .recent:
             let label = UILabel().then {
