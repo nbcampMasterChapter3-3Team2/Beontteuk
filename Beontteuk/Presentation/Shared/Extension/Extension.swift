@@ -114,3 +114,9 @@ extension UIImage {
         return result ?? self
     }
 }
+
+extension UIFont {
+    static func lightFont() -> UIFont {
+        return UIFont.systemFont(ofSize: 55, weight: .light)
+    }
+}
