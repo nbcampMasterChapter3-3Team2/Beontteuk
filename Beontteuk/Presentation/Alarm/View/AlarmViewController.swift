@@ -15,7 +15,18 @@ import RxCocoa
 final class AlarmViewController: BaseViewController {
 
     private let alarmView = AlarmView()
-    private let viewModel = AlarmViewModel()
+    private let viewModel: AlarmViewModel
+    private let bottomSheetViewModel: AlarmBottomSheetViewModel
+
+    init(viewModel: AlarmViewModel, bottomSheetViewModel: AlarmBottomSheetViewModel) {
+        self.viewModel = viewModel
+        self.bottomSheetViewModel = bottomSheetViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     override func loadView() {
         view = alarmView
@@ -25,7 +36,7 @@ final class AlarmViewController: BaseViewController {
         super.viewDidLoad()
         setNavigationItem()
         setTableHeader()
-        viewModel.action.onNext(.viewDidLoad)
+        viewModel.action.onNext(.readAlarm)
 
         // 앱이 포그라운드로 돌아올 때 리로드 트리거
         NotificationCenter.default.rx
@@ -34,6 +45,7 @@ final class AlarmViewController: BaseViewController {
             owner.alarmView.getTableView().reloadData()
         }
             .disposed(by: disposeBag)
+
     }
 
     override func bindViewModel() {
@@ -120,7 +132,15 @@ final class AlarmViewController: BaseViewController {
     }
 
     private func didOnAddTap() {
-        let bottomSheet = AlarmBottomSheetViewController()
+        bottomSheetViewModel.state.didSave
+            .take(1) // 한 번만 처리
+            .subscribe(with: self) { owner, _ in
+                owner.viewModel.action.onNext(.readAlarm)
+            }
+            .disposed(by: disposeBag)
+
+
+        let bottomSheet = AlarmBottomSheetViewController(viewModel: bottomSheetViewModel)
         let nav = UINavigationController(rootViewController: bottomSheet)
         nav.modalPresentationStyle = .pageSheet
         if let sheet = bottomSheet.sheetPresentationController {
@@ -132,3 +152,4 @@ final class AlarmViewController: BaseViewController {
     }
 
 }
+

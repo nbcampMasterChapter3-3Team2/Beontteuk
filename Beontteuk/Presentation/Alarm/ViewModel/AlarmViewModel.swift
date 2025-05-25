@@ -10,25 +10,31 @@ import RxSwift
 import RxRelay
 
 final class AlarmViewModel: ViewModelProtocol {
+
     enum Action {
-        case viewDidLoad
+        /// usecase
+        case readAlarm
+        case deleteAlarm(alarm: CDAlarm)
+        /// fileprivate
         case toggle(index: Int, isOn: Bool)
         case setEditingMode(isEditing: Bool)
     }
 
     struct State {
-        let alarmsRelay = BehaviorRelay<[AlarmMock]>(value: [])
+        let alarmsRelay = BehaviorRelay<[CDAlarm]>(value: [])
         let nextAlarmRelay = BehaviorRelay<Bool>(value: false)
         let isEditingRelay = BehaviorRelay<Bool>(value: false)
     }
 
+    private let useCase: AlarmUseInt
     private let actionSubject = PublishSubject<Action>()
     var action: AnyObserver<Action> { actionSubject.asObserver() }
     let state = State()
     let disposeBag = DisposeBag()
 
 
-    init() {
+    init(useCase: AlarmUseInt) {
+        self.useCase = useCase
         bind()
     }
 
@@ -37,8 +43,14 @@ final class AlarmViewModel: ViewModelProtocol {
             .subscribe(with: self) { owner, action in
             var list = owner.state.alarmsRelay.value
             switch action {
-            case .viewDidLoad:
-                list = AlarmMock.mockList
+                ///usecase
+            case .readAlarm:
+                list = self.useCase.readAlarms()
+
+            case .deleteAlarm(let alarm):
+                self.useCase.deleteAlarm(alarm)
+
+                /// fileprivate
             case .toggle(_, _):
                 break
             case .setEditingMode(let isEditing):
@@ -50,17 +62,16 @@ final class AlarmViewModel: ViewModelProtocol {
         }.disposed(by: disposeBag)
     }
 
-    private func isNextAlarm(from alarms: [AlarmMock]) -> Bool {
+    private func isNextAlarm(from alarms: [CDAlarm]) -> Bool {
         let enabled = alarms.filter { $0.isEnabled }
         return !enabled.isEmpty
     }
-
 }
 
 
 // 다음 알람 정보 구조체
 struct NextAlarmInfo {
-    let alarm: AlarmMock
+    let alarm: CDAlarm
     let hours: Int
     let minutes: Int
 }

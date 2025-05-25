@@ -15,7 +15,16 @@ import RxCocoa
 final class AlarmBottomSheetViewController: BaseViewController {
 
     private let bottomSheetView = AlarmBottomSheetView()
-    private let viewModel = AlarmBottomSheetViewModel()
+    private let viewModel: AlarmBottomSheetViewModel
+
+    init(viewModel: AlarmBottomSheetViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     private let titleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -70,7 +79,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         bottomSheetView.dateChanged
-        .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
+            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
     }
@@ -93,7 +102,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .do(onNext: { [weak self] in
             self?.dismiss(animated: true)
         })
-            .map { .save }
+            .map { .save(hour: 10, minute: 10, repeatDays: nil, label: "알람", soundName: nil) }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 
