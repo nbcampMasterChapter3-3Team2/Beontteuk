@@ -34,7 +34,7 @@ enum TimerItem: Hashable {
 }
 
 struct ActiveTimer: Hashable {
-    let id: UUID
+    let id: UUID?
     let remainTime: Double
     let totalTime: Double
     let isRunning: Bool
@@ -71,7 +71,7 @@ struct ActiveTimer: Hashable {
 }
 
 struct RecentTimer: Hashable {
-    let id: UUID
+    let id: UUID?
     let totalTime: Double
 
     var timeString: String {

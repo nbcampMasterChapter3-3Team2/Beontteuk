@@ -83,7 +83,7 @@ final class TimerViewModel: ViewModelProtocol {
     private func loadActiveTimers() {
         let activeTimers = useCase.getActiveTimers().map { cdTimer in
             TimerItem.active(ActiveTimer(
-                id: cdTimer.id ?? UUID(),
+                id: cdTimer.id,
                 remainTime: cdTimer.remainSecond,
                 totalTime: cdTimer.totalSecond,
                 isRunning: cdTimer.isRunning,
@@ -96,7 +96,7 @@ final class TimerViewModel: ViewModelProtocol {
     private func loadRecentTimers() {
         let recentTimers = useCase.getRecentTimers().map { cdTimer in
             TimerItem.recent(RecentTimer(
-                id: cdTimer.id ?? UUID(),
+                id: cdTimer.id,
                 totalTime: cdTimer.totalSecond
             ))
         }
@@ -108,7 +108,7 @@ final class TimerViewModel: ViewModelProtocol {
         guard let h = time[0], let m = time[1], let s = time[2] else { return }
         let cdTimer = useCase.addTimer(h, m, s)
         let timerItem = TimerItem.active(ActiveTimer(
-            id: cdTimer.id ?? UUID(),
+            id: cdTimer.id,
             remainTime: cdTimer.totalSecond,
             totalTime: cdTimer.totalSecond,
             isRunning: cdTimer.isRunning,
@@ -121,7 +121,7 @@ final class TimerViewModel: ViewModelProtocol {
         let time = state.selectedTime.value
         guard let h = time[0], let m = time[1], let s = time[2] else { return }
         guard let cdTimer = useCase.addRecentTimer(h, m, s) else { return }
-        let recentTimer = RecentTimer(id: cdTimer.id ?? UUID(), totalTime: cdTimer.totalSecond)
+        let recentTimer = RecentTimer(id: cdTimer.id, totalTime: cdTimer.totalSecond)
         let timerItem = TimerItem.recent(recentTimer)
         state.recentTimers.accept(state.recentTimers.value + [timerItem])
     }
