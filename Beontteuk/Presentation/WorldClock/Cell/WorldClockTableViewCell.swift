@@ -60,9 +60,9 @@ final class WorldClockTableViewCell: BaseTableViewCell {
         }
     }
     
-    func configureCell(with: WorldClockDummy) {
-        self.dayTimeLabel.text = with.timeDifference
-        self.cityLabel.text = with.city
-        self.clockLabel.text = with.time
+    func configureCell(with: WorldClockEntity) {
+        self.dayTimeLabel.text = "\(with.dayLabelText), \(with.hourDifferenceText)"
+        self.cityLabel.text = with.cityNameKR?.components(separatedBy: ", ").first ?? ""
+        self.clockLabel.text = with.localTimeString
     }
 }

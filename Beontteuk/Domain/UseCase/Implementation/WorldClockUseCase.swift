@@ -31,8 +31,8 @@ final class WorldClockUseCase: WorldClockUseCaseInterface {
         return repository.exists(timeZoneIdentifier: timeZoneIdentifier)
     }
     
-    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClockEntity {
-        return repository.createCity(cityName: cityName, timeZoneIdentifier: timeZoneIdentifier).toEntity()
+    func createCity(cityName: String, cityNameKR: String, timeZoneIdentifier: String) -> WorldClockEntity {
+        return repository.createCity(cityName: cityName, cityNameKR: cityNameKR, timeZoneIdentifier: timeZoneIdentifier).toEntity()
     }
     
     func deleteCity(_ city: WorldClockEntity) {

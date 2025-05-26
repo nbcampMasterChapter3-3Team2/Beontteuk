@@ -30,10 +30,12 @@ extension WorldClock {
 
     @NSManaged public var id: UUID?                     // 고유 식별자
     @NSManaged public var cityName: String?             // 도시 이름
+    @NSManaged public var cityNameKR: String?           // 도시 이름 (한국어)
     @NSManaged public var timeZoneIdentifier: String?   // 시간대 식별자
     @NSManaged public var createdAt: Date?              // 추가된 시간
     @NSManaged public var orderIndex: Int16             // 정렬 순서
 
+    // ✅ 현지 시간 (ex. "11:26")
     var currentLocalTime: String {
         guard let timeZoneIdentifier = timeZoneIdentifier,
               let timeZone = TimeZone(identifier: timeZoneIdentifier) else {
@@ -48,13 +50,53 @@ extension WorldClock {
         return formatter.string(from: Date())
     }
     
+    // ✅ 현지 시간 (ex. "11:26")
+//    var localTimeString: String {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "HH:mm"
+//        formatter.timeZone = TimeZone(identifier: timeZoneIdentifier!)
+//        return formatter.string(from: Date())
+//    }
+    
+    // ✅ +X시간 / -X시간
+    var hourDifferenceText: String {
+        guard let timeZone = TimeZone(identifier: timeZoneIdentifier!) else { return "" }
+        let localOffset = TimeZone.current.secondsFromGMT()
+        let cityOffset = timeZone.secondsFromGMT()
+        let diff = (cityOffset - localOffset) / 3600
+        if diff == 0 {
+            return "+0시간"
+        } else {
+            return diff > 0 ? "+\(diff)시간" : "\(diff)시간"
+        }
+    }
+    
+    // ✅ 오늘/어제 판단 (현지 기준)
+    var dayLabelText: String {
+        guard let cityTimeZone = TimeZone(identifier: timeZoneIdentifier!) else { return "" }
+        let now = Date()
+        let cityNow = Calendar.current.date(byAdding: .second, value: cityTimeZone.secondsFromGMT(), to: now) ?? now
+        
+        if Calendar.current.isDateInToday(cityNow) {
+            return "오늘"
+        } else if Calendar.current.isDateInYesterday(cityNow) {
+            return "어제"
+        } else {
+            return "오늘"
+        }
+    }
+    
     func toEntity() -> WorldClockEntity {
         return WorldClockEntity(
             id: id,
             cityName: cityName,
+            cityNameKR: cityNameKR,
             timeZoneIdentifier: timeZoneIdentifier,
             createdAt: createdAt,
-            orderIndex: orderIndex
+            orderIndex: orderIndex,
+            localTimeString: currentLocalTime,
+            hourDifferenceText: hourDifferenceText,
+            dayLabelText: dayLabelText
         )
     }
 }

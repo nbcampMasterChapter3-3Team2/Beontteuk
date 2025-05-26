@@ -21,9 +21,7 @@ final class WorldClockView: BaseView {
     
     private let worldClockTableView = UITableView().then {
         $0.register(WorldClockTableViewCell.self, forCellReuseIdentifier: WorldClockTableViewCell.className)
-        $0.register(WorldClockTableHeaderView.self, forHeaderFooterViewReuseIdentifier: WorldClockTableHeaderView.className)
         $0.backgroundColor = .clear
-        $0.tableHeaderView = WorldClockTableHeaderView()
     }
     
     //MARK: SetStyles

@@ -23,7 +23,7 @@ protocol WorldClockUseCaseInterface {
 
     // MARK: - 추가 및 삭제
     /// 새 도시 항목 추가
-    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClockEntity
+    func createCity(cityName: String, cityNameKR: String, timeZoneIdentifier: String) -> WorldClockEntity
 
     /// 도시 항목 삭제
     func deleteCity(_ city: WorldClockEntity)

@@ -8,18 +8,16 @@
 import UIKit
 
 import RxSwift
-import RxRelay
-
-struct WorldClockDummy {
-    let city: String
-    let timeDifference: String
-    let time: String
-}
+import RxCocoa
 
 final class WorldClockViewController: BaseViewController {
-    
+    //MARK: - Instances
     private let worldClockView = WorldClockView()
+    private let headerView = WorldClockTableHeaderView()
     
+    private let worldClockViewModel = WorldClockViewModel(useCase: WorldClockUseCase(repository: CoreDataWorldClockRepository()))
+    
+    //MARK: - View Life Cycles
     override func loadView() {
         view = worldClockView
     }
@@ -27,22 +25,36 @@ final class WorldClockViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let dummyData = BehaviorRelay<[WorldClockDummy]>(value: [
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00")
-        ])
+        bindAction()
+        setupHeaderView()
+    }
+    
+    private func setupHeaderView() {
+        let targetSize = CGSize(width: view.bounds.width, height: 0)
+        let height = headerView.systemLayoutSizeFitting(targetSize).height
+        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: height)
         
-        dummyData
+        headerView.addButton.rx.tap
+            .bind(with: self) { owner, _ in
+                let vc = SelectCityViewController()
+                let nav = UINavigationController(rootViewController: vc)
+                vc.modalPresentationStyle = .pageSheet
+                vc.onCitySelected = { [weak self] selectedCity in
+                    guard let self else { return }
+                    print("✅ 선택된 도시: \(selectedCity.cityName)")
+                    self.worldClockViewModel.action.onNext(.addCity(selectedCity))
+                }
+                owner.present(nav, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        worldClockView.getWorldClockTableView().tableHeaderView = headerView
+    }
+    
+    override func bindViewModel() {
+        super.bindViewModel()
+        
+        worldClockViewModel.state.items
             .do(onNext: { [weak self] items in
                 guard let self else { return }
                 self.worldClockView.getWorldClockTableView().backgroundView = items.isEmpty ? self.worldClockView.makeEmptyView() : nil
@@ -54,6 +66,10 @@ final class WorldClockViewController: BaseViewController {
                 cell.configureCell(with: model)
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func bindAction() {
+        worldClockViewModel.action.onNext(.viewDidLoad)
     }
     
     override func setStyles() {

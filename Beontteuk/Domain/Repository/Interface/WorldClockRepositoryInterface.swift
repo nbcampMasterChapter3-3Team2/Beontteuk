@@ -23,7 +23,7 @@ protocol WorldClockRepositoryInterface {
 
     // MARK: - 추가 및 삭제
     /// 새 도시 항목 추가
-    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClock
+    func createCity(cityName: String, cityNameKR: String, timeZoneIdentifier: String) -> WorldClock
 
     /// 도시 항목 삭제
     func deleteCity(_ city: WorldClock)

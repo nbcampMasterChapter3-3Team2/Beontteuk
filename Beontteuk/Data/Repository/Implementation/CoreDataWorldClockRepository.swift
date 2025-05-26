@@ -50,10 +50,11 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
     
     // MARK: - 추가 및 삭제
     /// 새 도시 항목 추가
-    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClock {
+    func createCity(cityName: String, cityNameKR: String, timeZoneIdentifier: String) -> WorldClock {
         let clock = WorldClock(context: context)
         clock.id = UUID()
         clock.cityName = cityName
+        clock.cityNameKR = cityNameKR
         clock.timeZoneIdentifier = timeZoneIdentifier
         clock.createdAt = Date()
         clock.orderIndex = Int16(fetchAll().count)

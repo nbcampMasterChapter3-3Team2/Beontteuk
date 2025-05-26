@@ -50,7 +50,11 @@ struct LapRecordEntity: Equatable, Identifiable {
 struct WorldClockEntity: Equatable, Identifiable {
     let id: UUID?
     let cityName: String?
+    let cityNameKR: String?
     let timeZoneIdentifier: String?
     let createdAt: Date?
     let orderIndex: Int16
+    let localTimeString: String
+    let hourDifferenceText: String
+    let dayLabelText: String
 }
