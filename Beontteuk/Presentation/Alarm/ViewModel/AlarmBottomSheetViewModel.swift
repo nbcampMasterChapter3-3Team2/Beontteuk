@@ -12,16 +12,18 @@ import RxRelay
 final class AlarmBottomSheetViewModel {
     enum Action {
         case dateChanged(Date)
+        case labelChanged(String?)
         case toggleSnooze(Bool)
-        case updateSelection(AlarmSheetTableOption, String?)
-        case save(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?)
+
+
+        case save(repeatDays: String?, soundName: String?)
         case cancel
     }
 
     struct State {
-        let pickedDate = BehaviorRelay<Date>(value: Date())
+        let pickedDate = BehaviorRelay<String>(value: "")
+        let inputLabel = BehaviorRelay<String?>(value: nil)
         let snoozeEnabled = BehaviorRelay<Bool>(value: true)
-        let selections = BehaviorRelay<[AlarmSheetTableOption: String]>(value: [:])
         let didSave = PublishRelay<Void>()
     }
 
@@ -41,19 +43,37 @@ final class AlarmBottomSheetViewModel {
             .subscribe(with: self) { owner, item in
             switch item {
             case .dateChanged(let date):
-                owner.state.pickedDate.accept(date)
+
+                let formatter = DateFormatter()
+                formatter.locale = Locale.autoupdatingCurrent
+                formatter.timeZone = TimeZone.current
+                formatter.dateFormat = "HH:mm"
+                let localTime = formatter.string(from: date)
+                /// 무조건 24시로 데이터 저장됨
+                owner.state.pickedDate.accept(localTime)
+
+            case .labelChanged(let textInput):
+                owner.state.inputLabel.accept(textInput)
+
             case .toggleSnooze(let isOn):
                 owner.state.snoozeEnabled.accept(isOn)
-            case .updateSelection(let option, let text):
-                var dict = self.state.selections.value
-                dict[option] = text ?? ""
-                owner.state.selections.accept(dict)
-            case .save(hour: let hour, minute: let minute, repeatDays: let repeatDays, label: let label, soundName: let soundName):
+
+            case .save(repeatDays: let repeatDays, soundName: let soundName):
+                let time = owner.state.pickedDate.value.split { $0 == ":" }
+
+                let hour = Int(time[0]) ?? 0
+                let minute = Int(time[1]) ?? 0
+                guard var label = owner.state.inputLabel.value else { return }
+                if label == "" {
+                    label = "알람"
+                }
+
                 let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName)
                 self.useCase.updateAlarm(alarm)
                 self.state.didSave.accept(())
 
             case .cancel: break
+
             }
         }
             .disposed(by: disposeBag)

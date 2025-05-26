@@ -56,24 +56,31 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 cellType: AlarmBottomSheetTableViewCell.self
             )) { [weak self] row, option, cell in
             guard let self else { return }
-            let detail = self.viewModel.state.selections.value[option]
+            let detail = self.viewModel.state.inputLabel.value
             let isOn = self.viewModel.state.snoozeEnabled.value
 
             // 셀 구성
-            cell.configure(option: option,
+            cell.configure(
+                option: option,
                 detail: detail,
-                isOn: isOn)
-
-            cell.snoozeToggled
-                .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
-                .bind(to: self.viewModel.action)
-                .disposed(by: cell.disposeBag)
-
-            cell.labelText
-                .map { AlarmBottomSheetViewModel.Action.updateSelection(.label, $0) }
-                .bind(to: self.viewModel.action)
-                .disposed(by: cell.disposeBag)
-
+                isOn: isOn
+            )
+                switch option {
+                case .repeat: break
+                case .label:
+                    cell.inputTextField
+                        .map { text in
+                        AlarmBottomSheetViewModel.Action.labelChanged(text)
+                    }
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+                case .sound: break
+                case .snooze:
+                    cell.snoozeToggled
+                        .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+                }
 
         }
             .disposed(by: disposeBag)
@@ -102,7 +109,9 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .do(onNext: { [weak self] in
             self?.dismiss(animated: true)
         })
-            .map { .save(hour: 10, minute: 10, repeatDays: nil, label: "알람", soundName: nil) }
+            .map {
+                .save(repeatDays: nil, soundName: nil)
+        }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 
