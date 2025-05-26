@@ -121,6 +121,7 @@ final class TimerActiveCell: BaseTableViewCell {
 
     /// value: 0~1 사이의 값으로 진행도를 나타냄
     func updateProgress(value: CGFloat) {
+        CATransaction.setDisableActions(true)
         progressLayer.strokeEnd = value
     }
 }

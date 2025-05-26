@@ -121,9 +121,13 @@ final class TimerView: BaseView {
     func updateSnapshot(with items: [TimerItem], to section: TimerSection) {
         guard var snapshot = dataSource?.snapshot() else { return }
         let oldItems = snapshot.itemIdentifiers(inSection: section)
-        snapshot.deleteItems(oldItems)
-        snapshot.appendItems(items, toSection: section)
-        dataSource?.apply(snapshot)
+        if oldItems.count == items.count {
+            snapshot.reloadItems(items)
+        } else {
+            snapshot.deleteItems(oldItems)
+            snapshot.appendItems(items, toSection: section)
+        }
+        dataSource?.apply(snapshot, animatingDifferences: false)
     }
 
     func toggleEditingTableView() {

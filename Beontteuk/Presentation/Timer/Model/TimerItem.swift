@@ -35,10 +35,19 @@ enum TimerItem: Hashable {
 
 struct ActiveTimer: Hashable {
     let id: UUID?
-    let remainTime: Double
     let totalTime: Double
     let isRunning: Bool
     let endTime: Date?
+
+    var remainTime: Double {
+        guard let endTime else { return 0 }
+        return endTime.timeIntervalSinceNow
+    }
+
+    var isExpired: Bool {
+        guard let endTime else { return true }
+        return endTime.timeIntervalSinceNow <= 0
+    }
 
     var timeString: String {
         let seconds = Int(remainTime)

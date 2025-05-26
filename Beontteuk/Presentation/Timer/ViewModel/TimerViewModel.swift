@@ -54,6 +54,7 @@ final class TimerViewModel: ViewModelProtocol {
                 switch action {
                 case .viewDidLoad:
                     owner.loadTimers()
+                    owner.startTicking()
                 case .didTapEditButton:
                     let isEditMode = owner.state.isEditMode.value
                     owner.state.isEditMode.accept(!isEditMode)
@@ -95,7 +96,6 @@ final class TimerViewModel: ViewModelProtocol {
         let activeTimers = useCase.getActiveTimers().map { cdTimer in
             TimerItem.active(ActiveTimer(
                 id: cdTimer.id,
-                remainTime: cdTimer.remainSecond,
                 totalTime: cdTimer.totalSecond,
                 isRunning: cdTimer.isRunning,
                 endTime: cdTimer.endTime
@@ -114,13 +114,28 @@ final class TimerViewModel: ViewModelProtocol {
         state.recentTimers.accept(recentTimers)
     }
 
+    private func startTicking() {
+        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .bind(with: self) { owner, _ in
+                let updated = owner.state.activeTimers.value.compactMap { item -> TimerItem? in
+                    if item.active!.isExpired, let id = item.active!.id {
+                        // TODO: 푸쉬 알림
+                        owner.useCase.deleteTimer(by: id)
+                        return nil // 타이머가 만료되면 타이머를 nil로 반환하여 compactMap으로 필터링
+                    }
+                    return item // 타이머가 살아있는 경우 그대로 반환
+                }
+                owner.state.activeTimers.accept(updated)
+            }
+            .disposed(by: disposeBag)
+    }
+
     private func createTimerThenStart() {
         let time = state.selectedTime.value
         guard let h = time[0], let m = time[1], let s = time[2] else { return }
         let cdTimer = useCase.addTimer(h, m, s)
         let timerItem = TimerItem.active(ActiveTimer(
             id: cdTimer.id,
-            remainTime: cdTimer.totalSecond,
             totalTime: cdTimer.totalSecond,
             isRunning: cdTimer.isRunning,
             endTime: cdTimer.endTime
@@ -174,7 +189,6 @@ final class TimerViewModel: ViewModelProtocol {
               let cdTimer = useCase.addTimer(fromRecentTimerID: id) else { return }
         let newActiveTimer = ActiveTimer(
             id: cdTimer.id,
-            remainTime: cdTimer.remainSecond,
             totalTime: cdTimer.totalSecond,
             isRunning: cdTimer.isRunning,
             endTime: cdTimer.endTime
