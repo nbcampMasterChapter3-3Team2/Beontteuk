@@ -19,7 +19,7 @@ final class TimerViewController: BaseViewController {
     // MARK: - UI Components
 
     private let timerView = TimerView()
-    private let editButton = CustomUIBarButtonItem(type: .edit(action: {}))
+    private let editButton = CustomUIBarButtonItem(type: .edit)
 
     // MARK: - Init, Deinit, required
 
@@ -57,12 +57,20 @@ final class TimerViewController: BaseViewController {
 
         if let button = editButton.customView as? UIButton {
             button.rx.tap
-                .asDriver()
+                .asDriver(onErrorDriveWith: .empty())
                 .drive(with: self) { owner, _ in
                     owner.timerView.toggleEditingTableView()
+                    owner.viewModel.action.onNext(.didTapEditButton)
                 }
                 .disposed(by: disposeBag)
         }
+
+        viewModel.state.isEditMode
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, isEdit in
+                owner.editButton.updateType(isEdit ? .check : .edit)
+            }
+            .disposed(by: disposeBag)
 
         timerView.didItemDeleted
             .map { TimerViewModel.Action.didDeletedTimerItem($0) }
