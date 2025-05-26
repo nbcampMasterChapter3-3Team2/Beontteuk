@@ -69,6 +69,11 @@ final class TimerViewController: BaseViewController {
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 
+        timerView.didTapRecentTimerButton
+            .map { TimerViewModel.Action.didTapRecentTimerButton($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+
         viewModel.state.activeTimers
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, timers in

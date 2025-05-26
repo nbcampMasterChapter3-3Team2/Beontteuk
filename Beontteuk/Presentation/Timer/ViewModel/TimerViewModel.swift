@@ -17,6 +17,7 @@ final class TimerViewModel: ViewModelProtocol {
         case didTapCancelButton
         case didChangeTimePicker((Int, Int))
         case didDeletedTimerItem(IndexPath)
+        case didTapRecentTimerButton(Int)
     }
 
     struct State {
@@ -64,6 +65,8 @@ final class TimerViewModel: ViewModelProtocol {
                     owner.setCanStartTimer()
                 case .didDeletedTimerItem(let indexPath):
                     owner.deleteTimer(for: indexPath)
+                case .didTapRecentTimerButton(let row):
+                    owner.addTimerFromRecent(at: row)
                 }
             }
             .disposed(by: disposeBag)
@@ -158,5 +161,20 @@ final class TimerViewModel: ViewModelProtocol {
             recentTimers.remove(at: indexPath.row)
             state.recentTimers.accept(recentTimers)
         }
+    }
+
+    private func addTimerFromRecent(at row: Int) {
+        let recentTimer = state.recentTimers.value[row]
+        guard let id = recentTimer.recent?.id,
+              let cdTimer = useCase.addTimer(fromRecentTimerID: id) else { return }
+        let newActiveTimer = ActiveTimer(
+            id: cdTimer.id,
+            remainTime: cdTimer.remainSecond,
+            totalTime: cdTimer.totalSecond,
+            isRunning: cdTimer.isRunning,
+            endTime: cdTimer.endTime
+        )
+        let activeTimers = state.activeTimers.value
+        state.activeTimers.accept(activeTimers + [TimerItem.active(newActiveTimer)])
     }
 }

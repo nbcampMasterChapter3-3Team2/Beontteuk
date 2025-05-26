@@ -34,6 +34,13 @@ final class TimerUseImp: TimerUseInt {
         return newTimer
     }
 
+    func addTimer(fromRecentTimerID id: UUID) -> CDTimer? {
+        guard let recentTimer = repository.fetchTimer(by: id) else { return nil }
+        let newTimer = repository.duplicateRecentItemAndStart(recentTimer)
+        repository.saveTimer(newTimer)
+        return newTimer
+    }
+
     func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer? {
         guard !repository.hasRecentItem(hour: h, minute: m, second: s) else { return nil }
         let newTimer = repository.createRecentItem(hour: h, minute: m, second: s)

@@ -15,6 +15,7 @@ final class TimerView: BaseView {
 
     // MARK: - Properties
 
+    let didTapRecentTimerButton = PublishRelay<Int>()
     let didItemDeleted = PublishRelay<IndexPath>()
     private var disposeBag = DisposeBag()
     private var dataSource: EditableDataSource<TimerSection, TimerItem>?
@@ -84,6 +85,12 @@ final class TimerView: BaseView {
                         time: timer.timeString,
                         timeKR: timer.localizedTimeString
                     )
+
+                    cell.didTapStartButton
+                        .bind(with: self) { owner, _ in
+                            owner.didTapRecentTimerButton.accept(indexPath.row)
+                        }
+                        .disposed(by: cell.disposeBag)
                 }
 
                 return cell
