@@ -42,7 +42,7 @@ final class TabBarController: UITabBarController {
         let alarmUseCase = AlarmUseImp(repository: alarmRepository)
         let alarmViewModel = AlarmViewModel(useCase: alarmUseCase)
         let alarmBottomSheetViewModel = AlarmBottomSheetViewModel(useCase: alarmUseCase)
-        let alarmViewController = UINavigationController(rootViewController: AlarmViewController(viewModel: alarmViewModel, bottomSheetViewModel: alarmBottomSheetViewModel))
+        let alarmViewController = AlarmViewController(viewModel: alarmViewModel, bottomSheetViewModel: alarmBottomSheetViewModel)
 
         let stopWatchViewController = StopWatchViewController()
         let timerViewController = UINavigationController(rootViewController: ViewController())

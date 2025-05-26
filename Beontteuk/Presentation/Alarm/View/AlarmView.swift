@@ -12,6 +12,13 @@ import Then
 
 final class AlarmView: BaseView {
 
+    private let navigationBar = UINavigationBar().then {
+        $0.backgroundColor = .clear
+        $0.setBackgroundImage(UIImage(), for: .default)
+        $0.shadowImage = UIImage()
+        $0.isTranslucent = true
+    }
+
     private let tableView = UITableView(frame: .zero, style: .grouped).then {
         $0.register(AlarmTableViewListTypeCell.self, forCellReuseIdentifier: AlarmTableViewListTypeCell.className)
         $0.separatorStyle = .singleLine
@@ -20,14 +27,25 @@ final class AlarmView: BaseView {
     }
 
     override func setLayout() {
-        addSubview(tableView)
-        tableView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        addSubviews(navigationBar, tableView)
+
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.horizontalEdges.equalToSuperview()
+            $0.height.equalTo(44)
         }
+
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview()        }
     }
 
     func getTableView() -> UITableView {
         return tableView
+    }
+    func getNavigationBar() -> UINavigationBar {
+        return navigationBar
     }
 
 }

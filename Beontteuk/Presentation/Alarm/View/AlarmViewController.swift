@@ -85,7 +85,8 @@ final class AlarmViewController: BaseViewController {
             .drive(onNext: { [weak self] isEditing in
             guard
                 let self = self,
-                let barItem = self.navigationItem.leftBarButtonItem
+                let navBar = self.alarmView.getNavigationBar().items?.first,
+                let barItem = navBar.leftBarButtonItem
             as? CustomUIBarButtonItem
                 else { return }
 
@@ -102,17 +103,23 @@ final class AlarmViewController: BaseViewController {
     }
 
     private func setNavigationItem() {
-        let barItem = CustomUIBarButtonItem(type: .edit)
-        navigationItem.leftBarButtonItem = barItem
-        guard let btn = barItem.customView as? UIButton else { return }
+        let navigationBar = alarmView.getNavigationBar()
 
-        // 탭 시 현재 isEditingRelay 값 반전하여 Action 전송
+        let navItem = UINavigationItem()
+        let barItem = CustomUIBarButtonItem(type: .edit)
+
+        navItem.leftBarButtonItem = barItem
+
+        navigationBar.items = [navItem]
+
+        guard let btn = barItem.customView as? UIButton else { return }
         btn.rx.tap
             .withLatestFrom(viewModel.state.isEditingRelay)
             .map { !$0 }
             .map(AlarmViewModel.Action.setEditingMode(isEditing:))
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
+
     }
 
     private func setTableHeader() {
@@ -134,9 +141,9 @@ final class AlarmViewController: BaseViewController {
     private func didOnAddTap() {
         bottomSheetViewModel.state.didSave
             .take(1) // 한 번만 처리
-            .subscribe(with: self) { owner, _ in
-                owner.viewModel.action.onNext(.readAlarm)
-            }
+        .subscribe(with: self) { owner, _ in
+            owner.viewModel.action.onNext(.readAlarm)
+        }
             .disposed(by: disposeBag)
 
 
