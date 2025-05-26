@@ -48,6 +48,15 @@ extension WorldClock {
         return formatter.string(from: Date())
     }
     
+    func toEntity() -> WorldClockEntity {
+        return WorldClockEntity(
+            id: id,
+            cityName: cityName,
+            timeZoneIdentifier: timeZoneIdentifier,
+            createdAt: createdAt,
+            orderIndex: orderIndex
+        )
+    }
 }
 
 extension WorldClock : Identifiable {
