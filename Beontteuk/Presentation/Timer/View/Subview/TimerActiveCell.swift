@@ -1,5 +1,5 @@
 //
-//  TimerCurrentCell.swift
+//  TimerActiveCell.swift
 //  Beontteuk
 //
 //  Created by 곽다은 on 5/20/25.
@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class TimerCurrentCell: BaseTableViewCell {
+final class TimerActiveCell: BaseTableViewCell {
 
     // MARK: - UI Components
 
@@ -125,7 +125,7 @@ final class TimerCurrentCell: BaseTableViewCell {
     }
 }
 
-extension TimerCurrentCell {
+extension TimerActiveCell {
     enum TimerState {
         case running
         case pause

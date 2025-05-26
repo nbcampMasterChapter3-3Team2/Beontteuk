@@ -8,8 +8,14 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 
 final class TimerRecentCell: BaseTableViewCell {
+
+    // MARK: - Properties
+
+    let didTapStartButton = PublishRelay<Void>()
 
     // MARK: - UI Components
 
@@ -38,6 +44,22 @@ final class TimerRecentCell: BaseTableViewCell {
     private let circleView = UIView().then {
         $0.backgroundColor = .primary200
         $0.layer.cornerRadius = 35
+    }
+
+    // MARK: - Init, Deinit, required
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        bind()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        bind()
     }
 
     // MARK: - Style Helper
@@ -69,6 +91,16 @@ final class TimerRecentCell: BaseTableViewCell {
         startButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
+    }
+
+    // MARK: - Bind
+
+    private func bind() {
+        startButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.didTapStartButton.accept(())
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Methods
