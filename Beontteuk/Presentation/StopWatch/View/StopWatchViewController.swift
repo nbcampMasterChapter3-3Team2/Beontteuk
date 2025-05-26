@@ -36,34 +36,54 @@ final class StopWatchViewController: BaseViewController {
         stopWatchView.leftButton.rx.tap
             .subscribe { [weak self] _ in
                 guard let self else { return }
-                viewModel.action.accept(.leftButton)
+                viewModel.action.buttonAction.accept(.leftButton)
             }.disposed(by: disposeBag)
 
         stopWatchView.rightButton.rx.tap
             .subscribe { [weak self] _ in
                 guard let self else { return }
-                viewModel.action.accept(.rightButton)
+                viewModel.action.buttonAction.accept(.rightButton)
             }.disposed(by: disposeBag)
 
-        viewModel.state.timeSubject
+        viewModel.state.formattedTimeRelay
+            .bind { [weak self] time in
+                guard let self else { return }
+                stopWatchView.updateTime(with: time)
+            }.disposed(by: disposeBag)
+
+        viewModel.state.stopWatchRelay
             .bind { [weak self] state in
                 guard let self else { return }
                 switch state {
                 case .initial:
+                    // TODO: 스톱워치 초기화
+                    viewModel.action.stopWatchAction.accept(.reset)
+
                     stopWatchView.leftButton.updateButtonType(type: .lap)
                     stopWatchView.leftButton.isEnabled = false
 
                     stopWatchView.rightButton.updateButtonType(type: .start)
                 case .progress:
+                    // TODO: 스톱워치 시작
+                    viewModel.action.stopWatchAction.accept(.start)
+
                     stopWatchView.leftButton.updateButtonType(type: .lap)
                     stopWatchView.leftButton.isEnabled = true
 
                     stopWatchView.rightButton.updateButtonType(type: .stop)
                 case .pause:
+                    // TODO: 스톱워치 일시정지
+                    viewModel.action.stopWatchAction.accept(.pause)
+
                     stopWatchView.leftButton.updateButtonType(type: .reset)
                     stopWatchView.rightButton.updateButtonType(type: .start)
                 }
             }.disposed(by: disposeBag)
+    }
+
+    private func start(_ text: String) {
+        print("start: \(text)")
+        stopWatchView.updateTime(with: text)
     }
 
     // MARK: - Style Helper
