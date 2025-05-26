@@ -12,7 +12,6 @@ import Then
 
 
 final class CustomUIBarButtonItem: UIBarButtonItem {
-
     convenience init(type: NavigationButtonType) {
         let button = ShadowButton().then {
 
@@ -24,37 +23,31 @@ final class CustomUIBarButtonItem: UIBarButtonItem {
 
             $0.setShadow(type: .small)
         }
-
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
-
-        switch type {
-        case .edit(let action):
-            let trashMark = UIImage(
-                systemName: "trash",
-                withConfiguration: symbolConfig
-            )
-
-            button.setImage(trashMark, for: .normal)
-            button.addAction(UIAction { _ in action() }, for: .touchUpInside)
-
-        case .check(let action):
-            let checkMark = UIImage(
-                systemName: "checkmark",
-                withConfiguration: symbolConfig
-            )
-
-            button.setImage(checkMark, for: .normal)
-            button.addAction(UIAction { _ in action() }, for: .touchUpInside)
-        }
         self.init(customView: button)
+        self.updateType(type)
     }
-
 
 }
 
 extension CustomUIBarButtonItem {
     enum NavigationButtonType {
-        case edit(action: () -> Void)
-        case check(action: () -> Void)
+        case edit
+        case check
+    }
+}
+
+extension CustomUIBarButtonItem {
+    func updateType(_ type: NavigationButtonType) {
+        guard let btn = customView as? UIButton else { return }
+
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
+        let imageName: String = {
+            switch type {
+            case .edit: return "trash"
+            case .check: return "checkmark"
+            }
+        }()
+
+        btn.setImage(UIImage(systemName: imageName, withConfiguration: symbolConfig), for: .normal)
     }
 }

@@ -17,7 +17,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
          toggleSwitch.rx.value
      }
      // 텍스트 필드 텍스트를 방출
-     var labelText: ControlProperty<String?> {
+     var inputTextField: ControlProperty<String?> {
          textField.rx.text
      }
 
@@ -100,9 +100,10 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
     ///   - isOn: snooze 스위치 상태
     func configure(
-        option: AlarmSheetTableOption,
-        detail: String?,
-        isOn: Bool
+        option: AlarmSheetTableOption
+//        ,
+//        detail: String?,
+//        isOn: Bool
     ) {
         titleLabel.text = option.title
 
@@ -112,19 +113,25 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         toggleSwitch.isHidden = true
 
         switch option {
-        case .repeat, .sound:
-            selectionStyle = .default
-            accessoryType = .disclosureIndicator
-            detailLabel.text = detail ?? option.detailText
-            detailLabel.isHidden = false
+//        case .repeat:
+//            selectionStyle = .default
+//            accessoryType = .disclosureIndicator
+//            detailLabel.text = "안 함"
+//            detailLabel.isHidden = false
+
+//        case .sound:
+//            selectionStyle = .default
+//            accessoryType = .disclosureIndicator
+//            detailLabel.text = "기본"
+//            detailLabel.isHidden = false
 
         case .label:
             textField.placeholder = option.detailText
-            textField.text = detail
+            textField.text = nil
             textField.isHidden = false
 
         case .snooze:
-            toggleSwitch.isOn = isOn
+            toggleSwitch.isOn = false
             toggleSwitch.isHidden = false
         }
     }

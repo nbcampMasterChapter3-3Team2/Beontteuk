@@ -36,9 +36,14 @@ final class TabBarController: UITabBarController {
             $0.edges.equalToSuperview()
         }
     }
-    
+
     private func setTabBarItems() {
-        let alarmViewController = UINavigationController(rootViewController: AlarmViewController())
+        let alarmRepository = CoreDataAlarmRepository()
+        let alarmUseCase = AlarmUseImp(repository: alarmRepository)
+        let alarmViewModel = AlarmViewModel(useCase: alarmUseCase)
+        let alarmBottomSheetViewModel = AlarmBottomSheetViewModel(useCase: alarmUseCase)
+        let alarmViewController = AlarmViewController(viewModel: alarmViewModel, bottomSheetViewModel: alarmBottomSheetViewModel)
+
         let stopWatchViewController = StopWatchViewController()
 
         let timerRepository = CoreDataCDTimerRepository()
@@ -47,7 +52,7 @@ final class TabBarController: UITabBarController {
         let timerViewController = UINavigationController(rootViewController: TimerViewController(viewModel: timerViewModel))
         
         let worldClockViewController = UINavigationController(rootViewController: WorldClockViewController())
-        
+
         let tabControllers = [
             alarmViewController,
             stopWatchViewController,
