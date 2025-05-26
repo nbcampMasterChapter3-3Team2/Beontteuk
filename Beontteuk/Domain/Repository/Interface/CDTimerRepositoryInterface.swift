@@ -19,7 +19,7 @@ protocol CDTimerRepositoryInterface {
     func saveTimer(_ timer: CDTimer)
 
     /// 타이머 정지 처리 (isRunning = false)
-    func stopTimer(_ timer: CDTimer)
+    func stopTimer(_ timer: CDTimer, remain: Double)
     
     // MARK: - 타이머 조회
     /// 실행 중인 타이머만

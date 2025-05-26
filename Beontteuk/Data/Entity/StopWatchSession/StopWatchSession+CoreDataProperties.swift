@@ -47,6 +47,17 @@ extension StopWatchSession {
             return elapsedBeforePause
         }
     }
+    
+    func toEntity(with laps: [LapRecordEntity]) -> StopWatchEntity {
+        return StopWatchEntity(
+            id: id,
+            startTime: startTime,
+            isRunning: isRunning,
+            elapsedBeforePause: elapsedBeforePause,
+            createdAt: createdAt,
+            laps: laps
+        )
+    }
 }
 
 // MARK: Generated accessors for laps

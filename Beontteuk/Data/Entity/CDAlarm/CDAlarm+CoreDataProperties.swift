@@ -70,6 +70,19 @@ extension CDAlarm {
     var dateComponents: DateComponents {
         DateComponents(hour: Int(hour), minute: Int(minute))
     }
+    
+    func toEntity() -> CDAlarmEntity {
+        return CDAlarmEntity(
+            id: id,
+            hour: hour,
+            minute: minute,
+            repeatDays: repeatDays,
+            label: label,
+            isEnabled: isEnabled,
+            soundName: soundName,
+            isSnoozeEnabled: isSnoozeEnabled
+        )
+    }
 
 }
 

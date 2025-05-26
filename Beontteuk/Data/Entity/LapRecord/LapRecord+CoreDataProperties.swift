@@ -41,6 +41,16 @@ extension LapRecord {
     @NSManaged public var recordedAt: Date?             // 랩 저장 시각
     @NSManaged public var session: StopWatchSession?    // 어떤 세션에 속한 랩인지 (Relationship)
 
+    func toEntity() -> LapRecordEntity {
+        return LapRecordEntity(
+            id: id,
+            lapIndex: lapIndex,
+            lapTime: lapTime,
+            absoluteTime: absoluteTime,
+            recordedAt: recordedAt
+        )
+    }
+    
 }
 
 extension LapRecord : Identifiable {

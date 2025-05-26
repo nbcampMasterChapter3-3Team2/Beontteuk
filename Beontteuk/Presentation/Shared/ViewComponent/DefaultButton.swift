@@ -10,37 +10,56 @@ import SnapKit
 
 final class DefaultButton: UIButton {
 
-    init(type: DefaultButtonType) {
-        super.init(frame: .zero)
-
-        var config = UIButton.Configuration.plain()
-
-        switch type {
-        case .reset, .start, .lap, .stop, .cancel:
-            config.baseForegroundColor = type.fgColor
-            config.titleAlignment = .center
-            config.attributedTitle = {
-                var attributedTitle = AttributedString(type.text)
-                attributedTitle.font = UIFont.systemFont(
-                    ofSize: type.fontSize,
-                    weight: .medium
-                )
-                return attributedTitle
-            }()
-
-            self.configuration = config
-            self.layer.cornerRadius = 16
-            self.backgroundColor = type.bgColor
-            self.setShadow(type: .large)
-
-            self.snp.makeConstraints {
-                $0.height.equalTo(type.height)
-            }
-        }
-    }
+    // MARK: - Properties
     
+    private var type: DefaultButtonType
+
+    // MARK: - Initializer, Deinit, requiered
+
+    init(type: DefaultButtonType) {
+        self.type = type
+        super.init(frame: .zero)
+        configureDefaultButton()
+        setLayout()
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Layout Helper
+
+    private func setLayout() {
+        self.snp.makeConstraints {
+            $0.height.equalTo(type.height)
+        }
+    }
+
+    // MARK: - Methods
+
+    private func configureDefaultButton() {
+        var config = UIButton.Configuration.plain()
+
+        config.baseForegroundColor = type.fgColor
+        config.titleAlignment = .center
+        config.attributedTitle = {
+            var attributedTitle = AttributedString(type.text)
+            attributedTitle.font = UIFont.systemFont(
+                ofSize: type.fontSize,
+                weight: .medium
+            )
+            return attributedTitle
+        }()
+
+        self.configuration = config
+        self.layer.cornerRadius = 16
+        self.backgroundColor = type.bgColor
+    }
+
+    ///
+    func updateButtonType(type: DefaultButtonType) {
+        self.type = type
+        configureDefaultButton()
     }
 }
 
