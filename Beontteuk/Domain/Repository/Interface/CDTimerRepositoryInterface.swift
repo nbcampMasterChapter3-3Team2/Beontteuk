@@ -22,6 +22,9 @@ protocol CDTimerRepositoryInterface {
     func stopTimer(_ timer: CDTimer, remain: Double)
     
     // MARK: - 타이머 조회
+    /// ID로 타이머 조회
+    func fetchTimer(by id: UUID) -> CDTimer?
+
     /// 실행 중인 타이머만
     func fetchRunningTimers() -> [CDTimer]
 

@@ -12,4 +12,5 @@ protocol TimerUseInt {
     func getRecentTimers() -> [CDTimer]
     func addTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer
     func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer?
+    func deleteTimer(by id: UUID)
 }

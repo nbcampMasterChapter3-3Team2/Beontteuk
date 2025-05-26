@@ -145,10 +145,16 @@ final class TimerViewModel: ViewModelProtocol {
         switch section {
         case .active:
             var activeTimers = state.activeTimers.value
+            guard let active = activeTimers[indexPath.row].active,
+                  let id = active.id else { return }
+            useCase.deleteTimer(by: id)
             activeTimers.remove(at: indexPath.row)
             state.activeTimers.accept(activeTimers)
         case .recent:
             var recentTimers = state.recentTimers.value
+            guard let recent = recentTimers[indexPath.row].recent,
+                  let id = recent.id else { return }
+            useCase.deleteTimer(by: id)
             recentTimers.remove(at: indexPath.row)
             state.recentTimers.accept(recentTimers)
         }

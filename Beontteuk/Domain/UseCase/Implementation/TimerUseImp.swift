@@ -23,12 +23,26 @@ final class TimerUseImp: TimerUseInt {
     }
 
     func addTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer {
-        // TODO: label, soundName 설정하는 기능 추가
-        repository.createTimer(hour: h, minute: m, second: s, label: nil, soundName: nil)
+        let newTimer = repository.createTimer(
+            hour: h,
+            minute: m,
+            second: s,
+            label: nil,
+            soundName: nil
+        )
+        repository.saveTimer(newTimer)
+        return newTimer
     }
 
     func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer? {
         guard !repository.hasRecentItem(hour: h, minute: m, second: s) else { return nil }
-        return repository.createRecentItem(hour: h, minute: m, second: s)
+        let newTimer = repository.createRecentItem(hour: h, minute: m, second: s)
+        repository.saveTimer(newTimer)
+        return newTimer
+    }
+
+    func deleteTimer(by id: UUID) {
+        guard let timer = repository.fetchTimer(by: id) else { return }
+        repository.deleteTimer(timer)
     }
 }
