@@ -14,15 +14,15 @@ final class TimerUseImp: TimerUseInt {
         self.repository = repository
     }
 
-    func getActiveTimers() -> [CDTimer] {
-        repository.fetchActiveTimers()
+    func getActiveTimers() -> [CDTimerEntity] {
+        repository.fetchActiveTimers().map { $0.toEntity() }
     }
     
-    func getRecentTimers() -> [CDTimer] {
-        repository.fetchRecentItems()
+    func getRecentTimers() -> [CDTimerEntity] {
+        repository.fetchRecentItems().map { $0.toEntity() }
     }
 
-    func addTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer {
+    func addTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimerEntity {
         let newTimer = repository.createTimer(
             hour: h,
             minute: m,
@@ -31,21 +31,21 @@ final class TimerUseImp: TimerUseInt {
             soundName: nil
         )
         repository.saveTimer(newTimer)
-        return newTimer
+        return newTimer.toEntity()
     }
 
-    func addTimer(fromRecentTimerID id: UUID) -> CDTimer? {
+    func addTimer(fromRecentTimerID id: UUID) -> CDTimerEntity? {
         guard let recentTimer = repository.fetchTimer(by: id) else { return nil }
         let newTimer = repository.duplicateRecentItemAndStart(recentTimer)
         repository.saveTimer(newTimer)
-        return newTimer
+        return newTimer.toEntity()
     }
 
-    func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimer? {
+    func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimerEntity? {
         guard !repository.hasRecentItem(hour: h, minute: m, second: s) else { return nil }
         let newTimer = repository.createRecentItem(hour: h, minute: m, second: s)
         repository.saveTimer(newTimer)
-        return newTimer
+        return newTimer.toEntity()
     }
 
     func deleteTimer(by id: UUID) {
