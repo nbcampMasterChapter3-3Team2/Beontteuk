@@ -80,6 +80,8 @@ final class AlarmViewController: BaseViewController {
         })
             .disposed(by: disposeBag)
 
+
+        // 네비게이션 아이템 - 편집모드
         viewModel.state.isEditingRelay
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isEditing in
@@ -99,6 +101,13 @@ final class AlarmViewController: BaseViewController {
                 isEditing ? .check : .edit
             barItem.updateType(newType)
         })
+            .disposed(by: disposeBag)
+
+        alarmView.getTableView()
+            .rx
+            .itemDeleted
+            .map { item in AlarmViewModel.Action.deleteAlarm(at: item.row)}
+            .bind(to: viewModel.action)
             .disposed(by: disposeBag)
     }
 

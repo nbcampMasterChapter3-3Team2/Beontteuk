@@ -14,7 +14,7 @@ final class AlarmViewModel: ViewModelProtocol {
     enum Action {
         /// usecase
         case readAlarm
-        case deleteAlarm(alarm: CDAlarm)
+        case deleteAlarm(at: Int)
         /// fileprivate
         case toggle(index: Int, isOn: Bool)
         case setEditingMode(isEditing: Bool)
@@ -47,8 +47,10 @@ final class AlarmViewModel: ViewModelProtocol {
             case .readAlarm:
                 list = self.useCase.readAlarms()
 
-            case .deleteAlarm(let alarm):
-                self.useCase.deleteAlarm(alarm)
+            case .deleteAlarm(let index):
+                guard index < list.count else { return }
+                let target = list.remove(at: index)
+                self.useCase.deleteAlarm(target)
 
                 /// fileprivate
             case .toggle(_, _):
