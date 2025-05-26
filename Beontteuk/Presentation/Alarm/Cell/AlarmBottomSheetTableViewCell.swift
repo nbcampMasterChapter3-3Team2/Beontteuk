@@ -100,9 +100,10 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
     ///   - isOn: snooze 스위치 상태
     func configure(
-        option: AlarmSheetTableOption,
-        detail: String?,
-        isOn: Bool
+        option: AlarmSheetTableOption
+//        ,
+//        detail: String?,
+//        isOn: Bool
     ) {
         titleLabel.text = option.title
 
@@ -130,7 +131,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
             textField.isHidden = false
 
         case .snooze:
-            toggleSwitch.isOn = isOn
+            toggleSwitch.isOn = false
             toggleSwitch.isHidden = false
         }
     }

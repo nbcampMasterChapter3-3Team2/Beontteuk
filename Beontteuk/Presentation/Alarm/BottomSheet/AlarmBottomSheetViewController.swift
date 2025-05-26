@@ -56,14 +56,14 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 cellType: AlarmBottomSheetTableViewCell.self
             )) { [weak self] row, option, cell in
             guard let self else { return }
-            let detail = self.viewModel.state.inputLabel.value
-            let isOn = self.viewModel.state.snoozeEnabled.value
+//            let detail = self.viewModel.state.inputLabel.value
+//            let isOn = self.viewModel.state.snoozeEnabled.value
 
             // 셀 구성
             cell.configure(
-                option: option,
-                detail: detail,
-                isOn: isOn
+                option: option
+//                detail: detail,
+//                isOn: isOn
             )
                 switch option {
 //                case .repeat: break

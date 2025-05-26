@@ -74,7 +74,7 @@ final class AlarmTableViewHeaderCell: BaseTableViewHeaderFooterView {
 
     func configureHasNextAlarm(to nextAlarm: Bool) {
         alarmImageView.image = UIImage(named: nextAlarm ? "alarmOn" : "alarmOff")
-        descriptionLabel.text = nextAlarm ? "다음 알람까지 00시 00분 남았어요" : "예정된 알람이 없어요"
+        descriptionLabel.text = nextAlarm ? "활성화된 알람이 있어요" : "예정된 알람이 없어요"
     }
 
     func configure() {
