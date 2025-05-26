@@ -19,6 +19,7 @@ final class TimerViewController: BaseViewController {
     // MARK: - UI Components
 
     private let timerView = TimerView()
+    private let editButton = CustomUIBarButtonItem(type: .edit(action: {}))
 
     // MARK: - Init, Deinit, required
 
@@ -40,7 +41,7 @@ final class TimerViewController: BaseViewController {
     // MARK: - Style Helper
 
     override func setStyles() {
-        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {}))
+        navigationItem.leftBarButtonItem = editButton
     }
 
     // MARK: - Delegate Helper
@@ -53,6 +54,20 @@ final class TimerViewController: BaseViewController {
 
     override func bindViewModel() {
         viewModel.action.onNext(.viewDidLoad)
+
+        if let button = editButton.customView as? UIButton {
+            button.rx.tap
+                .asDriver()
+                .drive(with: self) { owner, _ in
+                    owner.timerView.toggleEditingTableView()
+                }
+                .disposed(by: disposeBag)
+        }
+
+        timerView.didItemDeleted
+            .map { TimerViewModel.Action.didDeletedTimerItem($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
 
         viewModel.state.activeTimers
             .asDriver(onErrorDriveWith: .empty())

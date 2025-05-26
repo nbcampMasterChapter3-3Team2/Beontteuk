@@ -8,12 +8,16 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 
 final class TimerView: BaseView {
 
     // MARK: - Properties
 
-    private var dataSource: UITableViewDiffableDataSource<TimerSection, TimerItem>?
+    let didItemDeleted = PublishRelay<IndexPath>()
+    private var disposeBag = DisposeBag()
+    private var dataSource: EditableDataSource<TimerSection, TimerItem>?
 
     // MARK: - UI Components
 
@@ -29,6 +33,7 @@ final class TimerView: BaseView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setDataSource()
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -90,6 +95,16 @@ final class TimerView: BaseView {
         dataSource?.apply(snapshot)
     }
 
+    // MARK: - Bind
+
+    private func bind() {
+        tableView.rx.itemDeleted
+            .bind(with: self) { owner, indexPath in
+                owner.didItemDeleted.accept(indexPath)
+            }
+            .disposed(by: disposeBag)
+    }
+
     // MARK: - Methods
 
     func setTableViewDelegate(_ delegate: UITableViewDelegate) {
@@ -103,4 +118,10 @@ final class TimerView: BaseView {
         snapshot.appendItems(items, toSection: section)
         dataSource?.apply(snapshot)
     }
+
+    func toggleEditingTableView() {
+        let isEditing = tableView.isEditing
+        tableView.setEditing(!isEditing, animated: true)
+    }
 }
+
