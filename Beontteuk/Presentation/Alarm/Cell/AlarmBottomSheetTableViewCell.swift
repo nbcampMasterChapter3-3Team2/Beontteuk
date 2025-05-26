@@ -112,17 +112,17 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
         toggleSwitch.isHidden = true
 
         switch option {
-        case .repeat:
-            selectionStyle = .default
-            accessoryType = .disclosureIndicator
-            detailLabel.text = "안 함"
-            detailLabel.isHidden = false
+//        case .repeat:
+//            selectionStyle = .default
+//            accessoryType = .disclosureIndicator
+//            detailLabel.text = "안 함"
+//            detailLabel.isHidden = false
 
-        case .sound:
-            selectionStyle = .default
-            accessoryType = .disclosureIndicator
-            detailLabel.text = "기본"
-            detailLabel.isHidden = false
+//        case .sound:
+//            selectionStyle = .default
+//            accessoryType = .disclosureIndicator
+//            detailLabel.text = "기본"
+//            detailLabel.isHidden = false
 
         case .label:
             textField.placeholder = option.detailText

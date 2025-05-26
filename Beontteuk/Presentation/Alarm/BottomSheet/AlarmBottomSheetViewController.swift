@@ -66,7 +66,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 isOn: isOn
             )
                 switch option {
-                case .repeat: break
+//                case .repeat: break
                 case .label:
                     cell.inputTextField
                         .map { text in
@@ -74,7 +74,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
                     }
                         .bind(to: self.viewModel.action)
                         .disposed(by: cell.disposeBag)
-                case .sound: break
+//                case .sound: break
                 case .snooze:
                     cell.snoozeToggled
                         .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
