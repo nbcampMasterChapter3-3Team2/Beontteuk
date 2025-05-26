@@ -8,6 +8,7 @@
 import UIKit
 import Then
 import SnapKit
+import RxSwift
 import RxCocoa
 
 final class StopWatchViewController: BaseViewController {
@@ -25,6 +26,44 @@ final class StopWatchViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setDataSource()
+    }
+
+    // MARK: - Bind
+
+    override func bindViewModel() {
+        super.bindViewModel()
+
+        stopWatchView.leftButton.rx.tap
+            .subscribe { [weak self] _ in
+                guard let self else { return }
+                viewModel.action.accept(.leftButton)
+            }.disposed(by: disposeBag)
+
+        stopWatchView.rightButton.rx.tap
+            .subscribe { [weak self] _ in
+                guard let self else { return }
+                viewModel.action.accept(.rightButton)
+            }.disposed(by: disposeBag)
+
+        viewModel.state.timeSubject
+            .bind { [weak self] state in
+                guard let self else { return }
+                switch state {
+                case .initial:
+                    stopWatchView.leftButton.updateButtonType(type: .lap)
+                    stopWatchView.leftButton.isEnabled = false
+
+                    stopWatchView.rightButton.updateButtonType(type: .start)
+                case .progress:
+                    stopWatchView.leftButton.updateButtonType(type: .lap)
+                    stopWatchView.leftButton.isEnabled = true
+
+                    stopWatchView.rightButton.updateButtonType(type: .stop)
+                case .pause:
+                    stopWatchView.leftButton.updateButtonType(type: .reset)
+                    stopWatchView.rightButton.updateButtonType(type: .start)
+                }
+            }.disposed(by: disposeBag)
     }
 
     // MARK: - Style Helper
@@ -66,12 +105,11 @@ extension StopWatchViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.items.count
+        5
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: LapCell.className, for: indexPath) as! LapCell
-        cell.configureItems(viewModel.items[indexPath.item])
         cell.selectionStyle = .none
         return cell
     }

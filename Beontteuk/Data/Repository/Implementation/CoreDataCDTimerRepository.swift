@@ -41,7 +41,6 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
         } catch {
             print("❌ 타이머 삭제를 실패하였습니다.: \(error)")
         }
-        
     }
 
     /// 타이머 저장(종료 시간, 라벨 수정 등)
@@ -56,8 +55,9 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     }
 
     /// 타이머 정지 처리 (isRunning == false)
-    func stopTimer(_ timer: CDTimer) {
+    func stopTimer(_ timer: CDTimer, remain: Double) {
         timer.isRunning = false
+        timer.remainSecond = remain
         do {
             try context.save()
         } catch {
@@ -66,6 +66,14 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     }
 
     // MARK: - 타이머 조회
+    /// ID로 타이머 조회
+    func fetchTimer(by id: UUID) -> CDTimer? {
+        let request: NSFetchRequest<CDTimer> = CDTimer.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+    
     /// 실행 중인 타이머만
     func fetchRunningTimers() -> [CDTimer] {
         let request: NSFetchRequest<CDTimer> = CDTimer.fetchRequest()

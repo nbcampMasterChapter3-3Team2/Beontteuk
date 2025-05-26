@@ -46,6 +46,20 @@ extension CDTimer {
     @NSManaged public var endTime: Date?        // 실행 종료 시각
     
     @NSManaged public var isRecent: Bool        // 최근 항목 여부
+    
+    func toEntity() -> CDTimerEntity {
+        return CDTimerEntity(
+            id: id,
+            remainSecond: remainSecond,
+            totalSecond: totalSecond,
+            label: label,
+            soundName: soundName,
+            createdAt: createdAt,
+            isRunning: isRunning,
+            endTime: endTime,
+            isRecent: isRecent
+        )
+    }
 }
 
 extension CDTimer : Identifiable {
