@@ -53,8 +53,12 @@ final class AlarmViewModel: ViewModelProtocol {
                 self.useCase.deleteAlarm(target)
 
                 /// fileprivate
-            case .toggle(_, _):
-                break
+            case .toggle(let index, let isOn):
+                guard index < list.count else { return }
+                // 1) 메모리 배열 업데이트
+                let alarm = list[index]
+                alarm.isEnabled = isOn
+                self.useCase.updateAlarm(alarm)
             case .setEditingMode(let isEditing):
                 owner.state.isEditingRelay.accept(isEditing)
             }

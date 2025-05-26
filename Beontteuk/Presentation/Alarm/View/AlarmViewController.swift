@@ -66,6 +66,17 @@ final class AlarmViewController: BaseViewController {
             cell.alarmChanged = { isOn in
                 cell.configureLabelColor(to: isOn)
             }
+
+            cell.getToogleSwitch()
+                .rx
+                .controlEvent(.valueChanged) 
+            .withLatestFrom(cell.getToogleSwitch().rx.isOn)
+                .map { isOn in
+                AlarmViewModel.Action.toggle(index: row, isOn: isOn)
+            }
+                .bind(to: self.viewModel.action)
+                .disposed(by: cell.disposeBag)
+
         }
             .disposed(by: disposeBag)
 
@@ -106,7 +117,7 @@ final class AlarmViewController: BaseViewController {
         alarmView.getTableView()
             .rx
             .itemDeleted
-            .map { item in AlarmViewModel.Action.deleteAlarm(at: item.row)}
+            .map { item in AlarmViewModel.Action.deleteAlarm(at: item.row) }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
     }
