@@ -58,10 +58,22 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     func stopTimer(_ timer: CDTimer, remain: Double) {
         timer.isRunning = false
         timer.remainSecond = remain
+        timer.endTime = nil
         do {
             try context.save()
         } catch {
             print("❌ 타이머 정지를 실패하였습니다.: \(error)")
+        }
+    }
+
+    /// 타이머 재개 처리 (isRunning == true)
+    func resumeTimer(_ timer: CDTimer) {
+        timer.isRunning = true
+        timer.endTime = Date().addingTimeInterval(timer.remainSecond)
+        do {
+            try context.save()
+        } catch {
+            print("❌ 타이머 재개를 실패하였습니다.: \(error)")
         }
     }
 

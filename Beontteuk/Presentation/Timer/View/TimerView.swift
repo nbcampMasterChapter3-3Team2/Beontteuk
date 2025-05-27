@@ -16,6 +16,7 @@ final class TimerView: BaseView {
     // MARK: - Properties
 
     let didTapRecentTimerButton = PublishRelay<Int>()
+    let didTapTimerControlButton = PublishRelay<ActiveTimer>()
     let didItemDeleted = PublishRelay<IndexPath>()
     private var disposeBag = DisposeBag()
     private var dataSource: EditableDataSource<TimerSection, TimerItem>?
@@ -48,6 +49,7 @@ final class TimerView: BaseView {
 
         tableView.snp.makeConstraints {
             $0.top.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.directionalHorizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
     }
@@ -65,11 +67,19 @@ final class TimerView: BaseView {
                 ) as! TimerActiveCell
 
                 if let timer = item.active {
+
                     cell.configureCell(
                         time: timer.timeString,
                         timeKR: timer.localizedTimeString,
-                        progress: timer.progress
+                        progress: timer.progress,
                     )
+                    cell.updateState(to: timer.isRunning ? .running : .pause)
+
+                    cell.didTapControlButton
+                        .bind(with: self) { owner, _ in
+                            owner.didTapTimerControlButton.accept(timer)
+                        }
+                        .disposed(by: cell.disposeBag)
                 }
 
                 return cell
@@ -121,14 +131,35 @@ final class TimerView: BaseView {
     func updateSnapshot(with items: [TimerItem], to section: TimerSection) {
         guard var snapshot = dataSource?.snapshot() else { return }
         let oldItems = snapshot.itemIdentifiers(inSection: section)
-        snapshot.deleteItems(oldItems)
-        snapshot.appendItems(items, toSection: section)
-        dataSource?.apply(snapshot)
+        if oldItems.count == items.count {
+            snapshot.reloadItems(items)
+        } else {
+            snapshot.deleteItems(oldItems)
+            snapshot.appendItems(items, toSection: section)
+        }
+        dataSource?.apply(snapshot, animatingDifferences: false)
     }
 
     func toggleEditingTableView() {
         let isEditing = tableView.isEditing
         tableView.setEditing(!isEditing, animated: true)
+    }
+
+    func updateVisibleTimerCells() {
+        let visibleIndexPaths = tableView.indexPathsForVisibleRows ?? []
+
+        for indexPath in visibleIndexPaths {
+            guard let item = dataSource?.itemIdentifier(for: indexPath),
+                  let cell = tableView.cellForRow(at: indexPath) as? TimerActiveCell,
+                  let timer = item.active else { continue }
+
+            cell.configureCell(
+                time: timer.timeString,
+                timeKR: timer.localizedTimeString,
+                progress: timer.progress
+            )
+            cell.updateState(to: timer.isRunning ? .running : .pause)
+        }
     }
 }
 

@@ -16,6 +16,22 @@ enum TimerItem: Hashable {
     case active(ActiveTimer)
     case recent(RecentTimer)
 
+    // 내부 속성 값이 변해도 같은 타이머임을 명시하기 위함
+    var id: UUID? {
+        switch self {
+        case .active(let a): return a.id
+        case .recent(let r): return r.id
+        }
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    static func == (lhs: TimerItem, rhs: TimerItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     var active: ActiveTimer? {
         if case .active(let activeTimer) = self {
             return activeTimer
@@ -35,13 +51,28 @@ enum TimerItem: Hashable {
 
 struct ActiveTimer: Hashable {
     let id: UUID?
-    let remainTime: Double
     let totalTime: Double
     let isRunning: Bool
     let endTime: Date?
+    let remainTimeSnapshot: Double?
+
+    var remainTime: Double {
+        if isRunning {
+            guard let endTime else { return 0 }
+            return max(0, endTime.timeIntervalSinceNow)
+        } else {
+            return remainTimeSnapshot ?? 0
+        }
+    }
+
+    var isExpired: Bool {
+        guard let endTime else { return false }
+        return endTime.timeIntervalSinceNow <= 0
+    }
 
     var timeString: String {
-        let seconds = Int(remainTime)
+        guard let remainTimeSnapshot else { return "" }
+        let seconds = Int(isRunning ? remainTime : remainTimeSnapshot)
         let h = seconds / 3600
         let m = (seconds % 3600) / 60
         let s = seconds % 60
@@ -52,7 +83,8 @@ struct ActiveTimer: Hashable {
     }
 
     var localizedTimeString: String {
-        let seconds = Int(remainTime)
+        guard let remainTimeSnapshot else { return "" }
+        let seconds = Int(isRunning ? remainTime : remainTimeSnapshot)
         let h = seconds / 3600
         let m = (seconds % 3600) / 60
         let s = seconds % 60
@@ -66,7 +98,8 @@ struct ActiveTimer: Hashable {
     }
 
     var progress: CGFloat {
-        remainTime / totalTime
+        guard let remainTimeSnapshot else { return 0 }
+        return (isRunning ? remainTime : remainTimeSnapshot) / totalTime
     }
 }
 

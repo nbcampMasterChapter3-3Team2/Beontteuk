@@ -16,12 +16,10 @@ final class NotificationService: NSObject {
     private static let snoozeActionIdentifier = "SNOOZE_ACTION"
     private static let dismissActionIdentifier = UNNotificationDismissActionIdentifier
     private static let alarmCategoryIdentifier = "ALARM_CATEGORY"
+    private static let timerCategoryIdentifier = "TIMER_CATEGORY"
     private var audioPlayer: AVAudioPlayer?
 
-    private let repository: AlarmRepositoryInterface
-
-    init(repository: AlarmRepositoryInterface) {
-        self.repository = repository
+    override init() {
         super.init()
         UNUserNotificationCenter.current().delegate = self
         /// 무음모드에서도 소리 나오게 하기
@@ -84,6 +82,27 @@ final class NotificationService: NSObject {
         center.removePendingNotificationRequests(withIdentifiers: [notificationId, snoozeId])
     }
 
+    /// 타이머 스케줄 요청
+    func scheduleTimer(after seconds: TimeInterval, timerID id: UUID?) {
+        guard let id else { return }
+        let content = UNMutableNotificationContent()
+        content.body = "타이머"
+        content.sound = UNNotificationSound(named: UNNotificationSoundName("dog-bark.wav"))
+        content.categoryIdentifier = NotificationService.timerCategoryIdentifier
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: seconds, repeats: false)
+        let request = UNNotificationRequest(identifier: id.uuidString, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id.uuidString])
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    /// 타이머 취소
+    func cancelTimerNotification(id: UUID?) {
+        guard let id else { return }
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id.uuidString])
+    }
+
     // MARK: - 오디오 재생 제어
     private func playLongSound() {
         guard let url = Bundle.main.url(forResource: "iPhone-Alarm-Original", withExtension: "wav") else { return }
@@ -109,6 +128,13 @@ extension NotificationService: UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
+        let category = notification.request.content.categoryIdentifier
+
+        // 타이머일 경우 알림 띄우지 않음
+        guard category != "TIMER_CATEGORY" else {
+            completionHandler([.banner, .sound])
+            return
+        }
 
         playLongSound()
 
