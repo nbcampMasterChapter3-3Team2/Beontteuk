@@ -46,9 +46,12 @@ final class WorldClockViewController: BaseViewController {
         super.bindViewModel()
         
         lazy var dataSource = RxTableViewSectionedAnimatedDataSource<WorldClockSection>(
-            configureCell: { ds, tv, indexPath, item in
-                guard let cell = tv.dequeueReusableCell(withIdentifier: WorldClockTableViewCell.className, for: indexPath) as? WorldClockTableViewCell else { return UITableViewCell() }
+            configureCell: { [weak self] dataSource, tableView, indexPath, item in
+                guard let self else { return UITableViewCell() }
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: WorldClockTableViewCell.className, for: indexPath) as? WorldClockTableViewCell else { return UITableViewCell() }
+                
                 cell.configureCell(with: item)
+                
                 return cell
             },
             canEditRowAtIndexPath: { _, _ in true },
@@ -61,22 +64,25 @@ final class WorldClockViewController: BaseViewController {
                 self.worldClockView.getWorldClockTableView().backgroundView = items.isEmpty ? self.worldClockView.makeEmptyView() : nil
             })
             .map { [WorldClockSection(model: "WorldClock", items: $0)] }
-            .asDriver(onErrorJustReturn: [])
-            .drive(worldClockView.getWorldClockTableView().rx.items(dataSource: dataSource))
+            .bind(to: worldClockView.getWorldClockTableView().rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         worldClockViewModel.state.status
             .bind(with: self) { owner, value in
                 let buttonType = value == true ? CustomUIBarButtonItem.NavigationButtonType.check : CustomUIBarButtonItem.NavigationButtonType.edit
                 owner.worldClockView.getEditButton().updateType(buttonType)
-                owner.worldClockView.getWorldClockTableView().isEditing = value
+                owner.worldClockView.getWorldClockTableView().setEditing(value, animated: true)
             }
             .disposed(by: disposeBag)
         
         worldClockView.getWorldClockTableView().rx.itemDeleted
-            .bind(with: self) { owner, indexPath in
+            .withLatestFrom(worldClockViewModel.state.status) { indexPath, status in
+                return (indexPath, status)
+            }
+            .bind(with: self) { owner, value in
+                let (indexPath, status) = value
                 let item = dataSource[indexPath]
-                owner.worldClockViewModel.action.onNext(.deleteCity(item))
+                status ? owner.worldClockViewModel.action.onNext(.editDeleteCity(item, indexPath)) : owner.worldClockViewModel.action.onNext(.rowDeleteCity(item))
             }
             .disposed(by: disposeBag)
     }

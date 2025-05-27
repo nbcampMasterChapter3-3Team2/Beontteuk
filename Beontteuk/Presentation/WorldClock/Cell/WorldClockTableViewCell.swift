@@ -74,5 +74,8 @@ final class WorldClockTableViewCell: BaseTableViewCell {
         self.cityLabel.text = with.cityNameKR?.components(separatedBy: ", ").first ?? ""
         self.clockLabel.text = with.hourMinuteString
         self.amPmLabel.text = with.amPmString
+        
+        self.clockLabel.isHidden = with.isEditing
+        self.amPmLabel.isHidden = with.isEditing
     }
 }

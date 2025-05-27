@@ -16,11 +16,12 @@ final class WorldClockViewModel: ViewModelProtocol {
         case viewWillAppear
         case addCity(SelectCityEntity)
         case editButtonTapped
-        case deleteCity(WorldClockEntity)
+        case rowDeleteCity(WorldClockEntity)
+        case editDeleteCity(WorldClockEntity, IndexPath)
     }
     
     struct State {
-        let items = PublishRelay<[WorldClockEntity]>()
+        let items = BehaviorRelay<[WorldClockEntity]>(value: [])
         let status = BehaviorRelay<Bool>(value: false)
     }
     
@@ -51,8 +52,10 @@ final class WorldClockViewModel: ViewModelProtocol {
                     return owner.createWorldClock(city)
                 case .editButtonTapped:
                     return owner.toggleEditButtonStatus()
-                case .deleteCity(let city):
-                    return owner.deleteWorldClock(city)
+                case .rowDeleteCity(let city):
+                    return owner.rowDeleteWorldClock(city)
+                case .editDeleteCity(let city, let indexPath):
+                    return owner.editDeleteWorldClock(city, indexPath)
                 }
             }
             .disposed(by: disposeBag)
@@ -81,15 +84,29 @@ final class WorldClockViewModel: ViewModelProtocol {
         self.state.items.accept(useCase.fetchAll())
     }
     
-    private func deleteWorldClock(_ city: WorldClockEntity) {
+    private func editDeleteWorldClock(_ city: WorldClockEntity, _ indexPath: IndexPath) {
+        useCase.deleteCity(city)
+        var items = state.items.value
+        items.remove(at: indexPath.row)
+        state.items.accept(items)
+    }
+    
+    private func rowDeleteWorldClock(_ city: WorldClockEntity) {
         useCase.deleteCity(city)
         state.items.accept(useCase.fetchAll())
     }
     
     private func toggleEditButtonStatus() {
-        var status = state.status.value
-        status.toggle()
-        self.state.status.accept(status)
+        let isEditing = !state.status.value
+        state.status.accept(isEditing)
+        
+        // 강제 트리거 없이, 상태값을 포함한 새로운 배열로 교체
+        let newItems = state.items.value.map {
+            var updated = $0
+            updated.isEditing = isEditing
+            return updated
+        }
+        state.items.accept(newItems)
     }
     
     private func startClockTimer() {

@@ -127,7 +127,8 @@ extension WorldClock {
             hourMinuteString: hourMinuteString,
             amPmString: amPmString,
             hourDifferenceText: hourDifferenceText,
-            dayLabelText: dayLabelText
+            dayLabelText: dayLabelText,
+            isEditing: false
         )
     }
 }

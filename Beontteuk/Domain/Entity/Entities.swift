@@ -60,13 +60,14 @@ struct WorldClockEntity: Equatable, Identifiable {
     let amPmString: String?
     let hourDifferenceText: String
     let dayLabelText: String
+    var isEditing: Bool
 }
 
 extension WorldClockEntity: IdentifiableType {
-    var identity: String { return id!.uuidString }
+    var identity: String { return id?.uuidString ?? UUID().uuidString }
 
     static func == (lhs: WorldClockEntity, rhs: WorldClockEntity) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id && lhs.isEditing == rhs.isEditing
     }
 }
 
