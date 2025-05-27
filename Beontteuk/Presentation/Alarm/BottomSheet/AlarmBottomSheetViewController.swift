@@ -58,10 +58,10 @@ final class AlarmBottomSheetViewController: BaseViewController {
             configureCell: { [weak self] ds, tv, ip, item in
                 switch item {
                 case .option(let option):
-                    let cell = tv.dequeueReusableCell(
+                    guard let cell = tv.dequeueReusableCell(
                         withIdentifier: AlarmBottomSheetTableViewCell.className,
                         for: ip
-                    ) as! AlarmBottomSheetTableViewCell
+                    ) as? AlarmBottomSheetTableViewCell else { return UITableViewCell() }
 
                     // 초기값 detail/isOn 결정
                     let detail: String?
@@ -85,15 +85,23 @@ final class AlarmBottomSheetViewController: BaseViewController {
                     // Rx 바인딩
                     switch option {
                     case .label:
+
+                        cell.getTextField()
+                            .rx
+                            .controlEvent(.editingDidBegin)
+                            .subscribe(onNext: {
+                                cell.getTextField().text = ""
+                            })
+                            .disposed(by: cell.disposeBag)
+
                         cell.inputTextField
                             .orEmpty
-                            .skip(self?.type == .edit ? 1 : 0)
                             .map(AlarmBottomSheetViewModel.Action.labelChanged)
                             .bind(to: self!.viewModel.action)
                             .disposed(by: cell.disposeBag)
+
                     case .snooze:
                         cell.snoozeToggled
-                            .skip(self?.type == .edit ? 1 : 0)
                             .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
                             .bind(to: self!.viewModel.action)
                             .disposed(by: cell.disposeBag)
@@ -178,7 +186,6 @@ final class AlarmBottomSheetViewController: BaseViewController {
             bottomSheetView.getTimePicker().date = initial
 
             bottomSheetView.dateChanged
-                .skip(1)
             .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
             .bind(to: viewModel.action)
                 .disposed(by: disposeBag)

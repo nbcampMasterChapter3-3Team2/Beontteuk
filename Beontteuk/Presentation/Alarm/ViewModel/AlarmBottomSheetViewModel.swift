@@ -86,6 +86,7 @@ final class AlarmBottomSheetViewModel {
         }
 
         let time = state.pickedDate.value.split { $0 == ":" }
+        NSLog("Time : \(time)")
         let hour = Int(time[0]) ?? 0
         let minute = Int(time[1]) ?? 0
         let label = state.inputLabel.value

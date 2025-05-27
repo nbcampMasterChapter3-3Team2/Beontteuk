@@ -100,8 +100,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
     ///   - isOn: snooze 스위치 상태
     func configure(
-        option: AlarmSheetTableOption
-        ,
+        option: AlarmSheetTableOption,
         detail: String? = nil,
         isOn: Bool = false
     ) {
@@ -126,6 +125,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
 //            detailLabel.isHidden = false
 
         case .label:
+//            selectionStyle = .default
             textField.placeholder = option.detailText
             textField.text = detail
             textField.isHidden = false
@@ -135,5 +135,11 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
             toggleSwitch.isHidden = false
         }
     }
+
+    func getTextField() -> UITextField {
+        return textField
+    }
+
+
 }
 
