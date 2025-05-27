@@ -30,9 +30,8 @@ final class StopWatchViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.action.viewDidLoad.accept(())
         setDataSource()
-        bindViewModel()
+        viewModel.action.viewDidLoad.accept(())
     }
 
     // MARK: - Initializer, Deinit, requiered

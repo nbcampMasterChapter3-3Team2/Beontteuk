@@ -67,10 +67,11 @@ final class StopWatchViewModel {
         snapshot.appendSections([.laps])
 
         var item = [Item]()
-        let laps = state.lapsRelay.value.sorted { $0.lapIndex < $1.lapIndex }
+        let laps = state.lapsRelay.value.sorted { $0.lapIndex > $1.lapIndex }
         laps.forEach {
             item.append(.lap($0))
         }
+        snapshot.appendItems(item)
 
         state.snapshotRelay.accept(snapshot)
     }
@@ -87,6 +88,10 @@ final class StopWatchViewModel {
                 print("VIEW DID LOAD: \(session)")
 
                 if let session = session {
+                    elapsedTime = session.elapsedBeforePause
+                    let timeInterval = makeFormattedString(since: elapsedTime)
+                    state.stopWatchTimeLabelRelay.accept(timeInterval)
+
                     state.lapsRelay.accept(session.laps)
                     updateSnapshot()
                 }
@@ -176,6 +181,7 @@ final class StopWatchViewModel {
                         by: session.id,
                         with: elapsedTime
                     )
+                    print("🙃 \(elapsedTime)")
 
                 case .reset:
                     /// 스톱워치 재설정
@@ -206,19 +212,19 @@ final class StopWatchViewModel {
 
                     /// LapRecord 추가
                     guard let session else { return }
-                    let newLap = lapRecordUseCase.createLap(
+                    guard let newLap = lapRecordUseCase.createLap(
                         for: session.id,
                         lapIndex: state.currentLapTimeRelay.value.count,
                         lapTime: lapInterval,
                         absoluteTime: totalElapsed
-                    )
+                    ) else { return }
+
+                    let previouLaps = state.lapsRelay.value
+                    state.lapsRelay.accept(previouLaps + [newLap])
+                    updateSnapshot()
 
                     // 삭제할 것
-                    if let newLap = newLap {
-                        print("Created LAp: \(newLap)")
-                    } else {
-                        print("Create Lap Error")
-                    }
+                    print("Created LAp: \(newLap)")
                 }
             }.disposed(by: mainDisposeBag)
     }
@@ -228,6 +234,7 @@ final class StopWatchViewModel {
     private func addLapTime(_ lapTime: TimeInterval) {
         let previouLapTimes = state.currentLapTimeRelay.value
         state.currentLapTimeRelay.accept(previouLapTimes + [lapTime])
+
     }
 
     private func calculateTimeInterval(
