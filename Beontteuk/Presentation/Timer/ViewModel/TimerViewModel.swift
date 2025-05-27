@@ -38,6 +38,7 @@ final class TimerViewModel: ViewModelProtocol {
     var action: AnyObserver<Action> { actionSubject.asObserver() }
     var state = State()
     let disposeBag = DisposeBag()
+    private var timerBag: [UUID: Disposable] = [:]
 
     // MARK: - Init, Deinit, required
 
@@ -54,7 +55,6 @@ final class TimerViewModel: ViewModelProtocol {
                 switch action {
                 case .viewDidLoad:
                     owner.loadTimers()
-                    owner.startTicking()
                 case .didTapEditButton:
                     let isEditMode = owner.state.isEditMode.value
                     owner.state.isEditMode.accept(!isEditMode)
@@ -101,7 +101,14 @@ final class TimerViewModel: ViewModelProtocol {
                 endTime: cdTimer.endTime
             ))
         }
-        state.activeTimers.accept(activeTimers)
+
+        activeTimers.forEach { timerItem in
+            startTicking(timer: timerItem.active!)
+        }
+
+        let aliveTimers = activeTimers.filter { !$0.active!.isExpired }
+
+        state.activeTimers.accept(aliveTimers)
     }
 
     private func loadRecentTimers() {
@@ -114,20 +121,22 @@ final class TimerViewModel: ViewModelProtocol {
         state.recentTimers.accept(recentTimers)
     }
 
-    private func startTicking() {
-        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-            .bind(with: self) { owner, _ in
-                let updated = owner.state.activeTimers.value.compactMap { item -> TimerItem? in
-                    if item.active!.isExpired, let id = item.active!.id {
-                        // TODO: 푸쉬 알림
-                        owner.useCase.deleteTimer(by: id)
-                        return nil // 타이머가 만료되면 타이머를 nil로 반환하여 compactMap으로 필터링
-                    }
-                    return item // 타이머가 살아있는 경우 그대로 반환
+    private func startTicking(timer: ActiveTimer) {
+        guard let id = timer.id else { return }
+
+        let timerDisposable = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, _ in
+                if timer.isExpired {
+                    guard let row = owner.state.activeTimers.value
+                        .map({ $0.active! }).firstIndex(of: timer) else { return }
+                    owner.deleteTimer(for: IndexPath(row: row, section: 0))
+                } else {
+                    owner.state.activeTimers.accept(owner.state.activeTimers.value)
                 }
-                owner.state.activeTimers.accept(updated)
             }
-            .disposed(by: disposeBag)
+
+        timerBag[id] = timerDisposable
     }
 
     private func createTimerThenStart() {
@@ -140,6 +149,7 @@ final class TimerViewModel: ViewModelProtocol {
             isRunning: cdTimer.isRunning,
             endTime: cdTimer.endTime
         ))
+        startTicking(timer: timerItem.active!)
         state.activeTimers.accept(state.activeTimers.value + [timerItem])
     }
 
@@ -171,6 +181,7 @@ final class TimerViewModel: ViewModelProtocol {
             guard let active = activeTimers[indexPath.row].active,
                   let id = active.id else { return }
             useCase.deleteTimer(by: id)
+            timerBag[id]?.dispose()
             activeTimers.remove(at: indexPath.row)
             state.activeTimers.accept(activeTimers)
         case .recent:
@@ -194,6 +205,7 @@ final class TimerViewModel: ViewModelProtocol {
             endTime: cdTimer.endTime
         )
         let activeTimers = state.activeTimers.value
+        startTicking(timer: newActiveTimer)
         state.activeTimers.accept(activeTimers + [TimerItem.active(newActiveTimer)])
     }
 }
