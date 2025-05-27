@@ -11,22 +11,21 @@ import ActivityKit
 final class LiveActivityManager: ObservableObject {
     static let shared = LiveActivityManager()
 
-    @Published var activity: Activity<BeontteukWidgetAttributes>?
+    private var activityMap: [UUID: Activity<BeontteukWidgetAttributes>] = [:]
 
     private init() {}
 
-    func start(endAfter duration: Double) {
-        guard activity == nil else { return }
+    func start(for id: UUID?, endAfter duration: Double) {
+        guard let id else { return }
         let attributes = BeontteukWidgetAttributes()
         let contentState = BeontteukWidgetAttributes.ContentState(duration: duration)
         let staleDate = Date().addingTimeInterval(duration)
-        print(staleDate)
 
         do {
             if #available(iOS 16.2, *) {
                 let activityContent = ActivityContent(state: contentState, staleDate: staleDate)
                 let activity = try Activity<BeontteukWidgetAttributes>.request(attributes: attributes, content: activityContent)
-                print(activity)
+                activityMap[id] = activity
             }
         } catch {
             print(error)
@@ -46,13 +45,13 @@ final class LiveActivityManager: ObservableObject {
         }
     }
 
-    func stop() {
+    func stop(for id: UUID?) {
+        guard let id else { return }
         Task {
-            for activity in Activity<BeontteukWidgetAttributes>.activities {
-                if #available(iOS 16.2, *) {
-                    await activity.end(nil, dismissalPolicy: .immediate)
-                }
+            if let activity = activityMap[id], #available(iOS 16.2, *) {
+                await activity.end(nil, dismissalPolicy: .immediate)
             }
+
         }
     }
 }

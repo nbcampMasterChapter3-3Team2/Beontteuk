@@ -24,7 +24,7 @@ struct BeontteukWidgetLiveActivity: Widget {
         ActivityConfiguration(for: BeontteukWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("⏲️")
+                Text("⏲️ \(context.state.duration)")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
