@@ -47,7 +47,8 @@ final class TabBarController: UITabBarController {
         let stopWatchViewController = StopWatchViewController()
 
         let timerRepository = CoreDataCDTimerRepository()
-        let timerUseCase = TimerUseImp(repository: timerRepository)
+        let notificationService = NotificationService()
+        let timerUseCase = TimerUseImp(repository: timerRepository, notificationService: notificationService)
         let timerViewModel = TimerViewModel(useCase: timerUseCase)
         let timerViewController = UINavigationController(rootViewController: TimerViewController(viewModel: timerViewModel))
         

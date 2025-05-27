@@ -9,9 +9,11 @@ import Foundation
 
 final class TimerUseImp: TimerUseInt {
     private let repository: CDTimerRepositoryInterface
+    private let notificationService: NotificationService
 
-    init(repository: CDTimerRepositoryInterface) {
+    init(repository: CDTimerRepositoryInterface, notificationService: NotificationService) {
         self.repository = repository
+        self.notificationService = notificationService
     }
 
     func getActiveTimers() -> [CDTimerEntity] {
@@ -31,6 +33,7 @@ final class TimerUseImp: TimerUseInt {
             soundName: nil
         )
         repository.saveTimer(newTimer)
+        notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
         return newTimer.toEntity()
     }
 
@@ -38,6 +41,7 @@ final class TimerUseImp: TimerUseInt {
         guard let recentTimer = repository.fetchTimer(by: id) else { return nil }
         let newTimer = repository.duplicateRecentItemAndStart(recentTimer)
         repository.saveTimer(newTimer)
+        notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
         return newTimer.toEntity()
     }
 
@@ -51,15 +55,18 @@ final class TimerUseImp: TimerUseInt {
     func deleteTimer(by id: UUID) {
         guard let timer = repository.fetchTimer(by: id) else { return }
         repository.deleteTimer(timer)
+        notificationService.cancelTimerNotification(id: timer.id)
     }
 
     func pauseTimer(for timerID: UUID?, remainTime: Double) {
         guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
         repository.stopTimer(timer, remain: remainTime)
+        notificationService.cancelTimerNotification(id: timer.id)
     }
 
     func resumeTimer(for timerID: UUID?) {
         guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
         repository.resumeTimer(timer)
+        notificationService.scheduleTimer(after: timer.remainSecond, timerID: timer.id)
     }
 }

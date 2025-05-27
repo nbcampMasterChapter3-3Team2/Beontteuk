@@ -14,7 +14,7 @@ final class AlarmUseImp: AlarmUseInt {
     private let notificationService: NotificationService
     init(repository: AlarmRepositoryInterface) {
         self.repository = repository
-        self.notificationService = NotificationService(repository: repository)
+        self.notificationService = NotificationService()
     }
 
     func createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?, snooze: Bool) -> CDAlarm {
