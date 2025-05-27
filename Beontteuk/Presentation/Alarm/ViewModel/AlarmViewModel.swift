@@ -74,10 +74,3 @@ final class AlarmViewModel: ViewModelProtocol {
     }
 }
 
-
-// 다음 알람 정보 구조체
-struct NextAlarmInfo {
-    let alarm: CDAlarm
-    let hours: Int
-    let minutes: Int
-}

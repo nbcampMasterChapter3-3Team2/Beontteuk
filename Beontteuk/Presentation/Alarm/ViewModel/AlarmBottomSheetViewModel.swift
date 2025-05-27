@@ -17,6 +17,7 @@ final class AlarmBottomSheetViewModel {
 
 
         case save(repeatDays: String?, soundName: String?)
+        case delete(alarm: CDAlarm)
         case cancel
     }
 
@@ -24,7 +25,7 @@ final class AlarmBottomSheetViewModel {
         let pickedDate = BehaviorRelay<String>(value: "")
         let inputLabel = BehaviorRelay<String?>(value: nil)
         let snoozeEnabled = BehaviorRelay<Bool>(value: true)
-        let didSave = PublishRelay<Void>()
+        let didAction = PublishRelay<Void>()
     }
 
     private let useCase: AlarmUseInt
@@ -43,7 +44,6 @@ final class AlarmBottomSheetViewModel {
             .subscribe(with: self) { owner, item in
             switch item {
             case .dateChanged(let date):
-
                 let formatter = DateFormatter()
                 formatter.locale = Locale.autoupdatingCurrent
                 formatter.timeZone = TimeZone.current
@@ -72,7 +72,11 @@ final class AlarmBottomSheetViewModel {
 
                 let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
                 self.useCase.updateAlarm(alarm)
-                self.state.didSave.accept(())
+                self.state.didAction.accept(())
+
+            case .delete(let alarm):
+                self.useCase.deleteAlarm(alarm)
+                self.state.didAction.accept(())
 
             case .cancel: break
 

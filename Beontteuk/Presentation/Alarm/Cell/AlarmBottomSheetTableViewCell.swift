@@ -101,9 +101,9 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - isOn: snooze 스위치 상태
     func configure(
         option: AlarmSheetTableOption
-//        ,
-//        detail: String?,
-//        isOn: Bool
+        ,
+        detail: String? = nil,
+        isOn: Bool = false
     ) {
         titleLabel.text = option.title
 
@@ -127,11 +127,11 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
 
         case .label:
             textField.placeholder = option.detailText
-            textField.text = nil
+            textField.text = detail
             textField.isHidden = false
 
         case .snooze:
-            toggleSwitch.isOn = false
+            toggleSwitch.isOn = isOn
             toggleSwitch.isHidden = false
         }
     }

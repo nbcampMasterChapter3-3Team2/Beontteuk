@@ -27,10 +27,13 @@ final class AlarmBottomSheetView: BaseView {
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped).then {
         $0.register(AlarmBottomSheetTableViewCell.self, forCellReuseIdentifier: AlarmBottomSheetTableViewCell.className)
+        $0.register(UITableViewCell.self, forCellReuseIdentifier: "DeleteCell")
         $0.isScrollEnabled = false
         $0.rowHeight = UITableView.automaticDimension
         $0.backgroundColor = .clear
     }
+
+    private let testButton = AddButton(type: .alarm)
 
     override func setLayout() {
         addSubviews(timePicker, tableView)
@@ -49,4 +52,8 @@ final class AlarmBottomSheetView: BaseView {
     func getTableView() -> UITableView {
         return tableView
     }
+    func getTimePicker() -> UIDatePicker {
+        return timePicker
+    }
+
 }
