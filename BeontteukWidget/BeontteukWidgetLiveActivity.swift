@@ -24,10 +24,12 @@ struct BeontteukWidgetLiveActivity: Widget {
         ActivityConfiguration(for: BeontteukWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("⏲️ \(context.state.duration)")
+                Text(context.state.duration.convertToTimeString())
+                    .foregroundStyle(.neutral100)
+                    .font(.largeTitle)
+                    .fontWeight(.light)
             }
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
+            .activityBackgroundTint(.primary500)
 
         } dynamicIsland: { context in
             DynamicIsland {

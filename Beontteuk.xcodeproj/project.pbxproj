@@ -85,7 +85,9 @@
 		C9D7FE452DE6291F00532EDF /* Exceptions for "Beontteuk" folder in "BeontteukWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Presentation/Shared/Extension/Extension.swift,
 				Presentation/Shared/LiveActivity/LiveActivityManager.swift,
+				Resources/Assets.xcassets,
 			);
 			target = C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */;
 		};

@@ -126,3 +126,18 @@ extension UIFont {
         return UIFont.systemFont(ofSize: 25, weight: .light)
     }
 }
+
+extension Double {
+    func convertToTimeString() -> String {
+        let totalSeconds = Int(self)
+            let h = totalSeconds / 3600
+            let m = (totalSeconds % 3600) / 60
+            let s = totalSeconds % 60
+
+            if h > 0 {
+                return String(format: "%d:%02d:%02d", h, m, s)
+            } else {
+                return String(format: "%d:%02d", m, s)
+            }
+    }
+}
