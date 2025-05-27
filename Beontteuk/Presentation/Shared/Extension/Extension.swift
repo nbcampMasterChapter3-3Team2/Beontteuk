@@ -126,3 +126,12 @@ extension UIFont {
         return UIFont.systemFont(ofSize: 25, weight: .light)
     }
 }
+
+extension Date {
+    func convert(to timeZone: TimeZone) -> Date {
+        let currentOffset = TimeZone.current.secondsFromGMT(for: self)
+        let targetOffset = timeZone.secondsFromGMT(for: self)
+        let timeInterval = TimeInterval(targetOffset - currentOffset)
+        return addingTimeInterval(timeInterval)
+    }
+}

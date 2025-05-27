@@ -33,20 +33,24 @@ final class WorldClockTableViewCell: BaseTableViewCell {
         $0.textColor = .label
     }
     
+    let amPmLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 25, weight: .regular)
+        $0.textColor = .label
+    }
+    
     //MARK: SetStyles
     override func setStyles() {
         super.setStyles()
         
         self.selectionStyle = .none
         self.backgroundColor = .clear
-        
     }
     
     //MARK: SetLayout
     override func setLayout() {
         super.setLayout()
         
-        self.contentView.addSubviews(verticalStackView, clockLabel)
+        self.contentView.addSubviews(verticalStackView, clockLabel, amPmLabel)
         self.verticalStackView.addArrangedSubviews(dayTimeLabel, cityLabel)
         
         verticalStackView.snp.makeConstraints {
@@ -58,11 +62,20 @@ final class WorldClockTableViewCell: BaseTableViewCell {
             $0.trailing.equalToSuperview().offset(-16)
             $0.verticalEdges.equalToSuperview().inset(8)
         }
+        
+        amPmLabel.snp.makeConstraints {
+            $0.trailing.equalTo(clockLabel.snp.leading).offset(-3)
+            $0.bottom.equalTo(verticalStackView.snp.bottom)
+        }
     }
     
-    func configureCell(with: WorldClockDummy) {
-        self.dayTimeLabel.text = with.timeDifference
-        self.cityLabel.text = with.city
-        self.clockLabel.text = with.time
+    func configureCell(with: WorldClockEntity) {
+        self.dayTimeLabel.text = "\(with.dayLabelText), \(with.hourDifferenceText)"
+        self.cityLabel.text = with.cityNameKR?.components(separatedBy: ", ").first ?? ""
+        self.clockLabel.text = with.hourMinuteString
+        self.amPmLabel.text = with.amPmString
+        
+        self.clockLabel.isHidden = with.isEditing
+        self.amPmLabel.isHidden = with.isEditing
     }
 }

@@ -7,19 +7,38 @@
 
 import UIKit
 
+import RxCocoa
+import RxDataSources
 import RxSwift
-import RxRelay
-
-struct WorldClockDummy {
-    let city: String
-    let timeDifference: String
-    let time: String
-}
 
 final class WorldClockViewController: BaseViewController {
-    
+    //MARK: - Instances
     private let worldClockView = WorldClockView()
+    private let headerView = WorldClockTableHeaderView()
     
+    private let diContainer: BeontteukDIContainerInerface
+    private let worldClockViewModel: WorldClockViewModel
+    
+    //MARK: - init
+    init(diContainer: BeontteukDIContainerInerface) {
+        self.diContainer = diContainer
+        self.worldClockViewModel = diContainer.makeWorldClockViewModel()
+        
+        super.init(nibName: nil, bundle: nil)
+        
+        self.addCustomObserver()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - Deinit
+    deinit {
+        removeCustomObserver()
+    }
+    
+    //MARK: - View Life Cycles
     override func loadView() {
         view = worldClockView
     }
@@ -27,31 +46,62 @@ final class WorldClockViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let dummyData = BehaviorRelay<[WorldClockDummy]>(value: [
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "런던", timeDifference: "오늘, -8시간", time: "09:00"),
-            WorldClockDummy(city: "도쿄", timeDifference: "오늘, +0시간", time: "17:00"),
-            WorldClockDummy(city: "뉴욕", timeDifference: "어제, -13시간", time: "04:00"),
-            WorldClockDummy(city: "서울", timeDifference: "오늘, +0시간", time: "17:00")
-        ])
+        setupHeaderView()
         
-        dummyData
+        bindEditButtonTapped()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        bindViewWillAppear()
+    }
+    
+    override func bindViewModel() {
+        super.bindViewModel()
+        
+        lazy var dataSource = RxTableViewSectionedAnimatedDataSource<WorldClockSection>(
+            configureCell: { dataSource, tableView, indexPath, item in
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: WorldClockTableViewCell.className, for: indexPath) as? WorldClockTableViewCell else { return UITableViewCell() }
+                cell.configureCell(with: item)
+                
+                return cell
+            },
+            canEditRowAtIndexPath: { _, _ in true },
+            canMoveRowAtIndexPath: { _, _ in true }
+        )
+        
+        worldClockViewModel.state.items
             .do(onNext: { [weak self] items in
                 guard let self else { return }
                 self.worldClockView.getWorldClockTableView().backgroundView = items.isEmpty ? self.worldClockView.makeEmptyView() : nil
             })
-            .bind(to: worldClockView.getWorldClockTableView().rx.items(
-                cellIdentifier: WorldClockTableViewCell.className,
-                cellType: WorldClockTableViewCell.self)
-            ) { row, model, cell in
-                cell.configureCell(with: model)
+            .map { [WorldClockSection(model: "WorldClock", items: $0)] }
+            .bind(to: worldClockView.getWorldClockTableView().rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        worldClockViewModel.state.status
+            .bind(with: self) { owner, value in
+                let buttonType = value == true ? CustomUIBarButtonItem.NavigationButtonType.check : CustomUIBarButtonItem.NavigationButtonType.edit
+                owner.worldClockView.getEditButton().updateType(buttonType)
+                owner.worldClockView.getWorldClockTableView().setEditing(value, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        worldClockView.getWorldClockTableView().rx.itemDeleted
+            .withLatestFrom(worldClockViewModel.state.status) { indexPath, status in
+                return (indexPath, status)
+            }
+            .bind(with: self) { owner, value in
+                let (indexPath, status) = value
+                let item = dataSource[indexPath]
+                status ? owner.worldClockViewModel.action.onNext(.editDeleteCity(item, indexPath)) : owner.worldClockViewModel.action.onNext(.rowDeleteCity(item))
+            }
+            .disposed(by: disposeBag)
+        
+        worldClockView.getWorldClockTableView().rx.itemMoved
+            .bind(with: self) { owner, movement in
+                owner.worldClockViewModel.action.onNext(.moveCity(movement.sourceIndex, movement.destinationIndex))
             }
             .disposed(by: disposeBag)
     }
@@ -59,11 +109,65 @@ final class WorldClockViewController: BaseViewController {
     override func setStyles() {
         super.setStyles()
         
-        self.navigationController?.isNavigationBarHidden = true
     }
     
     override func setLayout() {
         super.setLayout()
         
+    }
+    
+    private func setupHeaderView() {
+        let targetSize = CGSize(width: view.bounds.width, height: 0)
+        let height = headerView.systemLayoutSizeFitting(targetSize).height
+        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: height)
+        
+        headerView.addButton.rx.tap
+            .bind(with: self) { owner, _ in
+                let vc = SelectCityViewController()
+                let nav = UINavigationController(rootViewController: vc)
+                vc.modalPresentationStyle = .pageSheet
+                vc.onCitySelected = { [weak self] selectedCity in
+                    guard let self else { return }
+                    print("✅ 선택된 도시: \(selectedCity.cityName)")
+                    self.worldClockViewModel.action.onNext(.addCity(selectedCity))
+                }
+                owner.present(nav, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        worldClockView.getWorldClockTableView().tableHeaderView = headerView
+    }
+    
+    private func bindViewWillAppear() {
+        worldClockViewModel.action.onNext(.viewWillAppear)
+    }
+    
+    private func bindEditButtonTapped() {
+        (worldClockView.getEditButton().customView as? UIButton)?.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.worldClockViewModel.action.onNext(.editButtonTapped)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func addCustomObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+    
+    private func removeCustomObserver() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func appWillEnterForeground() {
+        bindViewWillAppear()
     }
 }
