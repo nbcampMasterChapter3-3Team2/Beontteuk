@@ -26,6 +26,14 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         return (try? context.fetch(request)) ?? []
     }
 
+    /// 알람 불러오기
+    func fetchAlarm(by id: UUID) -> CDAlarm? {
+        let request: NSFetchRequest<CDAlarm> = CDAlarm.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+
     /// 알람 생성
     func createAlarm(hour: Int,
                      minute: Int,

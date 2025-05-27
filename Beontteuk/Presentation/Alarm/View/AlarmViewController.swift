@@ -56,15 +56,17 @@ final class AlarmViewController: BaseViewController {
                 cellType: AlarmTableViewCell.self
             )) { row, alarm, cell in
             guard var label = alarm.label else { return }
-            label = label == "" ? "알람" : label
+            label = label.isEmpty ? "알람" : label
 
             let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
+
             cell.configure(
                 hour: alarm.hour,
                 minute: alarm.minute,
                 detail: label + repeatDays,
                 isEnabled: alarm.isEnabled
             )
+
             cell.alarmChanged = { isOn in
                 cell.configureLabelColor(to: isOn)
             }
@@ -127,7 +129,7 @@ final class AlarmViewController: BaseViewController {
         /// cell 눌러서 편집 하기
         alarmView.getTableView()
             .rx
-            .modelSelected(CDAlarm.self)
+            .modelSelected(CDAlarmEntity.self)
             .subscribe(with: self) { owner, item in
             self.openbottomSheetView(type: .edit, alarm: item)
         }
@@ -171,14 +173,13 @@ final class AlarmViewController: BaseViewController {
         alarmView.getTableView().tableHeaderView = header
     }
 
-    private func openbottomSheetView(type: BottomSheetType, alarm: CDAlarm? = nil) {
+    private func openbottomSheetView(type: BottomSheetType, alarm: CDAlarmEntity? = nil) {
         bottomSheetViewModel.state.didAction
             .take(1) // 한 번만 처리
         .subscribe(with: self) { owner, _ in
             owner.viewModel.action.onNext(.readAlarm)
         }
             .disposed(by: disposeBag)
-
 
         let bottomSheet = AlarmBottomSheetViewController(viewModel: bottomSheetViewModel, type: type, alarm: alarm)
         bottomSheet.configure()

@@ -17,8 +17,8 @@ final class AlarmBottomSheetViewModel {
 
 
         case save(repeatDays: String?, soundName: String?)
-        case update(alarm: CDAlarm, repeatDays: String?, soundName: String?)
-        case delete(alarm: CDAlarm)
+        case update(alarm: CDAlarmEntity, repeatDays: String?, soundName: String?)
+        case delete(alarm: CDAlarmEntity)
         case cancel
     }
 
@@ -66,7 +66,8 @@ final class AlarmBottomSheetViewModel {
                 owner.upsertAlarm(deleting: alarm, repeatDays: repeatDays, soundName: soundName)
 
             case .delete(let alarm):
-                owner.useCase.deleteAlarm(alarm)
+                guard let uuid = alarm.id else { return }
+                owner.useCase.deleteAlarm(by: uuid)
                 owner.state.didAction.accept(())
 
             case .cancel: break
@@ -77,16 +78,15 @@ final class AlarmBottomSheetViewModel {
     }
 
     private func upsertAlarm(
-        deleting oldAlarm: CDAlarm?,
+        deleting oldAlarm: CDAlarmEntity?,
         repeatDays: String?,
         soundName: String?
     ) {
-        if let old = oldAlarm {
-            useCase.deleteAlarm(old)
+        if let old = oldAlarm, let uuid = old.id {
+            useCase.deleteAlarm(by: uuid)
         }
 
         let time = state.pickedDate.value.split { $0 == ":" }
-        NSLog("Time : \(time)")
         let hour = Int(time[0]) ?? 0
         let minute = Int(time[1]) ?? 0
         let label = state.inputLabel.value

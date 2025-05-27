@@ -18,9 +18,9 @@ final class AlarmBottomSheetViewController: BaseViewController {
     private let bottomSheetView = AlarmBottomSheetView()
     private let viewModel: AlarmBottomSheetViewModel
     private let type: BottomSheetType?
-    private let alarm: CDAlarm?
+    private let alarm: CDAlarmEntity?
 
-    init(viewModel: AlarmBottomSheetViewModel, type: BottomSheetType, alarm: CDAlarm? = nil) {
+    init(viewModel: AlarmBottomSheetViewModel, type: BottomSheetType, alarm: CDAlarmEntity? = nil) {
         self.viewModel = viewModel
         self.type = type
         self.alarm = alarm
@@ -85,7 +85,6 @@ final class AlarmBottomSheetViewController: BaseViewController {
                     // Rx 바인딩
                     switch option {
                     case .label:
-
                         cell.getTextField()
                             .rx
                             .controlEvent(.editingDidBegin)
@@ -182,8 +181,9 @@ final class AlarmBottomSheetViewController: BaseViewController {
 
     private func bindingDatePicker() {
         if type == .edit, let alarm = alarm {
-            let initial = Calendar.current.date(from: alarm.dateComponents)!
-            bottomSheetView.getTimePicker().date = initial
+            let dateComponents = DateComponents(hour: Int(alarm.hour), minute: Int(alarm.minute))
+            let initial = Calendar.current.date(from: dateComponents)
+            bottomSheetView.getTimePicker().date = initial ?? Date()
 
             bottomSheetView.dateChanged
             .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }

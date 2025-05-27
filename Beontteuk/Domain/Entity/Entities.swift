@@ -13,7 +13,7 @@ struct CDAlarmEntity: Equatable, Identifiable {
     let minute: Int16
     let repeatDays: String?
     let label: String?
-    let isEnabled: Bool
+    var isEnabled: Bool
     let soundName: String?
     let isSnoozeEnabled: Bool
 }

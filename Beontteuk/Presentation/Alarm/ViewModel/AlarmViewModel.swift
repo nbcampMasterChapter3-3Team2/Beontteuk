@@ -21,7 +21,7 @@ final class AlarmViewModel: ViewModelProtocol {
     }
 
     struct State {
-        let alarmsRelay = BehaviorRelay<[CDAlarm]>(value: [])
+        let alarmsRelay = BehaviorRelay<[CDAlarmEntity]>(value: [])
         let nextAlarmRelay = BehaviorRelay<Bool>(value: false)
         let isEditingRelay = BehaviorRelay<Bool>(value: false)
     }
@@ -48,15 +48,17 @@ final class AlarmViewModel: ViewModelProtocol {
                 list = self.useCase.readAlarms()
 
             case .deleteAlarm(let index):
-                guard index < list.count else { return }
+                guard index < list.count
+                else { return }
                 let target = list.remove(at: index)
-                self.useCase.deleteAlarm(target)
+                guard let id = target.id else { return }
+
+                self.useCase.deleteAlarm(by: id)
 
                 /// fileprivate
             case .toggle(let index, let isOn):
                 guard index < list.count else { return }
-                // 1) 메모리 배열 업데이트
-                let alarm = list[index]
+                var alarm = list[index]
                 alarm.isEnabled = isOn
                 self.useCase.updateAlarm(alarm)
             case .setEditingMode(let isEditing):
@@ -68,7 +70,7 @@ final class AlarmViewModel: ViewModelProtocol {
         }.disposed(by: disposeBag)
     }
 
-    private func isNextAlarm(from alarms: [CDAlarm]) -> Bool {
+    private func isNextAlarm(from alarms: [CDAlarmEntity]) -> Bool {
         let enabled = alarms.filter { $0.isEnabled }
         return !enabled.isEmpty
     }
