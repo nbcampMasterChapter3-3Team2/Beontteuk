@@ -55,7 +55,9 @@ final class AlarmViewController: BaseViewController {
                 cellIdentifier: AlarmTableViewListTypeCell.className,
                 cellType: AlarmTableViewListTypeCell.self
             )) { row, alarm, cell in
-            let label = alarm.label ?? "알람"
+            guard var label = alarm.label else { return }
+            label = label == "" ? "알람" : label
+
             let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
             cell.configure(
                 hour: alarm.hour,
@@ -114,6 +116,7 @@ final class AlarmViewController: BaseViewController {
         })
             .disposed(by: disposeBag)
 
+        /// cell  삭제
         alarmView.getTableView()
             .rx
             .itemDeleted
@@ -121,12 +124,13 @@ final class AlarmViewController: BaseViewController {
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 
+        /// cell 눌러서 편집 하기
         alarmView.getTableView()
             .rx
             .modelSelected(CDAlarm.self)
             .subscribe(with: self) { owner, item in
-                self.openbottomSheetView(type: .edit, alarm: item)
-            }
+            self.openbottomSheetView(type: .edit, alarm: item)
+        }
             .disposed(by: disposeBag)
 
     }

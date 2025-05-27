@@ -79,6 +79,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
                         detail = nil
                         isOn = false
                     }
+
                     cell.configure(option: option, detail: detail, isOn: isOn)
 
                     // Rx 바인딩
@@ -177,7 +178,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
 
             bottomSheetView.dateChanged
                 .skip(1)
-            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) } 
+            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
             .bind(to: viewModel.action)
                 .disposed(by: disposeBag)
         } else {

@@ -60,47 +60,46 @@ final class AlarmBottomSheetViewModel {
                 owner.state.snoozeEnabled.accept(isOn)
 
             case .save(let repeatDays, let soundName):
-                let time = owner.state.pickedDate.value.split { $0 == ":" }
+                owner.upsertAlarm(deleting: nil, repeatDays: repeatDays, soundName: soundName)
 
-                let hour = Int(time[0]) ?? 0
-                let minute = Int(time[1]) ?? 0
-                guard var label = owner.state.inputLabel.value else { return }
-                if label == "" {
-                    label = "알람"
-                }
-
-                let snooze = owner.state.snoozeEnabled.value
-
-                let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
-                self.useCase.updateAlarm(alarm)
-                self.state.didAction.accept(())
             case .update(let alarm, let repeatDays, let soundName):
-                self.useCase.deleteAlarm(alarm)
-                let time = owner.state.pickedDate.value.split { $0 == ":" }
-
-                let hour = Int(time[0]) ?? 0
-                let minute = Int(time[1]) ?? 0
-                guard var label = owner.state.inputLabel.value else { return }
-                if label == "" {
-                    label = "알람"
-                }
-
-                let snooze = owner.state.snoozeEnabled.value
-
-
-                let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
-                self.useCase.updateAlarm(alarm)
-                self.state.didAction.accept(())
-
+                owner.upsertAlarm(deleting: alarm, repeatDays: repeatDays, soundName: soundName)
 
             case .delete(let alarm):
-                self.useCase.deleteAlarm(alarm)
-                self.state.didAction.accept(())
+                owner.useCase.deleteAlarm(alarm)
+                owner.state.didAction.accept(())
 
             case .cancel: break
 
             }
         }
             .disposed(by: disposeBag)
+    }
+
+    private func upsertAlarm(
+        deleting oldAlarm: CDAlarm?,
+        repeatDays: String?,
+        soundName: String?
+    ) {
+        if let old = oldAlarm {
+            useCase.deleteAlarm(old)
+        }
+
+        let time = state.pickedDate.value.split { $0 == ":" }
+        let hour = Int(time[0]) ?? 0
+        let minute = Int(time[1]) ?? 0
+        let label = state.inputLabel.value
+        let snooze = state.snoozeEnabled.value
+
+        let newAlarm = useCase.createAlarm(
+            hour: hour,
+            minute: minute,
+            repeatDays: repeatDays,
+            label: label,
+            soundName: soundName,
+            snooze: snooze
+        )
+        useCase.updateAlarm(newAlarm)
+        state.didAction.accept(())
     }
 }
