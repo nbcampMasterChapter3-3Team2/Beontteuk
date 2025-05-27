@@ -125,7 +125,6 @@ final class AlarmViewController: BaseViewController {
             .rx
             .modelSelected(CDAlarm.self)
             .subscribe(with: self) { owner, item in
-                NSLog("alarm : \(item) --  \(item.dateComponents) -- \(Calendar.current.date(from:item.dateComponents)!)")
                 self.openbottomSheetView(type: .edit, alarm: item)
             }
             .disposed(by: disposeBag)

@@ -28,7 +28,6 @@ final class NotificationService: NSObject {
 
         try? AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
-//        registerCategories()
     }
 
     /// 알람 스케줄 요청
@@ -58,14 +57,15 @@ final class NotificationService: NSObject {
             trigger: originalTrigger
         )
         center.removePendingNotificationRequests(withIdentifiers: [notificationId])
-        center.add(originalRequest) { [weak self] error in
-            if let error = error {
-                print("[NotificationService] original schedule error: \(error)")
-            } else {
-                print("🔔 Scheduled alarm [id: \(notificationId)] at \(date)")
-                self?.printAllAlarms()
-            }
-        }
+        center.add(originalRequest)
+//        { [weak self] error in
+//            if let error = error {
+//                print("[NotificationService] original schedule error: \(error)")
+//            } else {
+//                print("🔔 Scheduled alarm [id: \(notificationId)] at \(date)")
+//                self?.printAllAlarms()
+//            }
+//        }
 
         // 2) 스누즈 자동 재알림 (1분 뒤)
         if snooze {
@@ -73,21 +73,22 @@ final class NotificationService: NSObject {
             let snoozeComps = Calendar.current.dateComponents([.hour, .minute], from: snoozeDate)
             let snoozeTrigger = UNCalendarNotificationTrigger(dateMatching: snoozeComps, repeats: false)
             let snoozeId = "\(notificationId)_snooze"
-            content.title = "다시알림 - \(title)"
+            content.title = "다시알림  \(title)"
             let snoozeRequest = UNNotificationRequest(
                 identifier: snoozeId,
                 content: content,
                 trigger: snoozeTrigger
             )
             center.removePendingNotificationRequests(withIdentifiers: [snoozeId])
-            center.add(snoozeRequest) { [weak self] error in
-                if let error = error {
-                    print("[NotificationService] snooze schedule error: \(error)")
-                } else {
-                    print("⏱ Scheduled snooze alarm [id: \(snoozeId)] at \(snoozeDate)")
-                    self?.printAllAlarms()
-                }
-            }
+            center.add(snoozeRequest)
+//            { [weak self] error in
+//                if let error = error {
+//                    print("[NotificationService] snooze schedule error: \(error)")
+//                } else {
+//                    print("⏱ Scheduled snooze alarm [id: \(snoozeId)] at \(snoozeDate)")
+//                    self?.printAllAlarms()
+//                }
+//            }
         }
     }
 
@@ -98,27 +99,26 @@ final class NotificationService: NSObject {
         // 원래 알람 및 스누즈 알람 취소
         let snoozeId = "\(notificationId)_snooze"
         center.removePendingNotificationRequests(withIdentifiers: [notificationId, snoozeId])
-        print("🛑 Canceled alarms [ids: \(notificationId), \(snoozeId)]")
-        printAllAlarms()
+//        printAllAlarms()
     }
 
-    // MARK: - 알람 목록 출력
-    private func printAllAlarms() {
-        let alarms = repository.fetchAllAlarm()
-        guard !alarms.isEmpty else {
-            print("현재 저장된 알람이 없습니다.")
-            return
-        }
-        print("📋 현재 저장된 알람 목록:")
-        for alarm in alarms {
-            let hour = alarm.hour
-            let minute = alarm.minute
-            let enabled = alarm.isEnabled
-            let snooze = alarm.isSnoozeEnabled
-            let id = alarm.id?.uuidString ?? "-"
-            print("- [id: \(id)] \(hour):\(String(format: "%02d", minute)) | enabled: \(enabled) | snooze: \(snooze)")
-        }
-    }
+    // TEST: - 알람 목록 출력
+//    private func printAllAlarms() {
+//        let alarms = repository.fetchAllAlarm()
+//        guard !alarms.isEmpty else {
+//            print("현재 저장된 알람이 없습니다.")
+//            return
+//        }
+//        print("📋 현재 저장된 알람 목록:")
+//        for alarm in alarms {
+//            let hour = alarm.hour
+//            let minute = alarm.minute
+//            let enabled = alarm.isEnabled
+//            let snooze = alarm.isSnoozeEnabled
+//            let id = alarm.id?.uuidString ?? "-"
+//            print("- [id: \(id)] \(hour):\(String(format: "%02d", minute)) | enabled: \(enabled) | snooze: \(snooze)")
+//        }
+//    }
 
     // MARK: - 오디오 재생 제어
     private func playLongSound() {
@@ -181,7 +181,6 @@ extension NotificationService: UNUserNotificationCenterDelegate {
     ) {
         switch response.actionIdentifier {
         case NotificationService.snoozeActionIdentifier:
-//             사용자 스누즈 액션 처리 (기존과 동일)
             let now = Date()
             let id = response.notification.request.identifier
             scheduleAlarm(at: now, snooze: true,
