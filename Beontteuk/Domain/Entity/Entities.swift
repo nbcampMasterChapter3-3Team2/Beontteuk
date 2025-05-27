@@ -28,6 +28,20 @@ struct CDTimerEntity: Equatable, Identifiable {
     let isRunning: Bool
     let endTime: Date?
     let isRecent: Bool
+
+    func toActiveTimer() -> ActiveTimer {
+        ActiveTimer(
+            id: id,
+            totalTime: totalSecond,
+            isRunning: isRunning,
+            endTime: endTime,
+            remainTimeSnapshot: remainSecond
+        )
+    }
+
+    func toRecentTimer() -> RecentTimer {
+        RecentTimer(id: id, totalTime: totalSecond)
+    }
 }
 
 struct StopWatchEntity: Equatable, Identifiable {

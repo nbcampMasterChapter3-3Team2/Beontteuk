@@ -100,13 +100,7 @@ final class TimerViewModel: ViewModelProtocol {
     private func loadActiveTimers() {
         state.activeTimers.accept([])
         let activeTimers = useCase.getActiveTimers().map { cdTimer in
-            TimerItem.active(ActiveTimer(
-                id: cdTimer.id,
-                totalTime: cdTimer.totalSecond,
-                isRunning: cdTimer.isRunning,
-                endTime: cdTimer.endTime,
-                remainTimeSnapshot: cdTimer.remainSecond
-            ))
+            TimerItem.active(cdTimer.toActiveTimer())
         }
 
         var aliveTimers = [TimerItem]()
@@ -131,10 +125,7 @@ final class TimerViewModel: ViewModelProtocol {
 
     private func loadRecentTimers() {
         let recentTimers = useCase.getRecentTimers().map { cdTimer in
-            TimerItem.recent(RecentTimer(
-                id: cdTimer.id,
-                totalTime: cdTimer.totalSecond
-            ))
+            TimerItem.recent(cdTimer.toRecentTimer())
         }
         state.recentTimers.accept(recentTimers)
     }
@@ -142,7 +133,7 @@ final class TimerViewModel: ViewModelProtocol {
     private func startTicking(timer: ActiveTimer) {
         guard let id = timer.id else { return }
 
-        let timerDisposable = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+        let timer = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
             .filter { _ in timer.isRunning }
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, _ in
@@ -155,20 +146,14 @@ final class TimerViewModel: ViewModelProtocol {
                 }
             }
 
-        timerBag[id] = timerDisposable
+        timerBag[id] = timer
     }
 
     private func createTimerThenStart() {
         let time = state.selectedTime.value
         guard let h = time[0], let m = time[1], let s = time[2] else { return }
         let cdTimer = useCase.addTimer(h, m, s)
-        let timerItem = TimerItem.active(ActiveTimer(
-            id: cdTimer.id,
-            totalTime: cdTimer.totalSecond,
-            isRunning: cdTimer.isRunning,
-            endTime: cdTimer.endTime,
-            remainTimeSnapshot: cdTimer.remainSecond,
-        ))
+        let timerItem = TimerItem.active(cdTimer.toActiveTimer())
         startTicking(timer: timerItem.active!)
         state.activeTimers.accept(state.activeTimers.value + [timerItem])
     }
@@ -218,13 +203,7 @@ final class TimerViewModel: ViewModelProtocol {
         let recentTimer = state.recentTimers.value[row]
         guard let id = recentTimer.recent?.id,
               let cdTimer = useCase.addTimer(fromRecentTimerID: id) else { return }
-        let newActiveTimer = ActiveTimer(
-            id: cdTimer.id,
-            totalTime: cdTimer.totalSecond,
-            isRunning: cdTimer.isRunning,
-            endTime: cdTimer.endTime,
-            remainTimeSnapshot: cdTimer.remainSecond
-        )
+        let newActiveTimer = cdTimer.toActiveTimer()
         let activeTimers = state.activeTimers.value
         startTicking(timer: newActiveTimer)
         state.activeTimers.accept(activeTimers + [TimerItem.active(newActiveTimer)])
