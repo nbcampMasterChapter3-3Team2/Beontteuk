@@ -17,6 +17,15 @@ final class WorldClockViewController: BaseViewController {
     
     private let worldClockViewModel = WorldClockViewModel(useCase: WorldClockUseCase(repository: CoreDataWorldClockRepository()))
     
+    //MARK: - Deinit
+    deinit {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+    
     //MARK: - View Life Cycles
     override func loadView() {
         view = worldClockView
@@ -25,8 +34,20 @@ final class WorldClockViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bindAction()
         setupHeaderView()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        bindAction()
     }
     
     private func setupHeaderView() {
@@ -68,10 +89,6 @@ final class WorldClockViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindAction() {
-        worldClockViewModel.action.onNext(.viewDidLoad)
-    }
-    
     override func setStyles() {
         super.setStyles()
         
@@ -81,5 +98,13 @@ final class WorldClockViewController: BaseViewController {
     override func setLayout() {
         super.setLayout()
         
+    }
+    
+    private func bindAction() {
+        worldClockViewModel.action.onNext(.viewDidLoad)
+    }
+    
+    @objc private func appWillEnterForeground() {
+        bindAction()
     }
 }

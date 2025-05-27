@@ -35,28 +35,44 @@ extension WorldClock {
     @NSManaged public var createdAt: Date?              // 추가된 시간
     @NSManaged public var orderIndex: Int16             // 정렬 순서
 
-    // ✅ 현지 시간 (ex. "11:26")
-    var currentLocalTime: String {
+    // ✅ 현지 시간 (ex. "11:26", "20:26")
+    var hourMinuteString: String {
         guard let timeZoneIdentifier = timeZoneIdentifier,
               let timeZone = TimeZone(identifier: timeZoneIdentifier) else {
             return "알 수 없음"
         }
-        
+
         let formatter = DateFormatter()
         formatter.timeZone = timeZone
-        formatter.dateFormat = "HH:mm" // 24시간제, "a h:mm" 하면 AM/PM 표시
-        formatter.locale = Locale(identifier: "ko_KR")
-        
+        formatter.locale = Locale.current
+
+        let is24Hour = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)?.contains("a") == false
+
+        formatter.dateFormat = is24Hour ? "HH:mm" : "hh:mm"
         return formatter.string(from: Date())
     }
     
-    // ✅ 현지 시간 (ex. "11:26")
-//    var localTimeString: String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "HH:mm"
-//        formatter.timeZone = TimeZone(identifier: timeZoneIdentifier!)
-//        return formatter.string(from: Date())
-//    }
+    // ✅ 오전/오후 표시 (기기의 24시간제 여부 추적)
+    var amPmString: String? {
+        guard let timeZoneIdentifier = timeZoneIdentifier,
+              let timeZone = TimeZone(identifier: timeZoneIdentifier) else {
+            return nil
+        }
+        
+        let is24Hour = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)?.contains("a") == false
+        
+        if is24Hour {
+            return nil
+        }
+
+        let formatter = DateFormatter()
+        formatter.timeZone = timeZone
+        formatter.locale = Locale(identifier: "en_US_POSIX") // AM/PM 고정 표현
+        formatter.dateFormat = "a"
+
+        let symbol = formatter.string(from: Date())
+        return Locale.current.identifier == "ko_KR" ? (symbol == "AM" ? "오전" : "오후") : symbol
+    }
     
     // ✅ +X시간 / -X시간
     var hourDifferenceText: String {
@@ -108,7 +124,8 @@ extension WorldClock {
             timeZoneIdentifier: timeZoneIdentifier,
             createdAt: createdAt,
             orderIndex: orderIndex,
-            localTimeString: currentLocalTime,
+            hourMinuteString: hourMinuteString,
+            amPmString: amPmString,
             hourDifferenceText: hourDifferenceText,
             dayLabelText: dayLabelText
         )
