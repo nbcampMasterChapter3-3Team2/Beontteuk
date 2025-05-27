@@ -18,7 +18,8 @@ final class BeontteukDIContainer: BeontteukDIContainerInerface {
     
     func makeTimerViewModel() -> TimerViewModel {
         let timerRepository = CoreDataCDTimerRepository()
-        let timerUseCase = TimerUseImp(repository: timerRepository)
+        let notificationService = NotificationService()
+        let timerUseCase = TimerUseImp(repository: timerRepository, notificationService: notificationService)
         let timerViewModel = TimerViewModel(useCase: timerUseCase)
         
         return timerViewModel
