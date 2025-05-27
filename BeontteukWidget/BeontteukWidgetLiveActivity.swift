@@ -12,11 +12,11 @@ import SwiftUI
 struct BeontteukWidgetAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         // Dynamic stateful properties about your activity go here!
-        var emoji: String
+        var duration: Double
     }
 
     // Fixed non-changing properties about your activity go here!
-    var name: String
+//    var name: String
 }
 
 struct BeontteukWidgetLiveActivity: Widget {
@@ -24,7 +24,7 @@ struct BeontteukWidgetLiveActivity: Widget {
         ActivityConfiguration(for: BeontteukWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("Hello \(context.state.emoji)")
+                Text("⏲️")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
@@ -40,34 +40,18 @@ struct BeontteukWidgetLiveActivity: Widget {
                     Text("Trailing")
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("Bottom \(context.state.emoji)")
+                    Text("\(context.state.duration)")
                     // more content
                 }
             } compactLeading: {
                 Text("L")
             } compactTrailing: {
-                Text("T \(context.state.emoji)")
+                Text("T \(context.state.duration)")
             } minimal: {
-                Text(context.state.emoji)
+                Text("⏲️")
             }
             .widgetURL(URL(string: "http://www.apple.com"))
             .keylineTint(Color.red)
         }
     }
-}
-
-extension BeontteukWidgetAttributes {
-    fileprivate static var preview: BeontteukWidgetAttributes {
-        BeontteukWidgetAttributes(name: "World")
-    }
-}
-
-extension BeontteukWidgetAttributes.ContentState {
-    fileprivate static var smiley: BeontteukWidgetAttributes.ContentState {
-        BeontteukWidgetAttributes.ContentState(emoji: "😀")
-     }
-     
-     fileprivate static var starEyes: BeontteukWidgetAttributes.ContentState {
-         BeontteukWidgetAttributes.ContentState(emoji: "🤩")
-     }
 }

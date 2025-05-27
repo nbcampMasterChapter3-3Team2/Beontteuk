@@ -15,14 +15,16 @@ final class LiveActivityManager: ObservableObject {
 
     private init() {}
 
-    func start() {
+    func start(endAfter duration: Double) {
         guard activity == nil else { return }
-        let attributes = BeontteukWidgetAttributes(name: "다은")
-        let contentState = BeontteukWidgetAttributes.ContentState(emoji: "🐺")
+        let attributes = BeontteukWidgetAttributes()
+        let contentState = BeontteukWidgetAttributes.ContentState(duration: duration)
+        let staleDate = Date().addingTimeInterval(duration)
+        print(staleDate)
 
         do {
             if #available(iOS 16.2, *) {
-                let activityContent = ActivityContent(state: contentState, staleDate: nil)
+                let activityContent = ActivityContent(state: contentState, staleDate: staleDate)
                 let activity = try Activity<BeontteukWidgetAttributes>.request(attributes: attributes, content: activityContent)
                 print(activity)
             }
