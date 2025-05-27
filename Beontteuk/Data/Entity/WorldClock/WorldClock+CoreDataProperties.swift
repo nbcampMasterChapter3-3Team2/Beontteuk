@@ -75,26 +75,28 @@ extension WorldClock {
     var dayLabelText: String {
         guard let timeZoneIdentifier,
               let cityTimeZone = TimeZone(identifier: timeZoneIdentifier) else { return "" }
-
+        
         let now = Date()
-
-        // 현지 기준 시간으로 변환 (도시 기준의 Date 객체)
-        let formatter = DateFormatter()
-        formatter.timeZone = cityTimeZone
-        formatter.dateFormat = "yyyy-MM-dd"
-        let cityDateString = formatter.string(from: now)
-        let cityDate = formatter.date(from: cityDateString) ?? now
-
-        // 기준 캘린더는 항상 서울 (디바이스 기준)
-        let currentCalendar = Calendar(identifier: .gregorian)
-        let today = currentCalendar.startOfDay(for: now)
-
-        if cityDate == today {
-            return "오늘"
-        } else if cityDate < today {
-            return "어제"
-        } else {
-            return "내일"
+        
+        // 1. 기준 캘린더
+        let calendar = Calendar(identifier: .gregorian)
+        
+        // 2. 도시 시간대로 변환한 시간
+        let localNow = now.convert(to: cityTimeZone)
+        
+        // 3. 오늘 기준 (기기 시간)
+        let today = calendar.startOfDay(for: now)
+        
+        // 4. 도시 기준의 날짜
+        let cityDay = calendar.startOfDay(for: localNow)
+        
+        let dayDiff = calendar.dateComponents([.day], from: today, to: cityDay).day ?? 0
+        
+        switch dayDiff {
+        case -1: return "어제"
+        case  0: return "오늘"
+        case  1: return "내일"
+        default: return "\(dayDiff)일"
         }
     }
     
