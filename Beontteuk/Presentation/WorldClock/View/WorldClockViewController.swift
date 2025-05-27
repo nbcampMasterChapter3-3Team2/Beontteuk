@@ -16,7 +16,19 @@ final class WorldClockViewController: BaseViewController {
     private let worldClockView = WorldClockView()
     private let headerView = WorldClockTableHeaderView()
     
-    private let worldClockViewModel = WorldClockViewModel(useCase: WorldClockUseCase(repository: CoreDataWorldClockRepository()))
+    private let diContainer: BeontteukDIContainerInerface
+    private let worldClockViewModel: WorldClockViewModel
+    
+    //MARK: - init
+    init(diContainer: BeontteukDIContainerInerface) {
+        self.diContainer = diContainer
+        self.worldClockViewModel = diContainer.makeWorldClockViewModel()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     //MARK: - Deinit
     deinit {
@@ -94,7 +106,6 @@ final class WorldClockViewController: BaseViewController {
     override func setStyles() {
         super.setStyles()
         
-        self.navigationController?.isNavigationBarHidden = true
     }
     
     override func setLayout() {
