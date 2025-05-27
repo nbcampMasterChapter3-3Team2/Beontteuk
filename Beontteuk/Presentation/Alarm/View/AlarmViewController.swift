@@ -52,10 +52,12 @@ final class AlarmViewController: BaseViewController {
         // 알람 리스트 바인딩
         viewModel.state.alarmsRelay
             .bind(to: alarmView.getTableView().rx.items(
-                cellIdentifier: AlarmTableViewListTypeCell.className,
-                cellType: AlarmTableViewListTypeCell.self
+                cellIdentifier: AlarmTableViewCell.className,
+                cellType: AlarmTableViewCell.self
             )) { row, alarm, cell in
-            let label = alarm.label ?? "알람"
+            guard var label = alarm.label else { return }
+            label = label == "" ? "알람" : label
+
             let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
             cell.configure(
                 hour: alarm.hour,
@@ -69,8 +71,8 @@ final class AlarmViewController: BaseViewController {
 
             cell.getToogleSwitch()
                 .rx
-                .controlEvent(.valueChanged) 
-            .withLatestFrom(cell.getToogleSwitch().rx.isOn)
+                .controlEvent(.valueChanged)
+                .withLatestFrom(cell.getToogleSwitch().rx.isOn)
                 .map { isOn in
                 AlarmViewModel.Action.toggle(index: row, isOn: isOn)
             }
@@ -86,7 +88,7 @@ final class AlarmViewController: BaseViewController {
             .drive(onNext: { [weak self] hasNext in
             guard let header = self?.alarmView
                 .getTableView()
-                .tableHeaderView as? AlarmTableViewHeaderCell else { return }
+                .tableHeaderView as? AlarmTableViewHeader else { return }
             header.configureHasNextAlarm(to: hasNext)
         })
             .disposed(by: disposeBag)
@@ -114,12 +116,23 @@ final class AlarmViewController: BaseViewController {
         })
             .disposed(by: disposeBag)
 
+        /// cell  삭제
         alarmView.getTableView()
             .rx
             .itemDeleted
             .map { item in AlarmViewModel.Action.deleteAlarm(at: item.row) }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
+
+        /// cell 눌러서 편집 하기
+        alarmView.getTableView()
+            .rx
+            .modelSelected(CDAlarm.self)
+            .subscribe(with: self) { owner, item in
+            self.openbottomSheetView(type: .edit, alarm: item)
+        }
+            .disposed(by: disposeBag)
+
     }
 
     private func setNavigationItem() {
@@ -143,11 +156,11 @@ final class AlarmViewController: BaseViewController {
     }
 
     private func setTableHeader() {
-        let header = AlarmTableViewHeaderCell(
-            reuseIdentifier: AlarmTableViewHeaderCell.className
+        let header = AlarmTableViewHeader(
+            reuseIdentifier: AlarmTableViewHeader.className
         )
         header.onAddTap = { [weak self] in
-            self?.didOnAddTap()
+            self?.openbottomSheetView(type: .create)
         }
         header.frame = CGRect(
             x: 0,
@@ -158,8 +171,8 @@ final class AlarmViewController: BaseViewController {
         alarmView.getTableView().tableHeaderView = header
     }
 
-    private func didOnAddTap() {
-        bottomSheetViewModel.state.didSave
+    private func openbottomSheetView(type: BottomSheetType, alarm: CDAlarm? = nil) {
+        bottomSheetViewModel.state.didAction
             .take(1) // 한 번만 처리
         .subscribe(with: self) { owner, _ in
             owner.viewModel.action.onNext(.readAlarm)
@@ -167,7 +180,8 @@ final class AlarmViewController: BaseViewController {
             .disposed(by: disposeBag)
 
 
-        let bottomSheet = AlarmBottomSheetViewController(viewModel: bottomSheetViewModel)
+        let bottomSheet = AlarmBottomSheetViewController(viewModel: bottomSheetViewModel, type: type, alarm: alarm)
+        bottomSheet.configure()
         let nav = UINavigationController(rootViewController: bottomSheet)
         nav.modalPresentationStyle = .pageSheet
         if let sheet = bottomSheet.sheetPresentationController {
@@ -179,4 +193,3 @@ final class AlarmViewController: BaseViewController {
     }
 
 }
-
