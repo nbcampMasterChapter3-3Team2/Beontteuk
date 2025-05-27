@@ -20,7 +20,10 @@ protocol CDTimerRepositoryInterface {
 
     /// 타이머 정지 처리 (isRunning = false)
     func stopTimer(_ timer: CDTimer, remain: Double)
-    
+
+    /// 타이머 재개 처리 (isRunning == true)
+    func resumeTimer(_ timer: CDTimer)
+
     // MARK: - 타이머 조회
     /// ID로 타이머 조회
     func fetchTimer(by id: UUID) -> CDTimer?

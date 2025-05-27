@@ -16,6 +16,7 @@ final class TimerView: BaseView {
     // MARK: - Properties
 
     let didTapRecentTimerButton = PublishRelay<Int>()
+    let didTapTimerControlButton = PublishRelay<ActiveTimer>()
     let didItemDeleted = PublishRelay<IndexPath>()
     private var disposeBag = DisposeBag()
     private var dataSource: EditableDataSource<TimerSection, TimerItem>?
@@ -65,11 +66,19 @@ final class TimerView: BaseView {
                 ) as! TimerActiveCell
 
                 if let timer = item.active {
+
                     cell.configureCell(
                         time: timer.timeString,
                         timeKR: timer.localizedTimeString,
-                        progress: timer.progress
+                        progress: timer.progress,
                     )
+                    cell.updateState(to: timer.isRunning ? .running : .pause)
+
+                    cell.didTapControlButton
+                        .bind(with: self) { owner, _ in
+                            owner.didTapTimerControlButton.accept(timer)
+                        }
+                        .disposed(by: cell.disposeBag)
                 }
 
                 return cell
@@ -133,6 +142,23 @@ final class TimerView: BaseView {
     func toggleEditingTableView() {
         let isEditing = tableView.isEditing
         tableView.setEditing(!isEditing, animated: true)
+    }
+
+    func updateVisibleTimerCells() {
+        let visibleIndexPaths = tableView.indexPathsForVisibleRows ?? []
+
+        for indexPath in visibleIndexPaths {
+            guard let item = dataSource?.itemIdentifier(for: indexPath),
+                  let cell = tableView.cellForRow(at: indexPath) as? TimerActiveCell,
+                  let timer = item.active else { continue }
+
+            cell.configureCell(
+                time: timer.timeString,
+                timeKR: timer.localizedTimeString,
+                progress: timer.progress
+            )
+            cell.updateState(to: timer.isRunning ? .running : .pause)
+        }
     }
 }
 

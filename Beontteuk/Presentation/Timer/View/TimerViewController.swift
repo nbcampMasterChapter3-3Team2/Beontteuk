@@ -82,6 +82,11 @@ final class TimerViewController: BaseViewController {
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 
+        timerView.didTapTimerControlButton
+            .map { TimerViewModel.Action.didTapTimerControlButton($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+
         viewModel.state.activeTimers
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, timers in
@@ -93,6 +98,13 @@ final class TimerViewController: BaseViewController {
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, timers in
                 owner.timerView.updateSnapshot(with: timers, to: .recent)
+            }
+            .disposed(by: disposeBag)
+
+        viewModel.state.tick
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, _ in
+                owner.timerView.updateVisibleTimerCells()
             }
             .disposed(by: disposeBag)
     }

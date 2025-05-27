@@ -19,6 +19,7 @@ final class TimerViewModel: ViewModelProtocol {
         case didChangeTimePicker((Int, Int))
         case didDeletedTimerItem(IndexPath)
         case didTapRecentTimerButton(Int)
+        case didTapTimerControlButton(ActiveTimer)
     }
 
     struct State {
@@ -29,6 +30,7 @@ final class TimerViewModel: ViewModelProtocol {
         let selectedTime = BehaviorRelay<[Int:Int]>(value: [0: 0, 1: 0, 2: 0])
         let shouldResetTimePicker = PublishRelay<Void>()
         let canStartTimer = PublishRelay<Bool>()
+        let tick = PublishRelay<Void>()
     }
 
     // MARK: - Properties
@@ -55,6 +57,7 @@ final class TimerViewModel: ViewModelProtocol {
                 switch action {
                 case .viewDidLoad:
                     owner.loadTimers()
+                    owner.startTickingActiveTimers()
                 case .didTapEditButton:
                     let isEditMode = owner.state.isEditMode.value
                     owner.state.isEditMode.accept(!isEditMode)
@@ -73,6 +76,8 @@ final class TimerViewModel: ViewModelProtocol {
                     owner.deleteTimer(for: indexPath)
                 case .didTapRecentTimerButton(let row):
                     owner.addTimerFromRecent(at: row)
+                case .didTapTimerControlButton(let timer):
+                    owner.toggleTimerState(timer)
                 }
             }
             .disposed(by: disposeBag)
@@ -93,22 +98,35 @@ final class TimerViewModel: ViewModelProtocol {
     }
 
     private func loadActiveTimers() {
+        state.activeTimers.accept([])
         let activeTimers = useCase.getActiveTimers().map { cdTimer in
             TimerItem.active(ActiveTimer(
                 id: cdTimer.id,
                 totalTime: cdTimer.totalSecond,
                 isRunning: cdTimer.isRunning,
-                endTime: cdTimer.endTime
+                endTime: cdTimer.endTime,
+                remainTimeSnapshot: cdTimer.remainSecond
             ))
         }
 
+        var aliveTimers = [TimerItem]()
+        activeTimers.forEach {
+            if $0.active!.isExpired {
+                guard let id = $0.id else { return }
+                useCase.deleteTimer(by: id)
+            } else {
+                aliveTimers.append($0)
+            }
+        }
+
+        state.activeTimers.accept(aliveTimers)
+    }
+
+    private func startTickingActiveTimers() {
+        let activeTimers = state.activeTimers.value
         activeTimers.forEach { timerItem in
             startTicking(timer: timerItem.active!)
         }
-
-        let aliveTimers = activeTimers.filter { !$0.active!.isExpired }
-
-        state.activeTimers.accept(aliveTimers)
     }
 
     private func loadRecentTimers() {
@@ -125,6 +143,7 @@ final class TimerViewModel: ViewModelProtocol {
         guard let id = timer.id else { return }
 
         let timerDisposable = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .filter { _ in timer.isRunning }
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self) { owner, _ in
                 if timer.isExpired {
@@ -132,7 +151,7 @@ final class TimerViewModel: ViewModelProtocol {
                         .map({ $0.active! }).firstIndex(of: timer) else { return }
                     owner.deleteTimer(for: IndexPath(row: row, section: 0))
                 } else {
-                    owner.state.activeTimers.accept(owner.state.activeTimers.value)
+                    owner.state.tick.accept(())
                 }
             }
 
@@ -147,7 +166,8 @@ final class TimerViewModel: ViewModelProtocol {
             id: cdTimer.id,
             totalTime: cdTimer.totalSecond,
             isRunning: cdTimer.isRunning,
-            endTime: cdTimer.endTime
+            endTime: cdTimer.endTime,
+            remainTimeSnapshot: cdTimer.remainSecond,
         ))
         startTicking(timer: timerItem.active!)
         state.activeTimers.accept(state.activeTimers.value + [timerItem])
@@ -202,10 +222,28 @@ final class TimerViewModel: ViewModelProtocol {
             id: cdTimer.id,
             totalTime: cdTimer.totalSecond,
             isRunning: cdTimer.isRunning,
-            endTime: cdTimer.endTime
+            endTime: cdTimer.endTime,
+            remainTimeSnapshot: cdTimer.remainSecond
         )
         let activeTimers = state.activeTimers.value
         startTicking(timer: newActiveTimer)
         state.activeTimers.accept(activeTimers + [TimerItem.active(newActiveTimer)])
+    }
+
+    private func toggleTimerState(_ timer: ActiveTimer) {
+        guard let id = timer.id else { return }
+
+        if timer.isRunning {
+            timerBag[id]?.dispose()
+            useCase.pauseTimer(
+                for: timer.id,
+                remainTime: timer.remainTime
+            )
+        } else {
+            useCase.resumeTimer(for: id)
+        }
+
+        loadActiveTimers()
+        startTickingActiveTimers()
     }
 }

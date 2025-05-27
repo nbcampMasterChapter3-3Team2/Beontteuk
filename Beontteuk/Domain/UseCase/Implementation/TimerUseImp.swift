@@ -52,4 +52,14 @@ final class TimerUseImp: TimerUseInt {
         guard let timer = repository.fetchTimer(by: id) else { return }
         repository.deleteTimer(timer)
     }
+
+    func pauseTimer(for timerID: UUID?, remainTime: Double) {
+        guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
+        repository.stopTimer(timer, remain: remainTime)
+    }
+
+    func resumeTimer(for timerID: UUID?) {
+        guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
+        repository.resumeTimer(timer)
+    }
 }
