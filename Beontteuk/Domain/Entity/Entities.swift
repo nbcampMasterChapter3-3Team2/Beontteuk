@@ -45,6 +45,28 @@ struct LapRecordEntity: Equatable, Identifiable, Hashable {
     let lapTime: Double
     let absoluteTime: Double
     let recordedAt: Date
+
+    var formattedAbsoluteTime: String {
+        let minute = Int(absoluteTime) / 60
+        let second = Int(absoluteTime) % 60
+        let sentiSecond = Int((absoluteTime - floor(absoluteTime)) * 100)
+
+        return String(
+            format: "%02d:%02d.%02d",
+            minute, second, sentiSecond
+        )
+    }
+
+    var formattedLapTime: String {
+        let minute = Int(lapTime) / 60
+        let second = Int(lapTime) % 60
+        let sentiSecond = Int((lapTime - floor(lapTime)) * 100)
+
+        return String(
+            format: "%02d:%02d.%02d",
+            minute, second, sentiSecond
+        )
+    }
 }
 
 struct WorldClockEntity: Equatable, Identifiable {
