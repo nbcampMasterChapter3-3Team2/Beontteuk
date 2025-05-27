@@ -107,6 +107,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
                         for: ip
                     )
                     cell.selectionStyle = .none
+                    cell.backgroundColor = .neutral100
                     cell.textLabel?.text = "알람 삭제"
                     cell.textLabel?.textColor = .red500
                     cell.textLabel?.textAlignment = .center
