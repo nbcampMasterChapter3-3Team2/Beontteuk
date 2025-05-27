@@ -10,18 +10,19 @@ import RxSwift
 import RxRelay
 
 final class AlarmBottomSheetViewModel {
+
+    // MARK: - Action
     enum Action {
         case dateChanged(Date)
         case labelChanged(String?)
         case toggleSnooze(Bool)
-
-
         case save(repeatDays: String?, soundName: String?)
-        case update(alarm: CDAlarm, repeatDays: String?, soundName: String?)
-        case delete(alarm: CDAlarm)
+        case update(alarm: CDAlarmEntity, repeatDays: String?, soundName: String?)
+        case delete(alarm: CDAlarmEntity)
         case cancel
     }
 
+    // MARK: - State
     struct State {
         let pickedDate = BehaviorRelay<String>(value: "")
         let inputLabel = BehaviorRelay<String?>(value: nil)
@@ -29,21 +30,24 @@ final class AlarmBottomSheetViewModel {
         let didAction = PublishRelay<Void>()
     }
 
+    // MARK: - Properties
     private let useCase: AlarmUseInt
     private let actionSubject = PublishSubject<Action>()
     var action: AnyObserver<Action> { actionSubject.asObserver() }
     let state: State = State()
     let disposeBag = DisposeBag()
 
+    // MARK: - Initializer
     init(useCase: AlarmUseInt) {
         self.useCase = useCase
         bind()
     }
 
+    // MARK: - Bind
     private func bind() {
         actionSubject
-            .subscribe(with: self) { owner, item in
-            switch item {
+            .subscribe(with: self) { owner, action in
+            switch action {
             case .dateChanged(let date):
                 let formatter = DateFormatter()
                 formatter.locale = Locale.autoupdatingCurrent
@@ -66,7 +70,8 @@ final class AlarmBottomSheetViewModel {
                 owner.upsertAlarm(deleting: alarm, repeatDays: repeatDays, soundName: soundName)
 
             case .delete(let alarm):
-                owner.useCase.deleteAlarm(alarm)
+                guard let uuid = alarm.id else { return }
+                owner.useCase.deleteAlarm(by: uuid)
                 owner.state.didAction.accept(())
 
             case .cancel: break
@@ -76,17 +81,17 @@ final class AlarmBottomSheetViewModel {
             .disposed(by: disposeBag)
     }
 
+    // MARK: - Methods
     private func upsertAlarm(
-        deleting oldAlarm: CDAlarm?,
+        deleting oldAlarm: CDAlarmEntity?,
         repeatDays: String?,
         soundName: String?
     ) {
-        if let old = oldAlarm {
-            useCase.deleteAlarm(old)
+        if let old = oldAlarm, let uuid = old.id {
+            useCase.deleteAlarm(by: uuid)
         }
 
         let time = state.pickedDate.value.split { $0 == ":" }
-        NSLog("Time : \(time)")
         let hour = Int(time[0]) ?? 0
         let minute = Int(time[1]) ?? 0
         let label = state.inputLabel.value

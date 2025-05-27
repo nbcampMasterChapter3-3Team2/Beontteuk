@@ -9,12 +9,10 @@ import UIKit
 
 import SnapKit
 import Then
-import RxCocoa
 
 final class AlarmTableViewHeader: BaseTableViewHeaderFooterView {
 
-    var onAddTap: (() -> Void)?
-
+    // MARK: - UI Components
     private let alarmImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
     }
@@ -28,10 +26,7 @@ final class AlarmTableViewHeader: BaseTableViewHeaderFooterView {
         $0.setShadow(type: .large)
     }
 
-    override func layoutSubviews() {
-        addButton.updateShadowPath()
-    }
-
+    // MARK: - Layout Helper
     override func setLayout() {
         addSubviews(alarmImageView, descriptionLabel, addButton)
 
@@ -54,29 +49,17 @@ final class AlarmTableViewHeader: BaseTableViewHeaderFooterView {
         }
     }
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-        bind()
+    // MARK: - LayoutSubViews Helper
+    override func layoutSubviews() {
+        addButton.updateShadowPath()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func bind() {
-        addButton.rx.tap
-            .bind(with: self) { owner, _ in
-                owner.onAddTap?()
-            }
-            .disposed(by: disposeBag)
-    }
-
-
+    // MARK: - Methods
     func configureHasNextAlarm(to nextAlarm: Bool) {
         alarmImageView.image = UIImage(named: nextAlarm ? "alarmOn" : "alarmOff")
         descriptionLabel.text = nextAlarm ? "활성화된 알람이 있어요" : "예정된 알람이 없어요"
     }
 
-    func configure() {
-    }
+    // MARK: - Getter Helper
+    func getAddButton() -> UIButton { addButton }
 }

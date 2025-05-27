@@ -9,13 +9,11 @@ import UIKit
 
 import SnapKit
 import Then
-import RxSwift
 import RxCocoa
 
 final class AlarmBottomSheetView: BaseView {
 
-    var dateChanged: ControlProperty<Date> { timePicker.rx.date }
-
+    // MARK: - UI Components
     private let timePicker = UIDatePicker().then {
         $0.preferredDatePickerStyle = .wheels
         $0.datePickerMode = .time
@@ -33,8 +31,7 @@ final class AlarmBottomSheetView: BaseView {
         $0.backgroundColor = .clear
     }
 
-    private let testButton = AddButton(type: .alarm)
-
+    // MARK: - Layout Helper
     override func setLayout() {
         addSubviews(timePicker, tableView)
         timePicker.snp.makeConstraints {
@@ -49,11 +46,9 @@ final class AlarmBottomSheetView: BaseView {
         }
     }
 
-    func getTableView() -> UITableView {
-        return tableView
-    }
-    func getTimePicker() -> UIDatePicker {
-        return timePicker
-    }
+    // MARK: - Getter Helper
+    var dateChanged: ControlProperty<Date> { timePicker.rx.date }
+    func getTableView() -> UITableView { tableView }
+    func getTimePicker() -> UIDatePicker { timePicker }
 
 }

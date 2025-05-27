@@ -12,52 +12,62 @@ final class AlarmUseImp: AlarmUseInt {
 
     private let repository: AlarmRepositoryInterface
     private let notificationService: NotificationService
+
     init(repository: AlarmRepositoryInterface) {
         self.repository = repository
         self.notificationService = NotificationService()
     }
 
-    func createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?, snooze: Bool) -> CDAlarm {
-        return repository.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
+    func createAlarm(hour: Int, minute: Int, repeatDays: String?, label: String?, soundName: String?, snooze: Bool) -> CDAlarmEntity {
+        return repository.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze).toEntity()
     }
 
-    func readAlarms() -> [CDAlarm] {
-        repository.fetchAllAlarm()
+    func readAlarms() -> [CDAlarmEntity] {
+        repository.fetchAllAlarm().map { $0.toEntity() }
     }
 
-    func updateAlarm(_ alarm: CDAlarm) {
+    func updateAlarm(_ alarm: CDAlarmEntity) {
+        guard let uuid = alarm.id,
+              let alarm = repository.fetchAlarm(by: uuid),
+              let label = alarm.label
+        else { return }
+
+
         repository.saveAlarm(alarm)
-        let date = Calendar.current.date(from: alarm.dateComponents)!
+        let date = Calendar.current.date(from: alarm.dateComponents)
         if alarm.isEnabled {
             notificationService.scheduleAlarm(
-                at: date,
+                at: date ?? Date(),
                 snooze: alarm.isSnoozeEnabled,
-                title: alarm.label ?? "알람",
-                notificationId: alarm.id!.uuidString
+                title: label.isEmpty ? "알람" : label,
+                notificationId: uuid.uuidString
             )
         } else {
-            notificationService.cancelAlarm(notificationId: alarm.id!.uuidString)
+            notificationService.cancelAlarm(notificationId: uuid.uuidString)
         }
     }
 
-    func deleteAlarm(_ alarm: CDAlarm) {
-        notificationService.cancelAlarm(notificationId: alarm.id!.uuidString)
+    func deleteAlarm(by id: UUID) {
+        guard let alarm = repository.fetchAlarm(by: id) else { return }
+        notificationService.cancelAlarm(notificationId: id.uuidString)
         repository.deleteAlarm(alarm)
     }
 
-    func toggleAlarm(_ alarm: CDAlarm) {
+    func toggleAlarm(by id: UUID) {
+        guard let alarm = repository.fetchAlarm(by: id),
+              let label = alarm.label
+        else { return }
         repository.toggleAlarm(alarm)
-//        스위치 상태 반영: on이면 스케줄, off이면 취소
-        let date = Calendar.current.date(from: alarm.dateComponents)!
+        let date = Calendar.current.date(from: alarm.dateComponents)
         if alarm.isEnabled {
             notificationService.scheduleAlarm(
-                at: date,
+                at: date ?? Date(),
                 snooze: alarm.isSnoozeEnabled,
-                title: alarm.label ?? "알람",
-                notificationId: alarm.id!.uuidString
+                title: label.isEmpty ? "알람" : label,
+                notificationId: id.uuidString
             )
         } else {
-            notificationService.cancelAlarm(notificationId: alarm.id!.uuidString)
+            notificationService.cancelAlarm(notificationId: id.uuidString)
         }
     }
 
