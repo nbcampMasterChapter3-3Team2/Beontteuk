@@ -12,10 +12,12 @@ protocol AlarmRepositoryInterface {
     func fetchAllAlarm() -> [CDAlarm]
     /// 알람 생성
     func createAlarm(hour: Int,
-                     minute: Int,
-                     repeatDays: String?,
-                     label: String?,
-                     soundName: String?) -> CDAlarm
+        minute: Int,
+        repeatDays: String?,
+        label: String?,
+        soundName: String?,
+        snooze: Bool
+    ) -> CDAlarm
     /// 알람 삭제
     func deleteAlarm(_ alarm: CDAlarm)
     /// 알람 on/off 변경

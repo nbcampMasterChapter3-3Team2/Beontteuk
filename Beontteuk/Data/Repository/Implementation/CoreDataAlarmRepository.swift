@@ -31,7 +31,9 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
                      minute: Int,
                      repeatDays: String?,
                      label: String?,
-                     soundName: String?) -> CDAlarm {
+                     soundName: String?,
+                     snooze: Bool
+    ) -> CDAlarm {
         let alarm = CDAlarm(context: context)
         alarm.id = UUID()
         alarm.hour = Int16(hour)
@@ -40,7 +42,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         alarm.label = label
         alarm.isEnabled = true
         alarm.soundName = soundName
-        alarm.isSnoozeEnabled = false
+        alarm.isSnoozeEnabled = snooze
         return alarm
     }
 
