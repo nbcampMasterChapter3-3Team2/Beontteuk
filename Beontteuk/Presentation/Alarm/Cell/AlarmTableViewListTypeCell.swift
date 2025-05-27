@@ -103,7 +103,8 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
             timeLabel.text = String(format: "%02d:%02d", hour, minute)
             amPmLabel.isHidden = true
         } else {
-            timeLabel.text = String(format: "%02d:%02d", hour < 12 ? hour : hour - 12, minute)
+            let displayHour = hour % 12 == 0 ? 12 : hour % 12
+            timeLabel.text = String(format: "%02d:%02d", displayHour, minute)
             amPmLabel.text = hour < 12 ? "AM" : "PM"
             amPmLabel.isHidden = false
         }
