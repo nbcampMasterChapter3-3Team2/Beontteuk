@@ -15,14 +15,16 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
     init(context: NSManagedObjectContext = CoreDataStack.shared.context) {
         self.context = context
     }
-    
+
+    /// 모든 랩 불러오기
     func fetchLaps(for session: StopWatchSession) -> [LapRecord] {
         let request: NSFetchRequest<LapRecord> = LapRecord.fetchRequest()
         request.predicate = NSPredicate(format: "session == %@", session)
         request.sortDescriptors = [NSSortDescriptor(key: "lapIndex", ascending: true)]
         return (try? context.fetch(request)) ?? []
     }
-    
+
+    /// 새로운 랩 생성
     func createLap(for session: StopWatchSession, lapIndex: Int, lapTime: Double, absoluteTime: Double) -> LapRecord {
         let lap = LapRecord(context: context)
         lap.id = UUID()
@@ -33,7 +35,8 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
         lap.session = session
         return lap
     }
-    
+
+    /// 기존 단일 랩 삭제
     func deleteLap(_ lap: LapRecord) {
         context.delete(lap)
         do {
@@ -42,7 +45,8 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
             print("❌ 랩 삭제를 실패하였습니다.: \(error)")
         }
     }
-    
+
+    /// 기존 모든 랩 삭제
     func deleteAllLaps(for session: StopWatchSession) {
         let laps = fetchLaps(for: session)
         laps.forEach { context.delete($0) }
@@ -52,7 +56,8 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
             print("❌ 랩 전체 삭제를 실패하였습니다.: \(error)")
         }
     }
-    
+
+    /// 랩 저장
     func saveLap(_ lap: LapRecord) {
         if context.hasChanges {
             do {
@@ -61,6 +66,14 @@ final class CoreDataLapRecordRepository: LapRecordRepositoryInterface {
                 print("❌ 랩 저장을 실패하였습니다.: \(error)")
             }
         }
+    }
+
+    /// ID로 스톱워치 조회
+    func fetchStopWatch(by id: UUID) -> StopWatchSession? {
+        let request: NSFetchRequest<StopWatchSession> = StopWatchSession.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
     }
 }
 

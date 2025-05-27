@@ -58,6 +58,12 @@ extension StopWatchSession {
             laps: laps
         )
     }
+
+    func toEntity(with lapsNSSet: NSSet?) -> [LapRecordEntity] {
+        guard let lapsNSSet,
+              let laps = lapsNSSet as? Set<LapRecord> else { return [] }
+        return laps.compactMap { $0.toEntity() }
+    }
 }
 
 // MARK: Generated accessors for laps

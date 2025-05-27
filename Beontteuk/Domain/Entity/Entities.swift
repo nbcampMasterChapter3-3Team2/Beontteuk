@@ -40,11 +40,11 @@ struct StopWatchEntity: Equatable, Identifiable {
 }
 
 struct LapRecordEntity: Equatable, Identifiable {
-    let id: UUID?
+    let id: UUID
     let lapIndex: Int16
     let lapTime: Double
     let absoluteTime: Double
-    let recordedAt: Date?
+    let recordedAt: Date
 }
 
 struct WorldClockEntity: Equatable, Identifiable {
