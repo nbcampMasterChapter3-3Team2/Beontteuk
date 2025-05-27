@@ -68,7 +68,9 @@ final class AlarmBottomSheetViewModel {
                     label = "알람"
                 }
 
-                let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName)
+                let snooze = owner.state.snoozeEnabled.value
+
+                let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
                 self.useCase.updateAlarm(alarm)
                 self.state.didSave.accept(())
 
