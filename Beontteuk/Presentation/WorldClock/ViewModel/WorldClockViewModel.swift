@@ -60,6 +60,11 @@ final class WorldClockViewModel: ViewModelProtocol {
     }
     
     private func createWorldClock(_ city: SelectCityEntity) {
+        // 중복 방지 로직 추가
+        if useCase.exists(timeZoneIdentifier: city.timeZoneIdentifier) {
+            return
+        }
+
         let newCity = useCase.createCity(
             cityName: city.cityName,
             cityNameKR: city.cityNameKR,
