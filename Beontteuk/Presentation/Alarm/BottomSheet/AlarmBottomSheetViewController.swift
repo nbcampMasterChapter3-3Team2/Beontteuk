@@ -151,8 +151,12 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .do(onNext: { [weak self] in
             self?.dismiss(animated: true)
         })
-            .map {
-                .save(repeatDays: nil, soundName: nil)
+            .map { [weak self] in
+            if let alarm = self?.alarm {
+                return AlarmBottomSheetViewModel.Action.update(alarm: alarm, repeatDays: nil, soundName: nil)
+            } else {
+                return AlarmBottomSheetViewModel.Action.save(repeatDays: nil, soundName: nil)
+            }
         }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
@@ -172,8 +176,8 @@ final class AlarmBottomSheetViewController: BaseViewController {
             bottomSheetView.getTimePicker().date = initial
 
             bottomSheetView.dateChanged
-                .skip(1) // 첫 초기값 이벤트 무시
-            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) } // 진짜 변경값
+                .skip(1)
+            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) } 
             .bind(to: viewModel.action)
                 .disposed(by: disposeBag)
         } else {
@@ -187,7 +191,6 @@ final class AlarmBottomSheetViewController: BaseViewController {
     private func bindingActionDeleteCell() {
         let tableView = bottomSheetView.getTableView()
 
-        // 모델(.delete) 선택 감지
         tableView.rx
             .modelSelected(BottomSheetItem.self)
             .filter { item in
@@ -195,10 +198,10 @@ final class AlarmBottomSheetViewController: BaseViewController {
             return false
         }
             .subscribe(with: self) { owner, item in
-                guard let alarm = owner.alarm else { return }
-                owner.viewModel.action.onNext(.delete(alarm: alarm))
-                owner.dismiss(animated: true)
-            }
+            guard let alarm = owner.alarm else { return }
+            owner.viewModel.action.onNext(.delete(alarm: alarm))
+            owner.dismiss(animated: true)
+        }
             .disposed(by: disposeBag)
     }
 

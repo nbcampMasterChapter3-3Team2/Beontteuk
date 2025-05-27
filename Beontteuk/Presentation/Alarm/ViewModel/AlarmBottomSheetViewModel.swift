@@ -17,6 +17,7 @@ final class AlarmBottomSheetViewModel {
 
 
         case save(repeatDays: String?, soundName: String?)
+        case update(alarm: CDAlarm, repeatDays: String?, soundName: String?)
         case delete(alarm: CDAlarm)
         case cancel
     }
@@ -58,7 +59,7 @@ final class AlarmBottomSheetViewModel {
             case .toggleSnooze(let isOn):
                 owner.state.snoozeEnabled.accept(isOn)
 
-            case .save(repeatDays: let repeatDays, soundName: let soundName):
+            case .save(let repeatDays, let soundName):
                 let time = owner.state.pickedDate.value.split { $0 == ":" }
 
                 let hour = Int(time[0]) ?? 0
@@ -73,6 +74,24 @@ final class AlarmBottomSheetViewModel {
                 let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
                 self.useCase.updateAlarm(alarm)
                 self.state.didAction.accept(())
+            case .update(let alarm, let repeatDays, let soundName):
+                self.useCase.deleteAlarm(alarm)
+                let time = owner.state.pickedDate.value.split { $0 == ":" }
+
+                let hour = Int(time[0]) ?? 0
+                let minute = Int(time[1]) ?? 0
+                guard var label = owner.state.inputLabel.value else { return }
+                if label == "" {
+                    label = "알람"
+                }
+
+                let snooze = owner.state.snoozeEnabled.value
+
+
+                let alarm = self.useCase.createAlarm(hour: hour, minute: minute, repeatDays: repeatDays, label: label, soundName: soundName, snooze: snooze)
+                self.useCase.updateAlarm(alarm)
+                self.state.didAction.accept(())
+
 
             case .delete(let alarm):
                 self.useCase.deleteAlarm(alarm)
