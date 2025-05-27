@@ -68,7 +68,9 @@ final class WorldClockView: BaseView {
     //MARK: Private Methods
     private func setNavigationBar() {
         let item = UINavigationItem(title: "")
-        item.leftBarButtonItem = CustomUIBarButtonItem(type: .edit)
+        item.leftBarButtonItem = CustomUIBarButtonItem(type: .edit {
+            print("Edit Button Tapped")
+        })
         
         self.navigationBar.setItems([item], animated: true)
     }

@@ -19,7 +19,7 @@ final class TimerViewController: BaseViewController {
     // MARK: - UI Components
 
     private let timerView = TimerView()
-    private let editButton = CustomUIBarButtonItem(type: .edit)
+    private let editButton = CustomUIBarButtonItem(type: .edit(action: {}))
 
     // MARK: - Init, Deinit, required
 

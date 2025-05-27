@@ -103,6 +103,9 @@ final class StopWatchViewModel {
         action.buttonAction
             .bind { [weak self] action in
                 guard let self else { return }
+                handleButtonAction(action)
+            }
+            .disposed(by: mainDisposeBag)
 
                 let timeState = state.stopWatchButtonRelay.value
 
@@ -228,7 +231,8 @@ final class StopWatchViewModel {
                     // 삭제할 것
                     print("Created LAp: \(newLap)")
                 }
-            }.disposed(by: mainDisposeBag)
+            }
+            .disposed(by: mainDisposeBag)
     }
 
     // MARK: - Methods
