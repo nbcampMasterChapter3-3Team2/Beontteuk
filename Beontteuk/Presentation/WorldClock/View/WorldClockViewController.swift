@@ -23,7 +23,10 @@ final class WorldClockViewController: BaseViewController {
     init(diContainer: BeontteukDIContainerInerface) {
         self.diContainer = diContainer
         self.worldClockViewModel = diContainer.makeWorldClockViewModel()
+        
         super.init(nibName: nil, bundle: nil)
+        
+        self.addCustomObserver()
     }
     
     required init?(coder: NSCoder) {
@@ -44,7 +47,7 @@ final class WorldClockViewController: BaseViewController {
         super.viewDidLoad()
         
         setupHeaderView()
-        addCustomObserver()
+        
         bindEditButtonTapped()
     }
     

@@ -65,11 +65,12 @@ final class WorldClockViewModel: ViewModelProtocol {
     }
     
     private func fetchWorldClock() {
-        Observable.just(useCase.fetchAll())
-            .subscribe(with: self) { owner, items in
-                owner.state.items.accept(items)
-            }
-            .disposed(by: disposeBag)
+        self.state.items.accept(useCase.fetchAll())
+//        Observable.just(useCase.fetchAll())
+//            .subscribe(with: self) { owner, items in
+//                owner.state.items.accept(items)
+//            }
+//            .disposed(by: disposeBag)
     }
     
     private func createWorldClock(_ city: SelectCityEntity) {
