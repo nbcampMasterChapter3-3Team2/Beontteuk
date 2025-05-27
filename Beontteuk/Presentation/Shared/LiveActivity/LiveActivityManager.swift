@@ -32,15 +32,14 @@ final class LiveActivityManager: ObservableObject {
         }
     }
 
-    func update(state: BeontteukWidgetAttributes.ContentState) {
+    func update(for id: UUID?, remainTime duration: Double) {
+        let staleDate = Date().addingTimeInterval(duration)
         Task {
-            let updateContentState = BeontteukWidgetAttributes.ContentState(emoji: state.emoji)
+            guard let id, let activity = activityMap[id] else { return }
+            let updateContentState = BeontteukWidgetAttributes.ContentState(duration: duration)
             if #available(iOS 16.2, *) {
-                // staleDate: The date when the system considers the Live Activity to be out of date.
-                let activityContent = ActivityContent(state: updateContentState, staleDate: nil)
-                for activity in Activity<BeontteukWidgetAttributes>.activities {
-                    await activity.update(activityContent)
-                }
+                let activityContent = ActivityContent(state: updateContentState, staleDate: staleDate)
+                await activity.update(activityContent)
             }
         }
     }
