@@ -34,6 +34,7 @@ final class TimerUseImp: TimerUseInt {
         )
         repository.saveTimer(newTimer)
         notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
+        LiveActivityManager.shared.start()
         return newTimer.toEntity()
     }
 
@@ -42,6 +43,7 @@ final class TimerUseImp: TimerUseInt {
         let newTimer = repository.duplicateRecentItemAndStart(recentTimer)
         repository.saveTimer(newTimer)
         notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
+        LiveActivityManager.shared.start()
         return newTimer.toEntity()
     }
 
