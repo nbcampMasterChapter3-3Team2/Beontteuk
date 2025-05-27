@@ -18,6 +18,7 @@ final class WorldClockViewModel: ViewModelProtocol {
         case editButtonTapped
         case rowDeleteCity(WorldClockEntity)
         case editDeleteCity(WorldClockEntity, IndexPath)
+        case moveCity(IndexPath, IndexPath)
     }
     
     struct State {
@@ -56,6 +57,8 @@ final class WorldClockViewModel: ViewModelProtocol {
                     return owner.rowDeleteWorldClock(city)
                 case .editDeleteCity(let city, let indexPath):
                     return owner.editDeleteWorldClock(city, indexPath)
+                case .moveCity(let source, let destination):
+                    return owner.moveCity(from: source, to: destination)
                 }
             }
             .disposed(by: disposeBag)
@@ -107,6 +110,16 @@ final class WorldClockViewModel: ViewModelProtocol {
             return updated
         }
         state.items.accept(newItems)
+    }
+    
+    private func moveCity(from sourceIndex: IndexPath, to destinationIndex: IndexPath) {
+        var currentItems = state.items.value
+        let movedItem = currentItems.remove(at: sourceIndex.row)
+        currentItems.insert(movedItem, at: destinationIndex.row)
+        
+        // 순서 반영: CoreData에도 반영 필요 (예: order 필드가 있을 경우)
+        useCase.reorder(citys: currentItems)
+        state.items.accept(currentItems)
     }
     
     private func startClockTimer() {

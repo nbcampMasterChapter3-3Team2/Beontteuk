@@ -46,10 +46,8 @@ final class WorldClockViewController: BaseViewController {
         super.bindViewModel()
         
         lazy var dataSource = RxTableViewSectionedAnimatedDataSource<WorldClockSection>(
-            configureCell: { [weak self] dataSource, tableView, indexPath, item in
-                guard let self else { return UITableViewCell() }
+            configureCell: { dataSource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: WorldClockTableViewCell.className, for: indexPath) as? WorldClockTableViewCell else { return UITableViewCell() }
-                
                 cell.configureCell(with: item)
                 
                 return cell
@@ -83,6 +81,12 @@ final class WorldClockViewController: BaseViewController {
                 let (indexPath, status) = value
                 let item = dataSource[indexPath]
                 status ? owner.worldClockViewModel.action.onNext(.editDeleteCity(item, indexPath)) : owner.worldClockViewModel.action.onNext(.rowDeleteCity(item))
+            }
+            .disposed(by: disposeBag)
+        
+        worldClockView.getWorldClockTableView().rx.itemMoved
+            .bind(with: self) { owner, movement in
+                owner.worldClockViewModel.action.onNext(.moveCity(movement.sourceIndex, movement.destinationIndex))
             }
             .disposed(by: disposeBag)
     }
