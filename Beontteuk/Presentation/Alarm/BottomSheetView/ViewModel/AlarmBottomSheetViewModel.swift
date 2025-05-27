@@ -10,18 +10,19 @@ import RxSwift
 import RxRelay
 
 final class AlarmBottomSheetViewModel {
+
+    // MARK: - Action
     enum Action {
         case dateChanged(Date)
         case labelChanged(String?)
         case toggleSnooze(Bool)
-
-
         case save(repeatDays: String?, soundName: String?)
         case update(alarm: CDAlarmEntity, repeatDays: String?, soundName: String?)
         case delete(alarm: CDAlarmEntity)
         case cancel
     }
 
+    // MARK: - State
     struct State {
         let pickedDate = BehaviorRelay<String>(value: "")
         let inputLabel = BehaviorRelay<String?>(value: nil)
@@ -29,21 +30,24 @@ final class AlarmBottomSheetViewModel {
         let didAction = PublishRelay<Void>()
     }
 
+    // MARK: - Properties
     private let useCase: AlarmUseInt
     private let actionSubject = PublishSubject<Action>()
     var action: AnyObserver<Action> { actionSubject.asObserver() }
     let state: State = State()
     let disposeBag = DisposeBag()
 
+    // MARK: - Initializer
     init(useCase: AlarmUseInt) {
         self.useCase = useCase
         bind()
     }
 
+    // MARK: - Bind
     private func bind() {
         actionSubject
-            .subscribe(with: self) { owner, item in
-            switch item {
+            .subscribe(with: self) { owner, action in
+            switch action {
             case .dateChanged(let date):
                 let formatter = DateFormatter()
                 formatter.locale = Locale.autoupdatingCurrent
@@ -77,6 +81,7 @@ final class AlarmBottomSheetViewModel {
             .disposed(by: disposeBag)
     }
 
+    // MARK: - Methods
     private func upsertAlarm(
         deleting oldAlarm: CDAlarmEntity?,
         repeatDays: String?,

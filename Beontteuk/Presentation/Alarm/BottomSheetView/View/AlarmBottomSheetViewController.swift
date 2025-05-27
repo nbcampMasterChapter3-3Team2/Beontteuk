@@ -10,27 +10,17 @@ import UIKit
 import SnapKit
 import Then
 import RxSwift
-import RxCocoa
 import RxDataSources
 
 final class AlarmBottomSheetViewController: BaseViewController {
 
+    // MARK: - Properties
     private let bottomSheetView = AlarmBottomSheetView()
     private let viewModel: AlarmBottomSheetViewModel
     private let type: BottomSheetType?
     private let alarm: CDAlarmEntity?
 
-    init(viewModel: AlarmBottomSheetViewModel, type: BottomSheetType, alarm: CDAlarmEntity? = nil) {
-        self.viewModel = viewModel
-        self.type = type
-        self.alarm = alarm
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError()
-    }
-
+    // MARK: - UI Components
     private let titleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16, weight: .semibold)
         $0.textColor = .neutral1000
@@ -49,11 +39,39 @@ final class AlarmBottomSheetViewController: BaseViewController {
         $0.setTitleColor(.primary500, for: .normal)
     }
 
+    // MARK: - Initializer
+    init(viewModel: AlarmBottomSheetViewModel, type: BottomSheetType,
+         alarm: CDAlarmEntity? = nil) {
+        self.viewModel = viewModel
+        self.type = type
+        self.alarm = alarm
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
+    // MARK: - View Life Cycle
     override func loadView() {
         view = bottomSheetView
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setNavigationItem()
+    }
+
+    // MARK: - Bind
     override func bindViewModel() {
+        bindTableSections()
+        bindingDatePicker()
+        bindingNavigationItem()
+        bindingActionDeleteCell()
+    }
+
+    // MARK: - Methods
+    private func bindTableSections() {
         let dataSource = RxTableViewSectionedReloadDataSource<BottomSheetSectionModel>(
             configureCell: { [weak self] ds, tv, ip, item in
                 switch item {
@@ -137,22 +155,6 @@ final class AlarmBottomSheetViewController: BaseViewController {
         Observable.just(sections)
             .bind(to: bottomSheetView.getTableView().rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-
-        bindingDatePicker()
-        bindingNavigationItem()
-        bindingActionDeleteCell()
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setNavigationItem()
-    }
-
-
-    private func setNavigationItem() {
-        navigationItem.titleView = titleLabel
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton)
     }
 
     private func bindingNavigationItem() {
@@ -214,7 +216,10 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
 
-    func configure() {
+    private func setNavigationItem() {
+        navigationItem.titleView = titleLabel
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton)
         titleLabel.text = type == .create ? "알람 추가" : "알람 편집"
     }
 }

@@ -11,8 +11,8 @@ import Then
 import RxSwift
 
 final class AlarmTableViewCell: BaseTableViewCell {
-    var alarmChanged: ((Bool) -> Void)?
 
+    // MARK: - UI Components
     private let timeLabel = UILabel().then {
         $0.font = .lightFont()
         $0.textColor = .neutral300
@@ -32,6 +32,7 @@ final class AlarmTableViewCell: BaseTableViewCell {
         $0.onTintColor = .primary500
     }
 
+    // MARK: - Initializer
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.overrideUserInterfaceStyle = .light
@@ -41,11 +42,13 @@ final class AlarmTableViewCell: BaseTableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Style Helper
     override func setStyles() {
         selectionStyle = .none
         backgroundColor = .clear
     }
 
+    // MARK: - Layout Helper
     override func setLayout() {
         contentView.addSubviews(
             timeLabel,
@@ -76,6 +79,7 @@ final class AlarmTableViewCell: BaseTableViewCell {
         }
     }
 
+    // MARK: - Methods
     func configure(
         hour: Int16,
         minute: Int16,
@@ -112,7 +116,6 @@ final class AlarmTableViewCell: BaseTableViewCell {
         }
     }
 
-    func getToogleSwitch() -> UISwitch {
-        return toggleSwitch
-    }
+    // MARK: - Getter Helper
+    func getToogleSwitch() -> UISwitch { toggleSwitch }
 }

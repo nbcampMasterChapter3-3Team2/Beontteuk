@@ -14,10 +14,12 @@ import RxCocoa
 
 final class AlarmViewController: BaseViewController {
 
+    // MARK: - Properties
     private let alarmView = AlarmView()
     private let viewModel: AlarmViewModel
     private let bottomSheetViewModel: AlarmBottomSheetViewModel
 
+    // MARK: - Initializer
     init(viewModel: AlarmViewModel, bottomSheetViewModel: AlarmBottomSheetViewModel) {
         self.viewModel = viewModel
         self.bottomSheetViewModel = bottomSheetViewModel
@@ -28,36 +30,43 @@ final class AlarmViewController: BaseViewController {
         fatalError()
     }
 
+    // MARK: - View Life Cycle
     override func loadView() {
         view = alarmView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationItem()
-        setTableHeader()
-        viewModel.action.onNext(.readAlarm)
-
-        // 앱이 포그라운드로 돌아올 때 리로드 트리거
-        NotificationCenter.default.rx
-            .notification(UIApplication.willEnterForegroundNotification)
-            .subscribe(with: self) { owner, _ in
-            owner.alarmView.getTableView().reloadData()
-        }
-            .disposed(by: disposeBag)
-
+        bindEditingToggle()
+        bindOpenSheet()
+        bindingReloadOnForeground()
     }
 
+    // MARK: Bind
     override func bindViewModel() {
-        // 알람 리스트 바인딩
+        fetchAlarms()
+        bindAlarmList()
+        bindNextAlarmHeader()
+        bindDeleteCell()
+        bindSelectCellForEdit()
+    }
+
+    // MARK: Methods
+    /// 최초 화면 진입 시 알람 읽기 액션
+    private func fetchAlarms() {
+        viewModel.action.onNext(.readAlarm)
+    }
+
+    /// 알람 리스트 → 테이블뷰
+    private func bindAlarmList() {
         viewModel.state.alarmsRelay
             .bind(to: alarmView.getTableView().rx.items(
                 cellIdentifier: AlarmTableViewCell.className,
                 cellType: AlarmTableViewCell.self
             )) { row, alarm, cell in
+            // 레이블 기본값 처리
             guard var label = alarm.label else { return }
             label = label.isEmpty ? "알람" : label
-
             let repeatDays = alarm.repeatDays != nil ? ", \(alarm.repeatDays!)" : ""
 
             cell.configure(
@@ -67,88 +76,76 @@ final class AlarmViewController: BaseViewController {
                 isEnabled: alarm.isEnabled
             )
 
-            cell.alarmChanged = { isOn in
-                cell.configureLabelColor(to: isOn)
-            }
-
+            // 스위치 토글
             cell.getToogleSwitch()
                 .rx
                 .controlEvent(.valueChanged)
                 .withLatestFrom(cell.getToogleSwitch().rx.isOn)
-                .map { isOn in
-                AlarmViewModel.Action.toggle(index: row, isOn: isOn)
-            }
-                .bind(to: self.viewModel.action)
+                .subscribe(onNext: { isOn in
+                // UI 갱신
+                cell.configureLabelColor(to: isOn)
+                // ViewModel에 토글 액션 전달
+                self.viewModel.action.onNext(.toggle(index: row, isOn: isOn))
+            })
                 .disposed(by: cell.disposeBag)
-
         }
             .disposed(by: disposeBag)
+    }
 
-        // 다음 알람 유무 헤더 업데이트
+    /// 다음 알람 유무 → 헤더
+    private func bindNextAlarmHeader() {
         viewModel.state.nextAlarmRelay
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] hasNext in
             guard let header = self?.alarmView
-                .getTableView()
-                .tableHeaderView as? AlarmTableViewHeader else { return }
+                .getTableView().tableHeaderView
+            as? AlarmTableViewHeader else { return }
             header.configureHasNextAlarm(to: hasNext)
         })
             .disposed(by: disposeBag)
-
-
-        // 네비게이션 아이템 - 편집모드
-        viewModel.state.isEditingRelay
-            .asDriver(onErrorJustReturn: false)
-            .drive(onNext: { [weak self] isEditing in
-            guard
-                let self = self,
-                let navBar = self.alarmView.getNavigationBar().items?.first,
-                let barItem = navBar.leftBarButtonItem
-            as? CustomUIBarButtonItem
-                else { return }
-
-            let tableView = self.alarmView.getTableView()
-            DispatchQueue.main.async {
-                tableView.setEditing(isEditing, animated: true)
-            }
-
-            let newType: CustomUIBarButtonItem.NavigationButtonType =
-                isEditing ? .check : .edit
-            barItem.updateType(newType)
-        })
-            .disposed(by: disposeBag)
-
-        /// cell  삭제
-        alarmView.getTableView()
-            .rx
-            .itemDeleted
-            .map { item in AlarmViewModel.Action.deleteAlarm(at: item.row) }
-            .bind(to: viewModel.action)
-            .disposed(by: disposeBag)
-
-        /// cell 눌러서 편집 하기
-        alarmView.getTableView()
-            .rx
-            .modelSelected(CDAlarmEntity.self)
-            .subscribe(with: self) { owner, item in
-            self.openbottomSheetView(type: .edit, alarm: item)
-        }
-            .disposed(by: disposeBag)
-
     }
 
-    private func setNavigationItem() {
-        let navigationBar = alarmView.getNavigationBar()
+    /// 스와이프 삭제 액션
+    private func bindDeleteCell() {
+        alarmView.getTableView().rx
+            .itemDeleted
+            .map { AlarmViewModel.Action.deleteAlarm(at: $0.row) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+    }
 
-        let navItem = UINavigationItem()
-        let barItem = CustomUIBarButtonItem(type: .edit)
+    /// 셀 탭 → 편집 시트 오픈
+    private func bindSelectCellForEdit() {
+        alarmView.getTableView().rx
+            .modelSelected(CDAlarmEntity.self)
+            .subscribe(with: self) { owner, alarm in
+            owner.openBottomSheetView(type: .edit, alarm: alarm)
+        }
+            .disposed(by: disposeBag)
+    }
 
-        navItem.leftBarButtonItem = barItem
+    /// 앱이 포그라운드로 돌아올 때 리로드 트리거
+    private func bindingReloadOnForeground() {
+        NotificationCenter.default.rx
+            .notification(UIApplication.willEnterForegroundNotification)
+            .subscribe(with: self) { owner, _ in
+            owner.alarmView.getTableView().reloadData()
+        }
+            .disposed(by: disposeBag)
+    }
 
-        navigationBar.items = [navItem]
+    /// 모달 띄우기
+    private func bindOpenSheet() {
+        alarmView.openSheet
+            .subscribe(with: self) { owner, _ in
+            owner.openBottomSheetView(type: .create)
+        }
+            .disposed(by: disposeBag)
+    }
 
-        guard let btn = barItem.customView as? UIButton else { return }
-        btn.rx.tap
+    /// 테이블 편집모드 전환
+    private func bindEditingToggle() {
+        alarmView.editingToggle
             .withLatestFrom(viewModel.state.isEditingRelay)
             .map { !$0 }
             .map(AlarmViewModel.Action.setEditingMode(isEditing:))
@@ -157,23 +154,8 @@ final class AlarmViewController: BaseViewController {
 
     }
 
-    private func setTableHeader() {
-        let header = AlarmTableViewHeader(
-            reuseIdentifier: AlarmTableViewHeader.className
-        )
-        header.onAddTap = { [weak self] in
-            self?.openbottomSheetView(type: .create)
-        }
-        header.frame = CGRect(
-            x: 0,
-            y: 0,
-            width: alarmView.getTableView().bounds.width,
-            height: 320
-        )
-        alarmView.getTableView().tableHeaderView = header
-    }
-
-    private func openbottomSheetView(type: BottomSheetType, alarm: CDAlarmEntity? = nil) {
+    /// 모달 띄우기
+    private func openBottomSheetView(type: BottomSheetType, alarm: CDAlarmEntity? = nil) {
         bottomSheetViewModel.state.didAction
             .take(1) // 한 번만 처리
         .subscribe(with: self) { owner, _ in
@@ -182,7 +164,6 @@ final class AlarmViewController: BaseViewController {
             .disposed(by: disposeBag)
 
         let bottomSheet = AlarmBottomSheetViewController(viewModel: bottomSheetViewModel, type: type, alarm: alarm)
-        bottomSheet.configure()
         let nav = UINavigationController(rootViewController: bottomSheet)
         nav.modalPresentationStyle = .pageSheet
         if let sheet = bottomSheet.sheetPresentationController {

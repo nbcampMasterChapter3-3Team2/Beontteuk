@@ -13,14 +13,6 @@ import RxCocoa
 
 final class BottomSheetTableViewCell: BaseTableViewCell {
 
-    var snoozeToggled: ControlProperty<Bool> {
-         toggleSwitch.rx.value
-     }
-     // 텍스트 필드 텍스트를 방출
-     var inputTextField: ControlProperty<String?> {
-         textField.rx.text
-     }
-
     // MARK: - UI Components
     private let titleLabel = UILabel().then {
         $0.textColor = .neutral1000
@@ -44,6 +36,7 @@ final class BottomSheetTableViewCell: BaseTableViewCell {
         $0.isHidden = true
     }
 
+    // MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.overrideUserInterfaceStyle = .light
@@ -53,12 +46,13 @@ final class BottomSheetTableViewCell: BaseTableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Life Cycle
+    // MARK: - Style Helper
     override func setStyles() {
         selectionStyle = .none
         backgroundColor = .neutral100
     }
 
+    // MARK: - Layout Helper
     override func setLayout() {
         contentView.addSubviews(
             titleLabel,
@@ -94,7 +88,7 @@ final class BottomSheetTableViewCell: BaseTableViewCell {
         }
     }
 
-    // MARK: - Configure
+    // MARK: - Methods
     /// - Parameters:
     ///   - option: 어떤 셀인지
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
@@ -112,6 +106,15 @@ final class BottomSheetTableViewCell: BaseTableViewCell {
         toggleSwitch.isHidden = true
 
         switch option {
+
+        case .label:
+            textField.placeholder = option.detailText
+            textField.text = detail
+            textField.isHidden = false
+
+        case .snooze:
+            toggleSwitch.isOn = isOn
+            toggleSwitch.isHidden = false
 //        case .repeat:
 //            selectionStyle = .default
 //            accessoryType = .disclosureIndicator
@@ -123,22 +126,13 @@ final class BottomSheetTableViewCell: BaseTableViewCell {
 //            accessoryType = .disclosureIndicator
 //            detailLabel.text = "기본"
 //            detailLabel.isHidden = false
-
-        case .label:
-            textField.placeholder = option.detailText
-            textField.text = detail
-            textField.isHidden = false
-
-        case .snooze:
-            toggleSwitch.isOn = isOn
-            toggleSwitch.isHidden = false
         }
     }
 
-    func getTextField() -> UITextField {
-        return textField
-    }
-
-
+    // MARK: - Getter Helper
+    var snoozeToggled: ControlProperty<Bool> { toggleSwitch.rx.value }
+    // 텍스트 필드 텍스트를 방출
+    var inputTextField: ControlProperty<String?> { textField.rx.text }
+    func getTextField() -> UITextField { textField }
 }
 
