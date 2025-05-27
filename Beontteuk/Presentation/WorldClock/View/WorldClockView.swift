@@ -19,6 +19,8 @@ final class WorldClockView: BaseView {
         $0.isTranslucent = true
     }
     
+    private let editButton = CustomUIBarButtonItem(type: .edit)
+    
     private let worldClockTableView = UITableView().then {
         $0.register(WorldClockTableViewCell.self, forCellReuseIdentifier: WorldClockTableViewCell.className)
         $0.backgroundColor = .clear
@@ -54,6 +56,14 @@ final class WorldClockView: BaseView {
         return worldClockTableView
     }
     
+    func getNavigationBar() -> UINavigationBar {
+        return navigationBar
+    }
+    
+    func getEditButton() -> CustomUIBarButtonItem {
+        return editButton
+    }
+    
     func makeEmptyView() -> UIView {
         let label = UILabel()
         label.text = "세계 시계 없음"
@@ -66,9 +76,7 @@ final class WorldClockView: BaseView {
     //MARK: Private Methods
     private func setNavigationBar() {
         let item = UINavigationItem(title: "")
-        item.leftBarButtonItem = CustomUIBarButtonItem(type: .edit {
-            print("Edit Button Tapped")
-        })
+        item.leftBarButtonItem = editButton
         
         self.navigationBar.setItems([item], animated: true)
     }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+import RxDataSources
+
 struct CDAlarmEntity: Equatable, Identifiable {
     let id: UUID?
     let hour: Int16
@@ -59,3 +61,13 @@ struct WorldClockEntity: Equatable, Identifiable {
     let hourDifferenceText: String
     let dayLabelText: String
 }
+
+extension WorldClockEntity: IdentifiableType {
+    var identity: String { return id!.uuidString }
+
+    static func == (lhs: WorldClockEntity, rhs: WorldClockEntity) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+typealias WorldClockSection = AnimatableSectionModel<String, WorldClockEntity>

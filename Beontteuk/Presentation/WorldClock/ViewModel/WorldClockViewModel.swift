@@ -13,12 +13,15 @@ import RxRelay
 final class WorldClockViewModel: ViewModelProtocol {
     
     enum Action {
-        case viewDidLoad
+        case viewWillAppear
         case addCity(SelectCityEntity)
+        case editButtonTapped
+        case deleteCity(WorldClockEntity)
     }
     
     struct State {
         let items = PublishRelay<[WorldClockEntity]>()
+        let status = BehaviorRelay<Bool>(value: false)
     }
     
     var action: AnyObserver<Action> { actionSubject.asObserver() }
@@ -42,10 +45,14 @@ final class WorldClockViewModel: ViewModelProtocol {
         actionSubject
             .subscribe(with: self) { owner, action in
                 switch action {
-                case .viewDidLoad:
+                case .viewWillAppear:
                     return owner.fetchWorldClock()
                 case .addCity(let city):
                     return owner.createWorldClock(city)
+                case .editButtonTapped:
+                    return owner.toggleEditButtonStatus()
+                case .deleteCity(let city):
+                    return owner.deleteWorldClock(city)
                 }
             }
             .disposed(by: disposeBag)
@@ -72,6 +79,17 @@ final class WorldClockViewModel: ViewModelProtocol {
         )
         useCase.saveCity(newCity)
         self.state.items.accept(useCase.fetchAll())
+    }
+    
+    private func deleteWorldClock(_ city: WorldClockEntity) {
+        useCase.deleteCity(city)
+        state.items.accept(useCase.fetchAll())
+    }
+    
+    private func toggleEditButtonStatus() {
+        var status = state.status.value
+        status.toggle()
+        self.state.status.accept(status)
     }
     
     private func startClockTimer() {
