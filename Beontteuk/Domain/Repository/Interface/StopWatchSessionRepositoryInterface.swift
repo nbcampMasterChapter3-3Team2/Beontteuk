@@ -12,8 +12,10 @@ protocol StopWatchSessionRepositoryInterface {
     func fetchLastSession() -> StopWatchSession?
     /// 새로운 세션 생성
     func createSession() -> StopWatchSession
-    /// 기존 세션 업데이트
+    /// 기존 세션 업데이트 - elapsedBeforePause
     func updateSession(_ session: StopWatchSession, with elapsedBeforePause: Double)
+    /// 기존 세션 업데이트 - startTime
+    func updateSession(_ session: StopWatchSession, with startTime: Date)
     /// 기존 세션 삭제
     func deleteSession(_ session: StopWatchSession)
     /// 세션 저장 (일시정지, 랩 추가 등)

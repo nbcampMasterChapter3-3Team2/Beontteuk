@@ -13,9 +13,14 @@ import RxCocoa
 
 final class StopWatchViewController: BaseViewController {
 
+    typealias Section = StopWatchSection
+    typealias Item = StopWatchItem
+
     // MARK: - Properties
 
-    private let viewModel = StopWatchViewModel()
+    private let viewModel: StopWatchViewModel
+
+    private var dataSource: UITableViewDiffableDataSource<Section, Item>?
 
     // MARK: - UI Components
 
@@ -25,9 +30,24 @@ final class StopWatchViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.action.viewDidLoad.accept(())
         setDataSource()
+        bindViewModel()
     }
 
+    // MARK: - Initializer, Deinit, requiered
+
+    init(
+        viewModel: StopWatchViewModel
+    ) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Bind
 
     override func bindViewModel() {
@@ -45,45 +65,39 @@ final class StopWatchViewController: BaseViewController {
                 viewModel.action.buttonAction.accept(.rightButton)
             }.disposed(by: disposeBag)
 
-        viewModel.state.formattedTimeRelay
+        viewModel.state.snapshotRelay
+            .bind { [weak self] snapshot in
+                guard let self,
+                      let dataSource,
+                      let snapshot else { return }
+                dataSource.apply(snapshot)
+            }.disposed(by: disposeBag)
+
+        viewModel.state.stopWatchTimeLabelRelay
             .bind { [weak self] time in
                 guard let self else { return }
                 stopWatchView.updateTime(with: time)
             }.disposed(by: disposeBag)
 
-        viewModel.state.stopWatchRelay
+        viewModel.state.stopWatchButtonRelay
             .bind { [weak self] state in
                 guard let self else { return }
                 switch state {
                 case .initial:
-                    // TODO: 스톱워치 초기화
-                    viewModel.action.stopWatchAction.accept(.reset)
-
-                    stopWatchView.leftButton.updateButtonType(type: .lap)
+                    stopWatchView.leftButton.updateType(type: .lap)
                     stopWatchView.leftButton.isEnabled = false
 
-                    stopWatchView.rightButton.updateButtonType(type: .start)
+                    stopWatchView.rightButton.updateType(type: .start)
                 case .progress:
-                    // TODO: 스톱워치 시작
-                    viewModel.action.stopWatchAction.accept(.start)
-
-                    stopWatchView.leftButton.updateButtonType(type: .lap)
+                    stopWatchView.leftButton.updateType(type: .lap)
                     stopWatchView.leftButton.isEnabled = true
 
-                    stopWatchView.rightButton.updateButtonType(type: .stop)
+                    stopWatchView.rightButton.updateType(type: .stop)
                 case .pause:
-                    // TODO: 스톱워치 일시정지
-                    viewModel.action.stopWatchAction.accept(.pause)
-
-                    stopWatchView.leftButton.updateButtonType(type: .reset)
-                    stopWatchView.rightButton.updateButtonType(type: .start)
+                    stopWatchView.leftButton.updateType(type: .reset)
+                    stopWatchView.rightButton.updateType(type: .start)
                 }
             }.disposed(by: disposeBag)
-    }
-
-    private func start(_ text: String) {
-        print("start: \(text)")
-        stopWatchView.updateTime(with: text)
     }
 
     // MARK: - Style Helper
@@ -114,24 +128,17 @@ final class StopWatchViewController: BaseViewController {
     // MARK: - DataSource Helper
 
     private func setDataSource() {
-        stopWatchView.tableView.dataSource = self
-    }
-}
+        dataSource = UITableViewDiffableDataSource(
+            tableView: stopWatchView.tableView,
+            cellProvider: { tableView, indexPath, item in
 
-extension StopWatchViewController: UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        45
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        5
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: LapCell.className, for: indexPath) as! LapCell
-        cell.selectionStyle = .none
-        return cell
+                switch item {
+                case .lap(let lap):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: LapCell.className) as! LapCell
+                    cell.configureItems(with: lap)
+                    return cell
+                }
+            })
     }
 }
 

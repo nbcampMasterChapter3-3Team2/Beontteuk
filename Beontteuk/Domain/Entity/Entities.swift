@@ -31,15 +31,15 @@ struct CDTimerEntity: Equatable, Identifiable {
 }
 
 struct StopWatchEntity: Equatable, Identifiable {
-    let id: UUID?
+    let id: UUID
     let startTime: Date?
     let isRunning: Bool
     let elapsedBeforePause: Double
-    let createdAt: Date?
+    let createdAt: Date
     let laps: [LapRecordEntity]
 }
 
-struct LapRecordEntity: Equatable, Identifiable {
+struct LapRecordEntity: Equatable, Identifiable, Hashable {
     let id: UUID
     let lapIndex: Int16
     let lapTime: Double

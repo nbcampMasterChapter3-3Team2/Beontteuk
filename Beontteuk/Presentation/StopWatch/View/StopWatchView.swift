@@ -20,7 +20,7 @@ final class StopWatchView: BaseView {
 
     private let timerLabel = UILabel().then {
         $0.text = "00:00.00"
-        $0.font = .systemFont(ofSize: 64, weight: .semibold)
+        $0.font = .lightFont().withSize(64)
         $0.textColor = .neutral1000
     }
 
@@ -84,7 +84,7 @@ final class StopWatchView: BaseView {
         tableView.snp.makeConstraints {
             $0.top.equalTo(stackView.snp.bottom).offset(26)
             $0.bottom.equalToSuperview()
-            $0.directionalHorizontalEdges.equalToSuperview().inset(28)
+            $0.directionalHorizontalEdges.equalToSuperview().inset(16)
         }
     }
 

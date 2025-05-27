@@ -8,37 +8,29 @@
 import Foundation
 import RxSwift
 import RxRelay
-
-enum ButtonAction {
-    case leftButton
-    case rightButton
-}
-
-enum StopWatchAction {
-    case start
-    case pause
-    case reset
-    case lap
-}
-
-enum StopWatchState {
-    case initial
-    case progress
-    case pause
-}
+import UIKit
 
 final class StopWatchViewModel {
+
+    typealias Section = StopWatchSection
+    typealias Item = StopWatchItem
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
     // MARK: - Action, State
 
     struct Action {
+        let viewDidLoad = PublishRelay<Void>()
         let buttonAction = PublishRelay<ButtonAction>()
         let stopWatchAction = PublishRelay<StopWatchAction>()
     }
 
     struct State {
-        let stopWatchRelay = BehaviorRelay<StopWatchState>(value: .initial)
-        var formattedTimeRelay = BehaviorRelay<String>(value: "00:00.00")
+        let snapshotRelay = BehaviorRelay<Snapshot?>(value: nil)
+        let stopWatchButtonRelay = BehaviorRelay<StopWatchState>(value: .initial)
+        var stopWatchTimeLabelRelay = BehaviorRelay<String>(value: "00:00.00")
+
+        let lapsRelay = BehaviorRelay<[LapRecordEntity]>(value: [])
+
         var currentLapTimeRelay = BehaviorRelay<[TimeInterval]>(value: [])
     }
 
@@ -50,62 +42,112 @@ final class StopWatchViewModel {
     private var stopWatchDisposeBag = DisposeBag()
 
     private var startTime: Date?
-    private var accumulatedTime: TimeInterval = .zero
+    private var elapsedTime: TimeInterval = .zero
+    private var session: StopWatchEntity?
+
+    private let stopWatchUseCase: StopWatchUseInt
+    private let lapRecordUseCase: LapRecordUseInt
 
     // MARK: - Initializer, Deinit, requiered
 
-    init() {
+    init(
+        stopWatchUseCase: StopWatchUseInt,
+        lapRecordUseCase: LapRecordUseInt
+    ) {
+        self.stopWatchUseCase = stopWatchUseCase
+        self.lapRecordUseCase = lapRecordUseCase
+
         bindAction()
+    }
+
+    // MARK: - Snapshot
+
+    private func updateSnapshot() {
+        var snapshot = Snapshot()
+        snapshot.appendSections([.laps])
+
+        var item = [Item]()
+        let laps = state.lapsRelay.value.sorted { $0.lapIndex < $1.lapIndex }
+        laps.forEach {
+            item.append(.lap($0))
+        }
+
+        state.snapshotRelay.accept(snapshot)
     }
 
     // MARK: - Bind
 
     private func bindAction() {
+        // MARK: View Life Cycle Action
+        action.viewDidLoad
+            .bind { [weak self] _ in
+                guard let self else { return }
+                session = stopWatchUseCase.fetchLastSession()
+
+                print("VIEW DID LOAD: \(session)")
+
+                if let session = session {
+                    state.lapsRelay.accept(session.laps)
+                    updateSnapshot()
+                }
+            }.disposed(by: mainDisposeBag)
+
+        // MARK: Button Action
         action.buttonAction
             .bind { [weak self] action in
                 guard let self else { return }
 
-                let timeState = state.stopWatchRelay.value
+
+                let timeState = state.stopWatchButtonRelay.value
 
                 switch action {
                 case .leftButton:
+//                    let timeState = state.stopWatchStateRelay.value
                     switch timeState {
                     case .initial:
-                        // TODO: CoreData
-                        self.state.stopWatchRelay.accept(.progress)
+                        break
                     case .progress:
-                        // TODO: 랩 활성화 -> CoreData
-
                         self.action.stopWatchAction.accept(.lap)
                     case .pause:
-                        // TODO: CoreData
-                        self.state.stopWatchRelay.accept(.initial)
+                        self.state.stopWatchButtonRelay.accept(.initial)
                     }
 
                 case .rightButton:
 
-                    let timeState = state.stopWatchRelay.value
 
                     switch timeState {
                     case .initial:
-                        // TODO: CoreData
-                        self.state.stopWatchRelay.accept(.progress)
+                        self.action.stopWatchAction.accept(.start)
+                        self.state.stopWatchButtonRelay.accept(.progress)
                     case .progress:
-                        // TODO: CoreData
-                        self.state.stopWatchRelay.accept(.pause)
+                        self.action.stopWatchAction.accept(.pause)
+                        self.state.stopWatchButtonRelay.accept(.pause)
                     case .pause:
-                        // TODO: CoreData
-                        self.state.stopWatchRelay.accept(.progress)
+                        self.action.stopWatchAction.accept(.start)
+                        self.state.stopWatchButtonRelay.accept(.progress)
                     }
                 }
             }.disposed(by: mainDisposeBag)
 
+        // MARK: StopWatch Action
         action.stopWatchAction
             .bind { [weak self] action in
                 guard let self else { return }
                 switch action {
                 case .start:
-                    startTime = Date() - accumulatedTime
+                    /// Session 생성 및 업데이트
+                    if let session = session {
+                        stopWatchUseCase.updateSession(
+                            by: session.id,
+                            with: Date()
+                        )
+                    } else {
+                        session = stopWatchUseCase.createSession()
+                    }
+                    print("Session: \(session)")
+
+                    /// 스톱워치 시작
+                    startTime = Date() - elapsedTime
                     stopWatchDisposeBag = DisposeBag()
 
                     Observable<Int>.timer(
@@ -117,26 +159,42 @@ final class StopWatchViewModel {
                               let startTime else { return }
 
                         let formattedTime = makeFormattedString(with: startTime)
-                        state.formattedTimeRelay.accept(formattedTime)
+                        state.stopWatchTimeLabelRelay.accept(formattedTime)
 
                     }).disposed(by: stopWatchDisposeBag)
 
+
                 case .pause:
+                    /// 스톱워치 일시정지
                     guard let startTime else { return }
-                    accumulatedTime = Date().timeIntervalSince(startTime)
+                    elapsedTime = Date().timeIntervalSince(startTime)
                     stopWatchDisposeBag = DisposeBag()
+
+                    // MARK: Session 의 누적 시간 (elapsedBeforePause) 업데이트
+                    guard let session else { return }
+                    stopWatchUseCase.updateSession(
+                        by: session.id,
+                        with: elapsedTime
+                    )
 
                 case .reset:
+                    /// 스톱워치 재설정
                     stopWatchDisposeBag = DisposeBag()
+                    session = nil
                     startTime = nil
-                    accumulatedTime = .zero
+                    elapsedTime = .zero
 
                     let formattedTime = makeFormattedString(with: Date())
-                    state.formattedTimeRelay.accept(formattedTime)
+                    state.stopWatchTimeLabelRelay.accept(formattedTime)
+                    
+                    /// 기존 Session 삭제
+                    guard let session else { return }
+                    stopWatchUseCase.deleteSession(by: session.id)
 
                 case .lap:
+                    /// 랩 찍기
                     guard let startTime else { return }
-
+                    // 스톱워치의 현재까지의 시간
                     let totalElapsed = calculateTimeInterval(with: startTime)
 
                     // Lap 구간 시간 계산: 직전 누적값과의 차이
@@ -146,15 +204,29 @@ final class StopWatchViewModel {
                     // 누적 Lap 시간 저장
                     addLapTime(totalElapsed)
 
-                    // 출력
-                    print("Current Lap: \(makeFormattedString(since: totalElapsed))")
-                    print("calculatedLap: \(makeFormattedString(since: lapInterval))")
+                    /// LapRecord 추가
+                    guard let session else { return }
+                    let newLap = lapRecordUseCase.createLap(
+                        for: session.id,
+                        lapIndex: state.currentLapTimeRelay.value.count,
+                        lapTime: lapInterval,
+                        absoluteTime: totalElapsed
+                    )
+
+                    // 삭제할 것
+                    if let newLap = newLap {
+                        print("Created LAp: \(newLap)")
+                    } else {
+                        print("Create Lap Error")
+                    }
                 }
             }.disposed(by: mainDisposeBag)
     }
 
+    // MARK: - Methods
+
     private func addLapTime(_ lapTime: TimeInterval) {
-        var previouLapTimes = state.currentLapTimeRelay.value
+        let previouLapTimes = state.currentLapTimeRelay.value
         state.currentLapTimeRelay.accept(previouLapTimes + [lapTime])
     }
 

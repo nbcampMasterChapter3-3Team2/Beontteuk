@@ -29,10 +29,17 @@ final class StopWatchUseImp: StopWatchUseInt {
         return session.toEntity(with: [])
     }
 
-    /// 기존 세션 업데이트
+    /// 기존 세션 업데이트 - elapsedBeforePause
     func updateSession(by id: UUID, with elapsedBeforePause: Double) {
         guard let session = repository.fetchStopWatch(by: id) else { return }
         repository.updateSession(session, with: elapsedBeforePause)
+        repository.saveSession(session)
+    }
+
+    /// 기존 세션 업데이트 - startTime
+    func updateSession(by id: UUID, with startTime: Date) {
+        guard let session = repository.fetchStopWatch(by: id) else { return }
+        repository.updateSession(session, with: startTime)
         repository.saveSession(session)
     }
 
