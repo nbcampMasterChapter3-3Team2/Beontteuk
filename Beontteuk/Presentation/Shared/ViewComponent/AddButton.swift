@@ -41,6 +41,7 @@ final class AddButton: UIButton {
         config.contentInsets = .init(top: 12, leading: 24, bottom: 12, trailing: 24)
 
         self.configuration = config
+        self.setNeedsUpdateConfiguration()
     }
 }
 
@@ -48,13 +49,14 @@ extension AddButton {
     enum ButtonType {
         case alarm
         case timer
+        case city
 
         var text: String {
             switch self {
             case .alarm: "알람 추가"
             case .timer: "타이머 추가"
+            case .city: "도시 추가"
             }
         }
     }
 }
-

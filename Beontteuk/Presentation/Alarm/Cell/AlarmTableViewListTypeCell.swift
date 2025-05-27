@@ -35,7 +35,6 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.overrideUserInterfaceStyle = .light
-        toggleSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
     }
 
     required init?(coder: NSCoder) {
@@ -76,16 +75,15 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
     }
 
     func configure(
-        time: String,
-        amPm: String,
+        hour: Int16,
+        minute: Int16,
         detail: String,
-        isOn: Bool
+        isEnabled: Bool
     ) {
-        timeLabel.text = time
-        amPmLabel.text = amPm
         detailLabel.text = detail
-        toggleSwitch.isOn = isOn
-        configureLabelColor(to: toggleSwitch.isOn)
+        toggleSwitch.isOn = isEnabled
+        configureLocale(hour: hour, minute: minute)
+        configureLabelColor(to: isEnabled)
     }
 
     func configureLabelColor(to toggleSwitchValue: Bool) {
@@ -100,8 +98,18 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         }
     }
 
-    // MARK: - Actions
-    @objc private func switchValueChanged(_ sender: UISwitch) {
-        alarmChanged?(sender.isOn)
+    private func configureLocale(hour: Int16, minute: Int16) {
+        if Locale.autoupdatingCurrent.uses24HourClock {
+            timeLabel.text = String(format: "%02d:%02d", hour, minute)
+            amPmLabel.isHidden = true
+        } else {
+            timeLabel.text = String(format: "%02d:%02d", hour < 12 ? hour : hour - 12, minute)
+            amPmLabel.text = hour < 12 ? "AM" : "PM"
+            amPmLabel.isHidden = false
+        }
+    }
+
+    func getToogleSwitch() -> UISwitch {
+        return toggleSwitch
     }
 }

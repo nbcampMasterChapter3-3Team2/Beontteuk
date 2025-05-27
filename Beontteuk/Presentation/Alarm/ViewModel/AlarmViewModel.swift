@@ -6,26 +6,78 @@
 //
 
 import Foundation
+import RxSwift
+import RxRelay
+
+final class AlarmViewModel: ViewModelProtocol {
+
+    enum Action {
+        /// usecase
+        case readAlarm
+        case deleteAlarm(at: Int)
+        /// fileprivate
+        case toggle(index: Int, isOn: Bool)
+        case setEditingMode(isEditing: Bool)
+    }
+
+    struct State {
+        let alarmsRelay = BehaviorRelay<[CDAlarm]>(value: [])
+        let nextAlarmRelay = BehaviorRelay<Bool>(value: false)
+        let isEditingRelay = BehaviorRelay<Bool>(value: false)
+    }
+
+    private let useCase: AlarmUseInt
+    private let actionSubject = PublishSubject<Action>()
+    var action: AnyObserver<Action> { actionSubject.asObserver() }
+    let state = State()
+    let disposeBag = DisposeBag()
 
 
-// 1) 알람 모델 정의
-struct Alarm {
-    let id: UUID
-    let hour: Int
-    let minute: Int
-    let repeatText: String // 예: "알람, 주중"
-    let isOn: Bool
+    init(useCase: AlarmUseInt) {
+        self.useCase = useCase
+        bind()
+    }
+
+    private func bind() {
+        actionSubject
+            .subscribe(with: self) { owner, action in
+            var list = owner.state.alarmsRelay.value
+            switch action {
+                ///usecase
+            case .readAlarm:
+                list = self.useCase.readAlarms()
+
+            case .deleteAlarm(let index):
+                guard index < list.count else { return }
+                let target = list.remove(at: index)
+                self.useCase.deleteAlarm(target)
+
+                /// fileprivate
+            case .toggle(let index, let isOn):
+                guard index < list.count else { return }
+                // 1) 메모리 배열 업데이트
+                let alarm = list[index]
+                alarm.isEnabled = isOn
+                self.useCase.updateAlarm(alarm)
+            case .setEditingMode(let isEditing):
+                owner.state.isEditingRelay.accept(isEditing)
+            }
+            owner.state.alarmsRelay.accept(list)
+            let hasNext = owner.isNextAlarm(from: list)
+            owner.state.nextAlarmRelay.accept(hasNext)
+        }.disposed(by: disposeBag)
+    }
+
+    private func isNextAlarm(from alarms: [CDAlarm]) -> Bool {
+        let enabled = alarms.filter { $0.isEnabled }
+        return !enabled.isEmpty
+    }
 }
 
-// 2) 목 데이터 선언 (여기에 원하는 만큼 추가)
-extension Alarm {
-    static let mockList: [Alarm] = [
-        Alarm(id: .init(), hour: 7, minute: 10, repeatText: "알람, 주중", isOn: true),
-        Alarm(id: .init(), hour: 8, minute: 30, repeatText: "운동 알람", isOn: false),
-        Alarm(id: .init(), hour: 21, minute: 0, repeatText: "취침 알람", isOn: true),
-        Alarm(id: .init(), hour: 21, minute: 0, repeatText: "취침 알람", isOn: true),
-        Alarm(id: .init(), hour: 7, minute: 10, repeatText: "알람, 주중", isOn: true),
-        Alarm(id: .init(), hour: 8, minute: 30, repeatText: "운동 알람", isOn: false),
-        Alarm(id: .init(), hour: 21, minute: 0, repeatText: "취침 알람", isOn: true)
-    ]
+
+// 다음 알람 정보 구조체
+struct NextAlarmInfo {
+    let alarm: CDAlarm
+    let hours: Int
+    let minutes: Int
 }

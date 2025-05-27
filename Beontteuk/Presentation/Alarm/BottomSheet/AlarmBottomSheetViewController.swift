@@ -14,139 +14,113 @@ import RxCocoa
 
 final class AlarmBottomSheetViewController: BaseViewController {
 
-    typealias Option = AlarmBottomSheetTableViewCell.Option
-
     private let bottomSheetView = AlarmBottomSheetView()
-    private var selections: [Option: String] = [:]
-    private var snoozeEnabled: Bool = true
+    private let viewModel: AlarmBottomSheetViewModel
+
+    init(viewModel: AlarmBottomSheetViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+
+    private let titleLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 16, weight: .semibold)
+        $0.textColor = .neutral1000
+        $0.text = "알람 추가"
+    }
+
+    private let saveButton = UIButton().then {
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        $0.setTitle("저장", for: .normal)
+        $0.tintColor = .primary500
+        $0.setTitleColor(.primary500, for: .normal)
+    }
+
+    private let cancelButton = UIButton().then {
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        $0.setTitle("취소", for: .normal)
+        $0.setTitleColor(.primary500, for: .normal)
+    }
 
     override func loadView() {
         view = bottomSheetView
     }
 
+    override func bindViewModel() {
+        Observable.just(AlarmSheetTableOption.allCases)
+            .bind(to: bottomSheetView.getTableView().rx.items(
+                cellIdentifier: AlarmBottomSheetTableViewCell.className,
+                cellType: AlarmBottomSheetTableViewCell.self
+            )) { [weak self] row, option, cell in
+            guard let self else { return }
+//            let detail = self.viewModel.state.inputLabel.value
+//            let isOn = self.viewModel.state.snoozeEnabled.value
+
+            // 셀 구성
+            cell.configure(
+                option: option
+//                detail: detail,
+//                isOn: isOn
+            )
+                switch option {
+//                case .repeat: break
+                case .label:
+                    cell.inputTextField
+                        .map { text in
+                        AlarmBottomSheetViewModel.Action.labelChanged(text)
+                    }
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+//                case .sound: break
+                case .snooze:
+                    cell.snoozeToggled
+                        .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+                }
+
+        }
+            .disposed(by: disposeBag)
+
+        bottomSheetView.dateChanged
+            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationItem()
-        bottomSheetView.tableView.dataSource = self
-        bottomSheetView.tableView.delegate = self
+        bindingNavigationItem()
     }
+
 
     private func setNavigationItem() {
-        navigationItem.titleView = NavigationItemType.title.view()
-        // cancel 버튼에 didTapCancel(_:) 연결
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            customView: NavigationItemType.cancel(
-                target: self,
-                action: #selector(didTapCancel)
-            ).view()
-        )
-
-        // save 버튼에 didTapSave(_:) 연결
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            customView: NavigationItemType.save(
-                target: self,
-                action: #selector(didTapSave)
-            ).view()
-        )
+        navigationItem.titleView = titleLabel
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton)
     }
 
-    @objc
-    private func didTapCancel() {
-        dismiss(animated: true)
-    }
+    private func bindingNavigationItem() {
+        saveButton.rx.tap
+            .do(onNext: { [weak self] in
+            self?.dismiss(animated: true)
+        })
+            .map {
+                .save(repeatDays: nil, soundName: nil)
+        }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
 
-    @objc
-    private func didTapSave() {
-        // 저장 로직 호출
-        dismiss(animated: true)
+        cancelButton.rx.tap
+            .do(onNext: { [weak self] in
+            self?.dismiss(animated: true)
+        })
+            .map { .cancel }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
     }
 }
-
-extension AlarmBottomSheetViewController {
-
-    enum NavigationItemType {
-        case title
-        case cancel(target: Any, action: Selector)
-        case save(target: Any, action: Selector)
-
-        func view() -> UIView {
-            switch self {
-            case .title:
-                return UILabel().then {
-                    $0.font = .systemFont(ofSize: 16, weight: .semibold)
-                    $0.textColor = .neutral1000
-                    $0.text = "알람 추가"
-                }
-            case .cancel(let target, let action):
-                return UIButton().then {
-                    $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-                    $0.setTitle("취소", for: .normal)
-                    $0.setTitleColor(.primary500, for: .normal)
-                    $0.addTarget(target, action: action, for: .touchUpInside)
-                }
-            case .save(let target, let action):
-                return UIButton().then {
-                    $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-                    $0.setTitle("저장", for: .normal)
-                    $0.tintColor = .primary500
-                    $0.setTitleColor(.primary500, for: .normal)
-                    $0.addTarget(target, action: action, for: .touchUpInside)
-                }
-            }
-        }
-    }
-
-}
-
-// MARK: - UITableViewDataSource
-extension AlarmBottomSheetViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        1
-    }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        Option.allCases.count
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let option = Option.allCases[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: AlarmBottomSheetTableViewCell.className, for: indexPath) as! AlarmBottomSheetTableViewCell
-        cell.configure(
-            option: option,
-            detail: selections[option],
-            isOn: snoozeEnabled
-        )
-        // 토글 변경 콜백
-        cell.snoozeChanged = { [weak self] isOn in
-            self?.snoozeEnabled = isOn
-        }
-        // 레이블 변경 콜백
-        cell.labelChanged = { [weak self] text in
-            self?.selections[.label] = text
-        }
-
-        return cell
-    }
-}
-
-// MARK: - UITableViewDelegate
-extension AlarmBottomSheetViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let option = Option.allCases[indexPath.row]
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        switch option {
-        case .repeat:
-            // 반복 선택 화면으로 push or present
-            break
-        case .label:
-            // 레이블 입력 UI 띄우기
-            break
-        case .sound:
-            // 사운드 선택 화면 띄우기
-            break
-        case .snooze:
-            // 스위치라 별도 처리 없음
-            break
-        }
-    }
-}
-
