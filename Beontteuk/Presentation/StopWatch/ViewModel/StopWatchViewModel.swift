@@ -94,6 +94,8 @@ final class StopWatchViewModel {
 
                     state.lapsRelay.accept(session.laps)
                     updateSnapshot()
+                } else {
+
                 }
             }.disposed(by: mainDisposeBag)
 
@@ -102,24 +104,21 @@ final class StopWatchViewModel {
             .bind { [weak self] action in
                 guard let self else { return }
 
-
                 let timeState = state.stopWatchButtonRelay.value
 
                 switch action {
                 case .leftButton:
-//                    let timeState = state.stopWatchStateRelay.value
                     switch timeState {
                     case .initial:
                         break
                     case .progress:
                         self.action.stopWatchAction.accept(.lap)
                     case .pause:
+                        self.action.stopWatchAction.accept(.reset)
                         self.state.stopWatchButtonRelay.accept(.initial)
                     }
 
                 case .rightButton:
-
-
                     switch timeState {
                     case .initial:
                         self.action.stopWatchAction.accept(.start)
@@ -181,12 +180,10 @@ final class StopWatchViewModel {
                         by: session.id,
                         with: elapsedTime
                     )
-                    print("🙃 \(elapsedTime)")
 
                 case .reset:
                     /// 스톱워치 재설정
                     stopWatchDisposeBag = DisposeBag()
-                    session = nil
                     startTime = nil
                     elapsedTime = .zero
 
@@ -196,6 +193,11 @@ final class StopWatchViewModel {
                     /// 기존 Session 삭제
                     guard let session else { return }
                     stopWatchUseCase.deleteSession(by: session.id)
+
+                    state.stopWatchTimeLabelRelay.accept("00:00.00")
+
+                    state.lapsRelay.accept([])
+                    updateSnapshot()
 
                 case .lap:
                     /// 랩 찍기
