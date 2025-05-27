@@ -10,14 +10,13 @@ import UserNotifications
 import UIKit
 import AVFoundation
 
-/// 알람 스케줄링 및 취소만 담당하는 서비스
 final class NotificationService: NSObject {
+
     // MARK: - Action Identifiers
     private static let snoozeActionIdentifier = "SNOOZE_ACTION"
     private static let dismissActionIdentifier = UNNotificationDismissActionIdentifier
     private static let alarmCategoryIdentifier = "ALARM_CATEGORY"
     private var audioPlayer: AVAudioPlayer?
-
 
     private let repository: AlarmRepositoryInterface
 
@@ -25,7 +24,7 @@ final class NotificationService: NSObject {
         self.repository = repository
         super.init()
         UNUserNotificationCenter.current().delegate = self
-
+        /// 무음모드에서도 소리 나오게 하기
         try? AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
     }
@@ -58,14 +57,6 @@ final class NotificationService: NSObject {
         )
         center.removePendingNotificationRequests(withIdentifiers: [notificationId])
         center.add(originalRequest)
-//        { [weak self] error in
-//            if let error = error {
-//                print("[NotificationService] original schedule error: \(error)")
-//            } else {
-//                print("🔔 Scheduled alarm [id: \(notificationId)] at \(date)")
-//                self?.printAllAlarms()
-//            }
-//        }
 
         // 2) 스누즈 자동 재알림 (1분 뒤)
         if snooze {
@@ -81,14 +72,6 @@ final class NotificationService: NSObject {
             )
             center.removePendingNotificationRequests(withIdentifiers: [snoozeId])
             center.add(snoozeRequest)
-//            { [weak self] error in
-//                if let error = error {
-//                    print("[NotificationService] snooze schedule error: \(error)")
-//                } else {
-//                    print("⏱ Scheduled snooze alarm [id: \(snoozeId)] at \(snoozeDate)")
-//                    self?.printAllAlarms()
-//                }
-//            }
         }
     }
 
@@ -99,26 +82,7 @@ final class NotificationService: NSObject {
         // 원래 알람 및 스누즈 알람 취소
         let snoozeId = "\(notificationId)_snooze"
         center.removePendingNotificationRequests(withIdentifiers: [notificationId, snoozeId])
-//        printAllAlarms()
     }
-
-    // TEST: - 알람 목록 출력
-//    private func printAllAlarms() {
-//        let alarms = repository.fetchAllAlarm()
-//        guard !alarms.isEmpty else {
-//            print("현재 저장된 알람이 없습니다.")
-//            return
-//        }
-//        print("📋 현재 저장된 알람 목록:")
-//        for alarm in alarms {
-//            let hour = alarm.hour
-//            let minute = alarm.minute
-//            let enabled = alarm.isEnabled
-//            let snooze = alarm.isSnoozeEnabled
-//            let id = alarm.id?.uuidString ?? "-"
-//            print("- [id: \(id)] \(hour):\(String(format: "%02d", minute)) | enabled: \(enabled) | snooze: \(snooze)")
-//        }
-//    }
 
     // MARK: - 오디오 재생 제어
     private func playLongSound() {
@@ -148,8 +112,7 @@ extension NotificationService: UNUserNotificationCenterDelegate {
 
         playLongSound()
 
-
-        // 2) 메인 스레드에서 커스텀 UIAlertController 띄우기
+        /// 메인 스레드에서 커스텀 UIAlertController 띄우기
         DispatchQueue.main.async {
 
             let scenes = UIApplication.shared.connectedScenes
@@ -164,8 +127,8 @@ extension NotificationService: UNUserNotificationCenterDelegate {
                         preferredStyle: .alert
                     )
                     alert.addAction(.init(title: "끄기", style: .destructive) { _ in
-                        self.stopLongSound()
-                    })
+                            self.stopLongSound()
+                        })
                     rootVC.present(alert, animated: true)
                 }
             }
@@ -184,8 +147,8 @@ extension NotificationService: UNUserNotificationCenterDelegate {
             let now = Date()
             let id = response.notification.request.identifier
             scheduleAlarm(at: now, snooze: true,
-                          title: response.notification.request.content.title,
-                          notificationId: id)
+                title: response.notification.request.content.title,
+                notificationId: id)
         default:
             break
         }

@@ -119,4 +119,10 @@ extension UIFont {
     static func lightFont() -> UIFont {
         return UIFont.systemFont(ofSize: 55, weight: .light)
     }
+    static func labelLightFont() -> UIFont {
+        return UIFont.systemFont(ofSize: 20, weight: .light)
+    }
+    static func ampmLightFont() -> UIFont {
+        return UIFont.systemFont(ofSize: 25, weight: .light)
+    }
 }
