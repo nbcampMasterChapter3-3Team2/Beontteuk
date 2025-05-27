@@ -15,7 +15,16 @@ import RxCocoa
 final class AlarmBottomSheetViewController: BaseViewController {
 
     private let bottomSheetView = AlarmBottomSheetView()
-    private let viewModel = AlarmBottomSheetViewModel()
+    private let viewModel: AlarmBottomSheetViewModel
+
+    init(viewModel: AlarmBottomSheetViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
 
     private let titleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -47,30 +56,37 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 cellType: AlarmBottomSheetTableViewCell.self
             )) { [weak self] row, option, cell in
             guard let self else { return }
-            let detail = self.viewModel.state.selections.value[option]
-            let isOn = self.viewModel.state.snoozeEnabled.value
+//            let detail = self.viewModel.state.inputLabel.value
+//            let isOn = self.viewModel.state.snoozeEnabled.value
 
             // 셀 구성
-            cell.configure(option: option,
-                detail: detail,
-                isOn: isOn)
-
-            cell.snoozeToggled
-                .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
-                .bind(to: self.viewModel.action)
-                .disposed(by: cell.disposeBag)
-
-            cell.labelText
-                .map { AlarmBottomSheetViewModel.Action.updateSelection(.label, $0) }
-                .bind(to: self.viewModel.action)
-                .disposed(by: cell.disposeBag)
-
+            cell.configure(
+                option: option
+//                detail: detail,
+//                isOn: isOn
+            )
+                switch option {
+//                case .repeat: break
+                case .label:
+                    cell.inputTextField
+                        .map { text in
+                        AlarmBottomSheetViewModel.Action.labelChanged(text)
+                    }
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+//                case .sound: break
+                case .snooze:
+                    cell.snoozeToggled
+                        .map(AlarmBottomSheetViewModel.Action.toggleSnooze)
+                        .bind(to: self.viewModel.action)
+                        .disposed(by: cell.disposeBag)
+                }
 
         }
             .disposed(by: disposeBag)
 
         bottomSheetView.dateChanged
-        .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
+            .map { AlarmBottomSheetViewModel.Action.dateChanged($0) }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
     }
@@ -93,7 +109,9 @@ final class AlarmBottomSheetViewController: BaseViewController {
             .do(onNext: { [weak self] in
             self?.dismiss(animated: true)
         })
-            .map { .save }
+            .map {
+                .save(repeatDays: nil, soundName: nil)
+        }
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
 

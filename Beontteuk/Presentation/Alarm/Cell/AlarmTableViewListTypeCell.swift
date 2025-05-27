@@ -35,7 +35,6 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.overrideUserInterfaceStyle = .light
-        toggleSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
     }
 
     required init?(coder: NSCoder) {
@@ -110,8 +109,7 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         }
     }
 
-    // MARK: - Actions
-    @objc private func switchValueChanged(_ sender: UISwitch) {
-        alarmChanged?(sender.isOn)
+    func getToogleSwitch() -> UISwitch {
+        return toggleSwitch
     }
 }

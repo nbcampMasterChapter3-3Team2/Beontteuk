@@ -110,7 +110,7 @@ final class CoreDataCDTimerRepository: CDTimerRepositoryInterface {
     /// 시/분/초 조합으로 최근 항목 존재 여부 확인
     func hasRecentItem(hour: Int, minute: Int, second: Int) -> Bool {
         let request: NSFetchRequest<CDTimer> = CDTimer.fetchRequest()
-        request.predicate = NSPredicate(format: "hour == %d AND minute == %d AND second == %d AND isRecent == true", hour, minute, second)
+        request.predicate = NSPredicate(format: "totalSecond == %f AND isRecent == true", Double(hour * 3600 + minute * 60 + second))
         request.fetchLimit = 1
         return (try? context.count(for: request)) ?? 0 > 0
     }

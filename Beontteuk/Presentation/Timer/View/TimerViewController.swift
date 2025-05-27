@@ -8,24 +8,85 @@
 import UIKit
 import SnapKit
 import Then
+import RxCocoa
 
 final class TimerViewController: BaseViewController {
+
+    // MARK: - Properties
+
+    private let viewModel: TimerViewModel
 
     // MARK: - UI Components
 
     private let timerView = TimerView()
+    private let editButton = CustomUIBarButtonItem(type: .edit(action: {}))
 
+    // MARK: - Init, Deinit, required
+
+    init(viewModel: TimerViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+    
     // MARK: - View Life Cycle
 
     override func loadView() {
         view = timerView
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: - Style Helper
 
+    override func setStyles() {
+        navigationItem.leftBarButtonItem = editButton
+    }
+
+    // MARK: - Delegate Helper
+
+    override func setDelegates() {
         timerView.setTableViewDelegate(self)
-        navigationItem.leftBarButtonItem = CustomUIBarButtonItem(type: .edit(action: {}))
+    }
+
+    // MARK: - Bind
+
+    override func bindViewModel() {
+        viewModel.action.onNext(.viewDidLoad)
+
+        if let button = editButton.customView as? UIButton {
+            button.rx.tap
+                .asDriver()
+                .drive(with: self) { owner, _ in
+                    owner.timerView.toggleEditingTableView()
+                }
+                .disposed(by: disposeBag)
+        }
+
+        timerView.didItemDeleted
+            .map { TimerViewModel.Action.didDeletedTimerItem($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+
+        timerView.didTapRecentTimerButton
+            .map { TimerViewModel.Action.didTapRecentTimerButton($0) }
+            .bind(to: viewModel.action)
+            .disposed(by: disposeBag)
+
+        viewModel.state.activeTimers
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, timers in
+                owner.timerView.updateSnapshot(with: timers, to: .active)
+            }
+            .disposed(by: disposeBag)
+
+        viewModel.state.recentTimers
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(with: self) { owner, timers in
+                owner.timerView.updateSnapshot(with: timers, to: .recent)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
@@ -33,8 +94,59 @@ extension TimerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section = TimerSection.allCases[section]
         switch section {
-        case .current:
+        case .active:
             let header = TimerAddHeader()
+
+            header.didTapAddButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapAddButton)
+                }
+                .disposed(by: header.disposeBag)
+
+            header.didTapCancelButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapCancelButton)
+                }
+                .disposed(by: header.disposeBag)
+
+            header.didTapStartButton
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    owner.viewModel.action.onNext(.didTapStartButton)
+                }
+                .disposed(by: header.disposeBag)
+
+            header.didChangeTimePicker
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, time in
+                    owner.viewModel.action.onNext(.didChangeTimePicker(time))
+                }
+                .disposed(by: header.disposeBag)
+
+            viewModel.state.showTimePicker
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, isShow in
+                    header.resetTimePicker()
+                    header.showTimePicker(isShow)
+                }
+                .disposed(by: header.disposeBag)
+
+            viewModel.state.canStartTimer
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, isEnabled in
+                    header.updateStartButtonState(isEnabled)
+                }
+                .disposed(by: header.disposeBag)
+
+            viewModel.state.shouldResetTimePicker
+                .asDriver(onErrorDriveWith: .empty())
+                .drive(with: self) { owner, _ in
+                    header.resetTimePicker()
+                }
+                .disposed(by: header.disposeBag)
+
             return header
         case .recent:
             let label = UILabel().then {
@@ -56,7 +168,7 @@ extension TimerViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         let section = TimerSection.allCases[section]
         switch section {
-        case .current: return 334
+        case .active: return 334
         case .recent: return 44
         }
     }
