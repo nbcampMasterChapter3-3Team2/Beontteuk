@@ -73,16 +73,28 @@ extension WorldClock {
     
     // ✅ 오늘/어제 판단 (현지 기준)
     var dayLabelText: String {
-        guard let cityTimeZone = TimeZone(identifier: timeZoneIdentifier!) else { return "" }
+        guard let timeZoneIdentifier,
+              let cityTimeZone = TimeZone(identifier: timeZoneIdentifier) else { return "" }
+
         let now = Date()
-        let cityNow = Calendar.current.date(byAdding: .second, value: cityTimeZone.secondsFromGMT(), to: now) ?? now
-        
-        if Calendar.current.isDateInToday(cityNow) {
+
+        // 현지 기준 시간으로 변환 (도시 기준의 Date 객체)
+        let formatter = DateFormatter()
+        formatter.timeZone = cityTimeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+        let cityDateString = formatter.string(from: now)
+        let cityDate = formatter.date(from: cityDateString) ?? now
+
+        // 기준 캘린더는 항상 서울 (디바이스 기준)
+        let currentCalendar = Calendar(identifier: .gregorian)
+        let today = currentCalendar.startOfDay(for: now)
+
+        if cityDate == today {
             return "오늘"
-        } else if Calendar.current.isDateInYesterday(cityNow) {
+        } else if cityDate < today {
             return "어제"
         } else {
-            return "오늘"
+            return "내일"
         }
     }
     
