@@ -49,6 +49,7 @@ final class TimerView: BaseView {
 
         tableView.snp.makeConstraints {
             $0.top.directionalHorizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.directionalHorizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
     }

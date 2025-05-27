@@ -26,12 +26,12 @@ final class TimerActiveCell: BaseTableViewCell {
 
     private let timeLabel = UILabel().then {
         $0.textColor = .neutral1000
-        $0.font = .systemFont(ofSize: 50, weight: .medium)
+        $0.font = .lightFont()
     }
 
     private let timeKRLabel = UILabel().then {
         $0.textColor = .neutral1000
-        $0.font = .systemFont(ofSize: 20, weight: .medium)
+        $0.font = .systemFont(ofSize: 20, weight: .light)
     }
 
     private let controlButton = UIButton().then {
@@ -67,7 +67,9 @@ final class TimerActiveCell: BaseTableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        setProgressPath()
+        DispatchQueue.main.async {
+            self.setProgressPath()
+        }
     }
 
     override func prepareForReuse() {
@@ -92,12 +94,13 @@ final class TimerActiveCell: BaseTableViewCell {
         controlButton.layer.addSublayer(progressLayer)
 
         labelStackView.snp.makeConstraints {
-            $0.verticalEdges.leading.equalToSuperview().inset(20)
+            $0.verticalEdges.equalToSuperview().inset(8)
+            $0.leading.equalToSuperview().inset(16)
         }
 
         controlButton.snp.makeConstraints {
             $0.leading.equalTo(labelStackView.snp.trailing).offset(20)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(16)
             $0.centerY.equalTo(labelStackView)
             $0.size.equalTo(70)
         }

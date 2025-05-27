@@ -26,12 +26,12 @@ final class TimerRecentCell: BaseTableViewCell {
 
     private let timeLabel = UILabel().then {
         $0.textColor = .neutral300
-        $0.font = .systemFont(ofSize: 50, weight: .medium)
+        $0.font = .lightFont()
     }
 
     private let timeKRLabel = UILabel().then {
         $0.textColor = .neutral300
-        $0.font = .systemFont(ofSize: 20, weight: .medium)
+        $0.font = .systemFont(ofSize: 20, weight: .light)
     }
 
     private let startButton = UIButton().then {
@@ -79,11 +79,13 @@ final class TimerRecentCell: BaseTableViewCell {
         circleView.addSubviews(startButton)
 
         labelStackView.snp.makeConstraints {
-            $0.verticalEdges.leading.equalToSuperview().inset(20)
+            $0.verticalEdges.equalToSuperview().inset(8)
+            $0.leading.equalToSuperview().inset(16)
         }
 
-        circleView.snp.makeConstraints {$0.leading.equalTo(labelStackView.snp.trailing).offset(20)
-            $0.trailing.equalToSuperview().inset(20)
+        circleView.snp.makeConstraints {
+            $0.leading.equalTo(labelStackView.snp.trailing).offset(20)
+            $0.trailing.equalToSuperview().inset(16)
             $0.centerY.equalTo(labelStackView)
             $0.size.equalTo(70)
         }
