@@ -12,8 +12,10 @@ protocol StopWatchUseInt {
     func fetchLastSession() -> StopWatchEntity?
     /// 새로운 세션 생성
     func createSession() -> StopWatchEntity
-    /// 기존 세션 업데이트
+    /// 기존 세션 업데이트 - elapsedBeforePause
     func updateSession(by id: UUID, with elapsedBeforePause: Double)
+    /// 기존 세션 업데이트 - startTime
+    func updateSession(by id: UUID, with startTime: Date)
     /// 기존 세션 삭제
     func deleteSession(by id: UUID)
 }
