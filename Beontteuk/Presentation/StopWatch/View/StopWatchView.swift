@@ -71,6 +71,7 @@ final class StopWatchView: BaseView {
         }
 
         timerLabel.snp.makeConstraints {
+            $0.width.equalTo(275)
             $0.top.equalTo(iconImageView.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
         }
