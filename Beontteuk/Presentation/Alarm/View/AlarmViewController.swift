@@ -52,8 +52,8 @@ final class AlarmViewController: BaseViewController {
         // 알람 리스트 바인딩
         viewModel.state.alarmsRelay
             .bind(to: alarmView.getTableView().rx.items(
-                cellIdentifier: AlarmTableViewListTypeCell.className,
-                cellType: AlarmTableViewListTypeCell.self
+                cellIdentifier: AlarmTableViewCell.className,
+                cellType: AlarmTableViewCell.self
             )) { row, alarm, cell in
             guard var label = alarm.label else { return }
             label = label == "" ? "알람" : label
@@ -88,7 +88,7 @@ final class AlarmViewController: BaseViewController {
             .drive(onNext: { [weak self] hasNext in
             guard let header = self?.alarmView
                 .getTableView()
-                .tableHeaderView as? AlarmTableViewHeaderCell else { return }
+                .tableHeaderView as? AlarmTableViewHeader else { return }
             header.configureHasNextAlarm(to: hasNext)
         })
             .disposed(by: disposeBag)
@@ -156,8 +156,8 @@ final class AlarmViewController: BaseViewController {
     }
 
     private func setTableHeader() {
-        let header = AlarmTableViewHeaderCell(
-            reuseIdentifier: AlarmTableViewHeaderCell.className
+        let header = AlarmTableViewHeader(
+            reuseIdentifier: AlarmTableViewHeader.className
         )
         header.onAddTap = { [weak self] in
             self?.openbottomSheetView(type: .create)

@@ -1,5 +1,5 @@
 //
-//  AlarmBottomSheetTableViewCell.swift
+//  BottomSheetTableViewCell.swift
 //  Beontteuk
 //
 //  Created by yimkeul on 5/22/25.
@@ -11,7 +11,7 @@ import SnapKit
 import Then
 import RxCocoa
 
-final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
+final class BottomSheetTableViewCell: BaseTableViewCell {
 
     var snoozeToggled: ControlProperty<Bool> {
          toggleSwitch.rx.value
@@ -100,7 +100,7 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
     ///   - detail: repeat/sound의 상세 텍스트, label의 현재 입력값
     ///   - isOn: snooze 스위치 상태
     func configure(
-        option: AlarmSheetTableOption,
+        option: BottomSheetTableOption,
         detail: String? = nil,
         isOn: Bool = false
     ) {
@@ -125,7 +125,6 @@ final class AlarmBottomSheetTableViewCell: BaseTableViewCell {
 //            detailLabel.isHidden = false
 
         case .label:
-//            selectionStyle = .default
             textField.placeholder = option.detailText
             textField.text = detail
             textField.isHidden = false

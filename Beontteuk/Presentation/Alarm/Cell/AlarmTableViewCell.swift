@@ -1,5 +1,5 @@
 //
-//  AlarmTableViewListTypeCell.swift
+//  AlarmTableViewCell.swift
 //  Beontteuk
 //
 //  Created by yimkeul on 5/21/25.
@@ -10,21 +10,21 @@ import SnapKit
 import Then
 import RxSwift
 
-final class AlarmTableViewListTypeCell: BaseTableViewCell {
+final class AlarmTableViewCell: BaseTableViewCell {
     var alarmChanged: ((Bool) -> Void)?
 
     private let timeLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 50, weight: .medium)
+        $0.font = .lightFont()
         $0.textColor = .neutral300
     }
 
     private let amPmLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 25, weight: .medium)
+        $0.font = .ampmLightFont()
         $0.textColor = .neutral300
     }
 
     private let detailLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 20, weight: .medium)
+        $0.font = .labelLightFont()
         $0.textColor = .neutral300
     }
 
@@ -55,17 +55,19 @@ final class AlarmTableViewListTypeCell: BaseTableViewCell {
         )
 
         timeLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().offset(20)
+            $0.leading.equalToSuperview().inset(16)
+            $0.top.equalToSuperview().inset(8)
         }
 
         amPmLabel.snp.makeConstraints {
-            $0.leading.equalTo(timeLabel.snp.trailing).offset(4)
+            $0.leading.equalTo(timeLabel.snp.trailing).offset(8)
             $0.firstBaseline.equalTo(timeLabel)
         }
 
         detailLabel.snp.makeConstraints {
             $0.top.equalTo(timeLabel.snp.bottom)
             $0.leading.equalTo(timeLabel)
+            $0.bottom.equalToSuperview().inset(8)
         }
 
         toggleSwitch.snp.makeConstraints {

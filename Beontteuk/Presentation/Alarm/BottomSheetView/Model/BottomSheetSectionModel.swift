@@ -11,7 +11,7 @@ import RxDataSources
 
 /// 테이블뷰의 섹션 아이템
 enum BottomSheetItem {
-    case option(AlarmSheetTableOption)
+    case option(BottomSheetTableOption)
     case delete
 }
 

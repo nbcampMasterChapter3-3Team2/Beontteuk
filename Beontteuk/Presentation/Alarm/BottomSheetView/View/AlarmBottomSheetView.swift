@@ -26,7 +26,7 @@ final class AlarmBottomSheetView: BaseView {
     }
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped).then {
-        $0.register(AlarmBottomSheetTableViewCell.self, forCellReuseIdentifier: AlarmBottomSheetTableViewCell.className)
+        $0.register(BottomSheetTableViewCell.self, forCellReuseIdentifier: BottomSheetTableViewCell.className)
         $0.register(UITableViewCell.self, forCellReuseIdentifier: "DeleteCell")
         $0.isScrollEnabled = false
         $0.rowHeight = UITableView.automaticDimension

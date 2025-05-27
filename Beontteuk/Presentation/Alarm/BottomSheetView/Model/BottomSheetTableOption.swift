@@ -1,5 +1,5 @@
 //
-//  AlarmSheetTableOption.swift
+//  BottomSheetTableOption.swift
 //  Beontteuk
 //
 //  Created by yimkeul on 5/23/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AlarmSheetTableOption: CaseIterable {
+enum BottomSheetTableOption: CaseIterable {
 //    case `repeat`
     case label
 //    case sound

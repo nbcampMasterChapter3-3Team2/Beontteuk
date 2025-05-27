@@ -20,10 +20,9 @@ final class AlarmView: BaseView {
     }
 
     private let tableView = UITableView(frame: .zero, style: .grouped).then {
-        $0.register(AlarmTableViewListTypeCell.self, forCellReuseIdentifier: AlarmTableViewListTypeCell.className)
+        $0.register(AlarmTableViewCell.self, forCellReuseIdentifier: AlarmTableViewCell.className)
         $0.separatorStyle = .singleLine
         $0.backgroundColor = .clear
-        $0.rowHeight = 125
     }
 
     override func setLayout() {
@@ -38,7 +37,8 @@ final class AlarmView: BaseView {
         tableView.snp.makeConstraints {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview()        }
+            $0.bottom.equalToSuperview()
+        }
     }
 
     func getTableView() -> UITableView {

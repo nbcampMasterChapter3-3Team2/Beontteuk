@@ -1,5 +1,5 @@
 //
-//  AlarmTableViewHeaderCell.swift
+//  AlarmTableViewHeader.swift
 //  Beontteuk
 //
 //  Created by yimkeul on 5/21/25.
@@ -11,7 +11,7 @@ import SnapKit
 import Then
 import RxCocoa
 
-final class AlarmTableViewHeaderCell: BaseTableViewHeaderFooterView {
+final class AlarmTableViewHeader: BaseTableViewHeaderFooterView {
 
     var onAddTap: (() -> Void)?
 

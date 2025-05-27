@@ -59,9 +59,9 @@ final class AlarmBottomSheetViewController: BaseViewController {
                 switch item {
                 case .option(let option):
                     guard let cell = tv.dequeueReusableCell(
-                        withIdentifier: AlarmBottomSheetTableViewCell.className,
+                        withIdentifier: BottomSheetTableViewCell.className,
                         for: ip
-                    ) as? AlarmBottomSheetTableViewCell else { return UITableViewCell() }
+                    ) as? BottomSheetTableViewCell else { return UITableViewCell() }
 
                     // 초기값 detail/isOn 결정
                     let detail: String?
@@ -124,7 +124,7 @@ final class AlarmBottomSheetViewController: BaseViewController {
             }
         )
         // 2) 섹션 모델 생성
-        let options = AlarmSheetTableOption.allCases.map(BottomSheetItem.option)
+        let options = BottomSheetTableOption.allCases.map(BottomSheetItem.option)
         let deleteItem = BottomSheetItem.delete
         var sections = [
             BottomSheetSectionModel(header: nil, items: options)]
