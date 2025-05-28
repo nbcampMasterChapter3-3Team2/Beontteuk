@@ -42,11 +42,11 @@ final class StopWatchViewController: BaseViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Bind
 
     override func bindViewModel() {
@@ -79,17 +79,18 @@ final class StopWatchViewController: BaseViewController {
             }.disposed(by: disposeBag)
 
         viewModel.state.stopWatchButtonRelay
-            .distinctUntilChanged() 
             .bind { [weak self] state in
                 guard let self else { return }
                 switch state {
                 case .initial:
                     stopWatchView.leftButton.updateType(type: .lap)
                     stopWatchView.leftButton.isEnabled = false
+
                     stopWatchView.rightButton.updateType(type: .start)
                 case .progress:
                     stopWatchView.leftButton.updateType(type: .lap)
                     stopWatchView.leftButton.isEnabled = true
+
                     stopWatchView.rightButton.updateType(type: .stop)
                 case .pause:
                     stopWatchView.leftButton.updateType(type: .reset)

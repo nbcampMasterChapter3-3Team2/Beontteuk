@@ -20,12 +20,12 @@ final class LapCell: BaseTableViewCell {
     }
 
     private let lapTimeLabel = UILabel().then {
-        $0.textColor = .neutral300
+        $0.textColor = .neutral1000
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
 
     private let absoluteTimeLabel = UILabel().then {
-        $0.textColor = .neutral1000
+        $0.textColor = .neutral300
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
 
@@ -53,15 +53,15 @@ final class LapCell: BaseTableViewCell {
             $0.centerY.equalToSuperview()
         }
 
-        absoluteTimeLabel.snp.makeConstraints {
-            $0.width.equalTo(77)
+        lapTimeLabel.snp.makeConstraints {
+            $0.width.equalTo(80)
             $0.trailing.equalToSuperview().inset(15)
             $0.centerY.equalToSuperview()
         }
 
-        lapTimeLabel.snp.makeConstraints {
-            $0.width.equalTo(77)
-            $0.trailing.equalTo(absoluteTimeLabel.snp.leading).offset(-31)
+        absoluteTimeLabel.snp.makeConstraints {
+            $0.width.equalTo(80)
+            $0.trailing.equalTo(lapTimeLabel.snp.leading).offset(-31)
             $0.centerY.equalToSuperview()
         }
     }
@@ -70,8 +70,8 @@ final class LapCell: BaseTableViewCell {
 
     func configureItems(with lap: LapRecordEntity) {
         lapLabel.text = "랩\(lap.lapIndex)"
-        lapTimeLabel.text = "\(lap.lapTime)"
-        absoluteTimeLabel.text = "\(lap.absoluteTime)"
+        absoluteTimeLabel.text = "\(lap.formattedAbsoluteTime)"
+        lapTimeLabel.text = "\(lap.formattedLapTime)"
     }
 }
 
