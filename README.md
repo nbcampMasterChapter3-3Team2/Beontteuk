@@ -7,11 +7,12 @@
 ## 📸 화면 미리보기
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/95a0720d-1671-4466-acb2-6b1a9310595c"/>
+  <img src="https://github.com/user-attachments/assets/bc55aed7-b0f5-45f4-addd-bd1a5c5379fc"/>
 </p>
 
 
 ---
+
 
 ## 🗓 프로젝트 일정
 
