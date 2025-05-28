@@ -100,6 +100,8 @@
 - **SnapKit**
 - **Then**
 - **DI & DIP**
+- **SwiftUI**
+- **ActivityKit**
 
 ---
 
@@ -181,17 +183,70 @@ extension WorldClockEntity: IdentifiableType {
 typealias WorldClockSection = AnimatableSectionModel<String, WorldClockEntity>
 ```
 
+
 ### 곽다은
 - **문제**
-   - ?
+   - 여러 타이머 동시 실행 시 남은 시간이 일괄 갱신되어 UI가 부자연스러움
 - **원인**
-  - ?
+  - 타이머 ViewModel이 단일 RxTimer를 공유하며 모든 타이머가 동일 시간 흐름으로 작동함
 - **해결**
-  - ?
+  - 타이머마다 고유의 RxTimer를 생성하고, 각 타이머에 전용 disposeBag을 할당해 개별적으로 구독을 관리함
+  - 타이머가 종료되면 해당 구독도 자동으로 해제되어 메모리 누수 방지
+  - 각 타이머는 1초마다 개별적으로 ticker(PublishRelay)를 통해 UI 업데이트를 트리거함
+  - UITableView의 보이는 셀만 업데이트하여 불필요한 스냅샷 연산을 줄이고 성능을 최적화함
+- **코드**
+  - ViewModel
+  ```swift
+  private func startTicking(timer: ActiveTimer) {
+      guard let id = timer.id else { return }
+  
+      let timer = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+          .filter { _ in timer.isRunning }
+          .asDriver(onErrorDriveWith: .empty())
+          .drive(with: self) { owner, _ in
+              if timer.isExpired {
+                  guard let row = owner.state.activeTimers.value
+                      .map({ $0.active! }).firstIndex(of: timer) else { return }
+                  owner.deleteTimer(for: IndexPath(row: row, section: 0))
+              } else {
+                  owner.state.tick.accept(())
+                  LiveActivityManager.shared.update(for: id, remainTime: timer.remainTime)
+              }
+          }
+  
+      timerBag[id] = timer
+  }
+  ```
 
-```swift
-Trouble Shooting
-```
+  - ViewController
+  ```swift
+  viewModel.state.tick
+      .asDriver(onErrorDriveWith: .empty())
+      .drive(with: self) { owner, _ in
+          owner.timerView.updateVisibleTimerCells()
+      }
+      .disposed(by: disposeBag)
+  ```
+
+  - View
+  ```swift
+  func updateVisibleTimerCells() {
+      let visibleIndexPaths = tableView.indexPathsForVisibleRows ?? []
+  
+      for indexPath in visibleIndexPaths {
+          guard let item = dataSource?.itemIdentifier(for: indexPath),
+                let cell = tableView.cellForRow(at: indexPath) as? TimerActiveCell,
+                let timer = item.active else { continue }
+  
+          cell.configureCell(
+              time: timer.timeString,
+              timeKR: timer.localizedTimeString,
+              progress: timer.progress
+          )
+          cell.updateState(to: timer.isRunning ? .running : .pause)
+      }
+  }
+  ```
 
 ### 손하경
 - **문제**
@@ -291,13 +346,24 @@ private func startClockTimer() {
 ```
 
 ### 곽다은
-#### ✅ 의존성 주입 (Dependency Injection)
-- ?
-  - ?
-
-- 사용 방식
+#### ✅ 타이머 Live Activity
+- 실행중인 타이머를 알림센터 및 잠금 화면에서 실시간 카운팅을 확인할 수 있습니다.
+- 타이머를 생성하여 실행하거나, 일시정지 상태였던 타이머를 재개하는 usecase 메서드에서 `start(for:endAfter)`을 호출하여 시작합니다.
+- 타이머가 종료, 삭제 또는 일시정지하는 usecase 메서드에서 `stop(for:)`를 호출하여 멈출 수 있습니다.
+- 각 RxTimer에서 `update(for:remainTime)`을 호출하여 상태를 업데이트합니다.
+- 작동 방식
 ```swift
+final class LiveActivityManager: ObservableObject {
+    static let shared = LiveActivityManager()
+
+    private var activityMap: [UUID: Activity<BeontteukWidgetAttributes>] = [:]
+
+    private init() {}
+
+    // ...
+}
 ```
+`[UUID: Activity<CustomAttributes>]` 타입인 `activityMap`로 업데이트 또는 멈출 Activity를 찾아 작업을 수행합니다.
 
 ### 손하경
 ### ✅ 의존성 역전 원칙
