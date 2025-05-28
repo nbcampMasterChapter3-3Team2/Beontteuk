@@ -273,7 +273,7 @@ Dependency Injection
 
         // 2) 스누즈 자동 재알림 (1분 뒤)
         if snooze {
-            let snoozeDate = date.addingTimeInterval(15)
+            let snoozeDate = date.addingTimeInterval(60)
             let snoozeComps = Calendar.current.dateComponents([.hour, .minute, .second], from: snoozeDate)
             let snoozeTrigger = UNCalendarNotificationTrigger(dateMatching: snoozeComps, repeats: false)
             let snoozeId = "\(notificationId)_snooze"
