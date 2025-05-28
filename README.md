@@ -17,7 +17,6 @@
 
 ---
 
-
 ## 🗓 프로젝트 일정
 
 - **시작일:** 2025년 5월 20일
@@ -141,14 +140,45 @@
 
 ### 백래훈
 - **문제**
-   - ?
+  - 앱이 foreground로 진입하거나 viewWillAppear 시점에서 12/24시간제 또는 1분 단위 시간이 변했음에도 테이블 뷰의 시각 정보가 갱신되지 않음
 - **원인**
-  - ?
+  - 초기에 RxCocoa의 `.bind(to:)` 방식으로 단일 섹션을 구성하여 동작에는 문제가 없었음
+  - 하지만 삭제/정렬 기능 구현을 위해 RxDataSources로 전환
+  - RxDataSources는 내부적으로 `==` 연산자를 기준으로 diff를 계산함
+  - `WorldClockEntity`에서 id와 `isEditing`만을 기준으로 비교하던 `==` 연산자에서는 시각 정보인 `hourMinuteString`, `amPmString`의 변화는 셀 변화로 인식되지 않음
+    - → 그 결과 `configureCell()`이 호출되지 않아 셀 내용이 갱신되지 않음
 - **해결**
-  - ?
+  - `WorldClockEntity`의 `==` 연산자 구현을 수정하여 비교 기준에 `hourMinuteString`, `amPmString`도 포함시킴
+    - → 셀의 시간 시각이 변할 경우에도 RxDataSources가 셀을 갱신 대상으로 판단
+    - → 시각 정보 및 12/24시간제가 정상적으로 분 단위로 실시간 반영됨을 확인함
 
 ```swift
-Trouble Shooting
+struct WorldClockEntity: Equatable, Identifiable {
+    let id: UUID?
+    let cityName: String?
+    let cityNameKR: String?
+    let timeZoneIdentifier: String?
+    let createdAt: Date?
+    let orderIndex: Int16
+    let hourMinuteString: String
+    let amPmString: String?
+    let hourDifferenceText: String
+    let dayLabelText: String
+    var isEditing: Bool
+}
+
+extension WorldClockEntity: IdentifiableType {
+    var identity: String { return id?.uuidString ?? UUID().uuidString }
+
+    static func == (lhs: WorldClockEntity, rhs: WorldClockEntity) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.isEditing == rhs.isEditing &&
+               lhs.hourMinuteString == rhs.hourMinuteString &&
+               lhs.amPmString == rhs.amPmString
+    }
+}
+
+typealias WorldClockSection = AnimatableSectionModel<String, WorldClockEntity>
 ```
 
 ### 곽다은
@@ -184,7 +214,7 @@ Trouble Shooting
 - **해결**
   - UNUserNotificationCenterDelegate에서 아래 코드를 사용하고 foreground에서의 이벤트 처리 때 AVPlayer로 음원 무한 루프 실행
 
-  ```
+  ```swift
     func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification,
@@ -192,7 +222,7 @@ Trouble Shooting
     ) 
   ```
 
-  ```
+  ```swift
       do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.numberOfLoops = -1 // 무한루프
@@ -209,13 +239,55 @@ Trouble Shooting
 
 ## 📝 공유하고 싶은 개발 내용
 ### 백래훈
-#### ✅ 모듈화 (Modularity)
-- ?
-  - ?
+#### ✅ 12/24시간제 자동 반영
+- `DateFormatter.dateFormat(fromTemplate:)`를 활용해서 사용자 기기 설정에 따라 시간 포맷 자동 전환
+- 앱이 background → foreground로 진입했을 때도 NotificationCenter + Rx 흐름으로 자동 업데이트 처리
+- `hourMinuteString`, `amPmString`을 분리하여 label에 개별적으로 표현 (폰트 스타일 분리 가능)
 
-- 사용 방식
 ```swift
-Dependency Injection
+private func addCustomObserver() {
+    NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(appWillEnterForeground),
+        name: UIApplication.willEnterForegroundNotification,
+        object: nil
+    )
+}
+
+private func bindViewWillAppear() {
+    worldClockViewModel.action.onNext(.viewWillAppear)
+}
+
+@objc private func appWillEnterForeground() {
+    bindViewWillAppear()
+}
+```
+```swift
+private func fetchWorldClock() {
+    Observable.just(useCase.fetchAll())
+        .subscribe(with: self) { owner, items in
+            owner.state.items.accept(items)
+        }
+        .disposed(by: disposeBag)
+}
+```
+
+#### 🔁 분 단위 시계 실시간 갱신
+- `Timer(fireAt:interval:)`를 사용하여 **다음 정각(분의 0초)**에 맞춰 타이머 시작
+- `RunLoop.main.add(timer, forMode: .common)`으로 메인 런루프에 등록하여 UI 업데이트와 충돌 없이 동작
+- `updateClock()`이 호출되면 `fetchWorldClock()` 메서드를 통해 현재 시간 데이터를 다시 불러옴
+```swift
+private func startClockTimer() {
+    let now = Date()
+    let intervalToNextMinute = 60 - now.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 60)
+    let nextFullMinute = now.addingTimeInterval(intervalToNextMinute)
+    timer = Timer(fireAt: nextFullMinute, interval: 60, target: self, selector: #selector(updateClock), userInfo: nil, repeats: true)
+    RunLoop.main.add(timer!, forMode: .common)
+}
+
+@objc private func updateClock() {
+    fetchWorldClock()
+}
 ```
 
 ### 곽다은
@@ -238,7 +310,7 @@ Dependency Injection
 ```
 
 ### 이세준
-### 알람 기능 (UNUserNotificationCenter)
+#### 알람 기능 (UNUserNotificationCenter)
 - 앱의 알림 기능을 구현하고, 반복 재생을 구현하는 방법을 공유합니다.
 - 사용 방식
 ```swift
