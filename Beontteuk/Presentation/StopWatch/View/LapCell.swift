@@ -19,12 +19,12 @@ final class LapCell: BaseTableViewCell {
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
 
-    private let lappedTimeLabel = UILabel().then {
+    private let lapTimeLabel = UILabel().then {
         $0.textColor = .neutral300
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
 
-    private let timeIntervalLabel = UILabel().then {
+    private let absoluteTimeLabel = UILabel().then {
         $0.textColor = .neutral1000
         $0.font = .systemFont(ofSize: 18, weight: .medium)
     }
@@ -46,28 +46,32 @@ final class LapCell: BaseTableViewCell {
 
     override func setLayout() {
         super.setLayout()
-        contentView.addSubviews(lapLabel, lappedTimeLabel, timeIntervalLabel)
+        contentView.addSubviews(lapLabel, lapTimeLabel, absoluteTimeLabel)
 
         lapLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(15)
             $0.centerY.equalToSuperview()
         }
 
-        timeIntervalLabel.snp.makeConstraints {
+        absoluteTimeLabel.snp.makeConstraints {
             $0.width.equalTo(77)
             $0.trailing.equalToSuperview().inset(15)
             $0.centerY.equalToSuperview()
         }
 
-        lappedTimeLabel.snp.makeConstraints {
+        lapTimeLabel.snp.makeConstraints {
             $0.width.equalTo(77)
-            $0.trailing.equalTo(timeIntervalLabel.snp.leading).offset(-31)
+            $0.trailing.equalTo(absoluteTimeLabel.snp.leading).offset(-31)
             $0.centerY.equalToSuperview()
         }
     }
 
     // MARK: - Methods
 
-    func configureItems() { }
+    func configureItems(with lap: LapRecordEntity) {
+        lapLabel.text = "랩\(lap.lapIndex)"
+        lapTimeLabel.text = "\(lap.lapTime)"
+        absoluteTimeLabel.text = "\(lap.absoluteTime)"
+    }
 }
 

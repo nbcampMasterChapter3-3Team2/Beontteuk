@@ -34,11 +34,11 @@ extension LapRecord {
         return NSFetchRequest<LapRecord>(entityName: "LapRecord")
     }
 
-    @NSManaged public var id: UUID?                     // 고유 식별자
+    @NSManaged public var id: UUID                      // 고유 식별자
     @NSManaged public var lapIndex: Int16               // 몇 번째 랩인지 식별
     @NSManaged public var lapTime: Double               // 해당 랩의 시간 (초 단위)
     @NSManaged public var absoluteTime: Double          // 언제 랩을 눌렀는지 (누른 시점)
-    @NSManaged public var recordedAt: Date?             // 랩 저장 시각
+    @NSManaged public var recordedAt: Date              // 랩 저장 시각
     @NSManaged public var session: StopWatchSession?    // 어떤 세션에 속한 랩인지 (Relationship)
 
     func toEntity() -> LapRecordEntity {
@@ -50,7 +50,6 @@ extension LapRecord {
             recordedAt: recordedAt
         )
     }
-    
 }
 
 extension LapRecord : Identifiable {

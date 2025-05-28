@@ -56,8 +56,8 @@ final class DefaultButton: UIButton {
         self.backgroundColor = type.bgColor
     }
 
-    ///
-    func updateButtonType(type: DefaultButtonType) {
+    /// 버튼의 타입을 변경
+    func updateType(type: DefaultButtonType) {
         self.type = type
         configureDefaultButton()
     }

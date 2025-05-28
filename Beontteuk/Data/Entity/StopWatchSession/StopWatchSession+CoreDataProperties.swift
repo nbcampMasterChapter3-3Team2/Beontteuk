@@ -32,11 +32,11 @@ extension StopWatchSession {
         return NSFetchRequest<StopWatchSession>(entityName: "StopWatchSession")
     }
 
-    @NSManaged public var id: UUID?                     // 고유 식별자
+    @NSManaged public var id: UUID                      // 고유 식별자
     @NSManaged public var startTime: Date?              // 타이머가 마지막으로 시작된 시점 기록
     @NSManaged public var isRunning: Bool               // 현재 실행중인지 판별
     @NSManaged public var elapsedBeforePause: Double    // 일시정지 시 누적된 시간 보존
-    @NSManaged public var createdAt: Date?              // 스톱워치 생성 시각
+    @NSManaged public var createdAt: Date               // 스톱워치 생성 시각
     
     @NSManaged public var laps: NSSet?                  // 랩 기록 저장 및 조회용 관계 필드
     
@@ -57,6 +57,12 @@ extension StopWatchSession {
             createdAt: createdAt,
             laps: laps
         )
+    }
+
+    func toEntity(with lapsNSSet: NSSet?) -> [LapRecordEntity] {
+        guard let lapsNSSet,
+              let laps = lapsNSSet as? Set<LapRecord> else { return [] }
+        return laps.compactMap { $0.toEntity() }
     }
 }
 

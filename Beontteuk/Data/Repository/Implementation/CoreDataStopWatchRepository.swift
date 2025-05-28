@@ -34,7 +34,27 @@ final class CoreDataStopWatchRepository: StopWatchSessionRepositoryInterface {
         session.isRunning = true
         return session
     }
-    
+
+    /// 기존 세션 업데이트 - elapsedBeforePause
+    func updateSession(_ session: StopWatchSession, with elapsedBeforePause: Double) {
+        session.elapsedBeforePause = elapsedBeforePause
+        do {
+            try context.save()
+        } catch {
+            print("❌ 세션 업데이트를 실패하였습니다.: \(error)")
+        }
+    }
+
+    /// 기존 세션 업데이트 - startTime
+    func updateSession(_ session: StopWatchSession, with startTime: Date) {
+        session.startTime = startTime
+        do {
+            try context.save()
+        } catch {
+            print("❌ 세션 업데이트를 실패하였습니다.: \(error)")
+        }
+    }
+
     /// 기존 세션 삭제
     func deleteSession(_ session: StopWatchSession) {
         context.delete(session)
@@ -54,6 +74,14 @@ final class CoreDataStopWatchRepository: StopWatchSessionRepositoryInterface {
                 print("❌ 세션 저장을 실패하였습니다.: \(error)")
             }
         }
+    }
+
+    /// ID로 스톱워치 조회
+    func fetchStopWatch(by id: UUID) -> StopWatchSession? {
+        let request: NSFetchRequest<StopWatchSession> = StopWatchSession.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
     }
 }
 
