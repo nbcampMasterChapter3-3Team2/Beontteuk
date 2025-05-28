@@ -1,6 +1,6 @@
 //
 //  SceneDelegate.swift
-//  Alarm
+//  Beontteuk
 //
 //  Created by 백래훈 on 5/20/25.
 //
@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        window.rootViewController = ViewController()
+        window.rootViewController = TabBarController()
         window.makeKeyAndVisible()
         
         self.window = window

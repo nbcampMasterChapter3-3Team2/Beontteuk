@@ -1,0 +1,182 @@
+[
+  {
+      "cityName": "Seoul",
+      "cityNameKR": "서울, 대한민국",
+      "timeZoneIdentifier": "Asia/Seoul",
+      "country": "KR"
+  },
+  {
+      "cityName": "New York",
+      "cityNameKR": "뉴욕, 미국",
+      "timeZoneIdentifier": "America/New_York",
+      "country": "US"
+  },
+  {
+      "cityName": "London",
+      "cityNameKR": "런던, 잉글랜드",
+      "timeZoneIdentifier": "Europe/London",
+      "country": "GB"
+  },
+  {
+      "cityName": "Tokyo",
+      "cityNameKR": "도쿄, 일본",
+      "timeZoneIdentifier": "Asia/Tokyo",
+      "country": "JP"
+  },
+  {
+      "cityName": "Paris",
+      "cityNameKR": "파리, 프랑스",
+      "timeZoneIdentifier": "Europe/Paris",
+      "country": "FR"
+  },
+  {
+      "cityName": "Los Angeles",
+      "cityNameKR": "로스앤젤레스, 미국",
+      "timeZoneIdentifier": "America/Los_Angeles",
+      "country": "US"
+  },
+  {
+      "cityName": "Beijing",
+      "cityNameKR": "베이징, 중국",
+      "timeZoneIdentifier": "Asia/Shanghai",
+      "country": "CN"
+  },
+  {
+      "cityName": "Moscow",
+      "cityNameKR": "모스크바, 러시아",
+      "timeZoneIdentifier": "Europe/Moscow",
+      "country": "RU"
+  },
+  {
+      "cityName": "Sydney",
+      "cityNameKR": "시드니, 오스트레일리아",
+      "timeZoneIdentifier": "Australia/Sydney",
+      "country": "AU"
+  },
+  {
+      "cityName": "Cairo",
+      "cityNameKR": "카이로, 이집트",
+      "timeZoneIdentifier": "Africa/Cairo",
+      "country": "EG"
+  },
+  {
+      "cityName": "Dubai",
+      "cityNameKR": "두바이, 아랍 에밀리트 연합국",
+      "timeZoneIdentifier": "Asia/Dubai",
+      "country": "AE"
+  },
+  {
+      "cityName": "Berlin",
+      "cityNameKR": "베를린, 독일",
+      "timeZoneIdentifier": "Europe/Berlin",
+      "country": "DE"
+  },
+  {
+      "cityName": "Singapore",
+      "cityNameKR": "싱가포르, 싱가포르",
+      "timeZoneIdentifier": "Asia/Singapore",
+      "country": "SG"
+  },
+  {
+      "cityName": "Toronto",
+      "cityNameKR": "토론토, 캐나다",
+      "timeZoneIdentifier": "America/Toronto",
+      "country": "CA"
+  },
+  {
+      "cityName": "São Paulo",
+      "cityNameKR": "상파울루, 브라질",
+      "timeZoneIdentifier": "America/Sao_Paulo",
+      "country": "BR"
+  },
+  {
+      "cityName": "Johannesburg",
+      "cityNameKR": "요하네스버그, 남아프리카",
+      "timeZoneIdentifier": "Africa/Johannesburg",
+      "country": "ZA"
+  },
+  {
+      "cityName": "Bangkok",
+      "cityNameKR": "방콕, 태국",
+      "timeZoneIdentifier": "Asia/Bangkok",
+      "country": "TH"
+  },
+  {
+      "cityName": "Mexico City",
+      "cityNameKR": "멕시코 시티, 멕시코",
+      "timeZoneIdentifier": "America/Mexico_City",
+      "country": "MX"
+  },
+  {
+      "cityName": "Istanbul",
+      "cityNameKR": "이스탄불, 튀르키예",
+      "timeZoneIdentifier": "Europe/Istanbul",
+      "country": "TR"
+  },
+  {
+      "cityName": "Rome",
+      "cityNameKR": "로마, 이탈리아",
+      "timeZoneIdentifier": "Europe/Rome",
+      "country": "IT"
+  },
+  {
+      "cityName": "Madrid",
+      "cityNameKR": "마드리드, 스페인",
+      "timeZoneIdentifier": "Europe/Madrid",
+      "country": "ES"
+  },
+  {
+      "cityName": "Mumbai",
+      "cityNameKR": "뭄바이, 인도",
+      "timeZoneIdentifier": "Asia/Kolkata",
+      "country": "IN"
+  },
+  {
+      "cityName": "Buenos Aires",
+      "cityNameKR": "부에노스아이레스, 아르헨티나",
+      "timeZoneIdentifier": "America/Argentina/Buenos_Aires",
+      "country": "AR"
+  },
+  {
+      "cityName": "Chicago",
+      "cityNameKR": "시카고, 미국",
+      "timeZoneIdentifier": "America/Chicago",
+      "country": "US"
+  },
+  {
+      "cityName": "San Francisco",
+      "cityNameKR": "샌프란시스코, 미국",
+      "timeZoneIdentifier": "America/Los_Angeles",
+      "country": "US"
+  },
+  {
+      "cityName": "Vancouver",
+      "cityNameKR": "밴쿠버, 캐나다",
+      "timeZoneIdentifier": "America/Vancouver",
+      "country": "CA"
+  },
+  {
+      "cityName": "Jakarta",
+      "cityNameKR": "자카르타, 인도네시아",
+      "timeZoneIdentifier": "Asia/Jakarta",
+      "country": "ID"
+  },
+  {
+      "cityName": "Lagos",
+      "cityNameKR": "라고스, 나이지리아",
+      "timeZoneIdentifier": "Africa/Lagos",
+      "country": "NG"
+  },
+  {
+      "cityName": "Tehran",
+      "cityNameKR": "테헤란, 이란",
+      "timeZoneIdentifier": "Asia/Tehran",
+      "country": "IR"
+  },
+  {
+      "cityName": "Honolulu",
+      "cityNameKR": "호놀룰루, 미국",
+      "timeZoneIdentifier": "Pacific/Honolulu",
+      "country": "US"
+  }
+]

@@ -13,6 +13,10 @@
 		149B2D102DDC3546005EA674 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D0F2DDC3546005EA674 /* RxSwift */; };
 		149B2D132DDC3553005EA674 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D122DDC3553005EA674 /* SnapKit */; };
 		149B2D162DDC355E005EA674 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 149B2D152DDC355E005EA674 /* Then */; };
+		8615407E2DDDB6240099D412 /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 8615407D2DDDB6240099D412 /* RxDataSources */; };
+		C9D7FE222DE620CB00532EDF /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D7FE212DE620CA00532EDF /* WidgetKit.framework */; };
+		C9D7FE242DE620CB00532EDF /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9D7FE232DE620CB00532EDF /* SwiftUI.framework */; };
+		C9D7FE352DE620CE00532EDF /* BeontteukWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C9D7FE1F2DE620CA00532EDF /* BeontteukWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,13 +34,37 @@
 			remoteGlobalIDString = 149B2A112DDC263A005EA674;
 			remoteInfo = Alarm;
 		};
+		C9D7FE332DE620CE00532EDF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 149B2A0A2DDC263A005EA674 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C9D7FE1E2DE620CA00532EDF;
+			remoteInfo = BeontteukWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C9D7FE362DE620CE00532EDF /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C9D7FE352DE620CE00532EDF /* BeontteukWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		149B2A122DDC263A005EA674 /* Beontteuk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beontteuk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		149B2A2B2DDC263B005EA674 /* BeontteukTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeontteukTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		149B2A352DDC263B005EA674 /* BeontteukUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeontteukUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		149B2A492DDC2661005EA674 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		C9D7FE1F2DE620CA00532EDF /* BeontteukWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BeontteukWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9D7FE212DE620CA00532EDF /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		C9D7FE232DE620CB00532EDF /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,6 +75,29 @@
 			);
 			target = 149B2A112DDC263A005EA674 /* Beontteuk */;
 		};
+		C9D7FE3A2DE620CE00532EDF /* Exceptions for "BeontteukWidget" folder in "BeontteukWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */;
+		};
+		C9D7FE452DE6291F00532EDF /* Exceptions for "Beontteuk" folder in "BeontteukWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Presentation/Shared/Extension/Extension.swift,
+				Presentation/Shared/LiveActivity/LiveActivityManager.swift,
+				Resources/Assets.xcassets,
+			);
+			target = C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */;
+		};
+		C9D7FE4B2DE62B9F00532EDF /* Exceptions for "BeontteukWidget" folder in "Beontteuk" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BeontteukWidgetLiveActivity.swift,
+			);
+			target = 149B2A112DDC263A005EA674 /* Beontteuk */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -54,6 +105,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				149B2A3D2DDC263B005EA674 /* Exceptions for "Beontteuk" folder in "Beontteuk" target */,
+				C9D7FE452DE6291F00532EDF /* Exceptions for "Beontteuk" folder in "BeontteukWidgetExtension" target */,
 			);
 			path = Beontteuk;
 			sourceTree = "<group>";
@@ -68,6 +120,15 @@
 			path = BeontteukUITests;
 			sourceTree = "<group>";
 		};
+		C9D7FE252DE620CB00532EDF /* BeontteukWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C9D7FE4B2DE62B9F00532EDF /* Exceptions for "BeontteukWidget" folder in "Beontteuk" target */,
+				C9D7FE3A2DE620CE00532EDF /* Exceptions for "BeontteukWidget" folder in "BeontteukWidgetExtension" target */,
+			);
+			path = BeontteukWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +139,7 @@
 				149B2D162DDC355E005EA674 /* Then in Frameworks */,
 				149B2D102DDC3546005EA674 /* RxSwift in Frameworks */,
 				149B2D132DDC3553005EA674 /* SnapKit in Frameworks */,
+				8615407E2DDDB6240099D412 /* RxDataSources in Frameworks */,
 				149B2D0E2DDC3546005EA674 /* RxRelay in Frameworks */,
 				149B2D0C2DDC3546005EA674 /* RxCocoa in Frameworks */,
 			);
@@ -97,6 +159,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9D7FE1C2DE620CA00532EDF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9D7FE242DE620CB00532EDF /* SwiftUI.framework in Frameworks */,
+				C9D7FE222DE620CB00532EDF /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -107,6 +178,8 @@
 				149B2A142DDC263A005EA674 /* Beontteuk */,
 				149B2A2E2DDC263B005EA674 /* BeontteukTests */,
 				149B2A382DDC263B005EA674 /* BeontteukUITests */,
+				C9D7FE252DE620CB00532EDF /* BeontteukWidget */,
+				C9D7FE202DE620CA00532EDF /* Frameworks */,
 				149B2A132DDC263A005EA674 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -117,8 +190,18 @@
 				149B2A122DDC263A005EA674 /* Beontteuk.app */,
 				149B2A2B2DDC263B005EA674 /* BeontteukTests.xctest */,
 				149B2A352DDC263B005EA674 /* BeontteukUITests.xctest */,
+				C9D7FE1F2DE620CA00532EDF /* BeontteukWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C9D7FE202DE620CA00532EDF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C9D7FE212DE620CA00532EDF /* WidgetKit.framework */,
+				C9D7FE232DE620CB00532EDF /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,10 +214,12 @@
 				149B2A0E2DDC263A005EA674 /* Sources */,
 				149B2A0F2DDC263A005EA674 /* Frameworks */,
 				149B2A102DDC263A005EA674 /* Resources */,
+				C9D7FE362DE620CE00532EDF /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C9D7FE342DE620CE00532EDF /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				149B2A142DDC263A005EA674 /* Beontteuk */,
@@ -146,6 +231,7 @@
 				149B2D0F2DDC3546005EA674 /* RxSwift */,
 				149B2D122DDC3553005EA674 /* SnapKit */,
 				149B2D152DDC355E005EA674 /* Then */,
+				8615407D2DDDB6240099D412 /* RxDataSources */,
 			);
 			productName = Alarm;
 			productReference = 149B2A122DDC263A005EA674 /* Beontteuk.app */;
@@ -197,6 +283,28 @@
 			productReference = 149B2A352DDC263B005EA674 /* BeontteukUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9D7FE392DE620CE00532EDF /* Build configuration list for PBXNativeTarget "BeontteukWidgetExtension" */;
+			buildPhases = (
+				C9D7FE1B2DE620CA00532EDF /* Sources */,
+				C9D7FE1C2DE620CA00532EDF /* Frameworks */,
+				C9D7FE1D2DE620CA00532EDF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C9D7FE252DE620CB00532EDF /* BeontteukWidget */,
+			);
+			name = BeontteukWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = BeontteukWidgetExtension;
+			productReference = C9D7FE1F2DE620CA00532EDF /* BeontteukWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -218,6 +326,9 @@
 						CreatedOnToolsVersion = 16.3;
 						TestTargetID = 149B2A112DDC263A005EA674;
 					};
+					C9D7FE1E2DE620CA00532EDF = {
+						CreatedOnToolsVersion = 16.3;
+					};
 				};
 			};
 			buildConfigurationList = 149B2A0D2DDC263A005EA674 /* Build configuration list for PBXProject "Beontteuk" */;
@@ -233,6 +344,7 @@
 				149B2D0A2DDC3546005EA674 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				149B2D112DDC3553005EA674 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				149B2D142DDC355E005EA674 /* XCRemoteSwiftPackageReference "Then" */,
+				8615407C2DDDB6240099D412 /* XCRemoteSwiftPackageReference "RxDataSources" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 149B2A132DDC263A005EA674 /* Products */;
@@ -242,6 +354,7 @@
 				149B2A112DDC263A005EA674 /* Beontteuk */,
 				149B2A2A2DDC263B005EA674 /* BeontteukTests */,
 				149B2A342DDC263B005EA674 /* BeontteukUITests */,
+				C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -263,6 +376,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		149B2A332DDC263B005EA674 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9D7FE1D2DE620CA00532EDF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -293,6 +413,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C9D7FE1B2DE620CA00532EDF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -306,6 +433,11 @@
 			target = 149B2A112DDC263A005EA674 /* Beontteuk */;
 			targetProxy = 149B2A362DDC263B005EA674 /* PBXContainerItemProxy */;
 		};
+		C9D7FE342DE620CE00532EDF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C9D7FE1E2DE620CA00532EDF /* BeontteukWidgetExtension */;
+			targetProxy = C9D7FE332DE620CE00532EDF /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -316,19 +448,23 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Beontteuk/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "번뜩";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Alarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Beontteuk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -347,19 +483,23 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Beontteuk/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "번뜩";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Alarm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Beontteuk;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -496,8 +636,9 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.3.1;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.AlarmTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -514,8 +655,9 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.3.1;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.AlarmTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -558,6 +700,62 @@
 			};
 			name = Release;
 		};
+		C9D7FE372DE620CE00532EDF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YMLG3QVVWG;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeontteukWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeontteukWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Beontteuk.BeontteukWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C9D7FE382DE620CE00532EDF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YMLG3QVVWG;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BeontteukWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BeontteukWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.developAlot.Beontteuk.BeontteukWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -597,6 +795,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		C9D7FE392DE620CE00532EDF /* Build configuration list for PBXNativeTarget "BeontteukWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9D7FE372DE620CE00532EDF /* Debug */,
+				C9D7FE382DE620CE00532EDF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -622,6 +829,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.0.0;
+			};
+		};
+		8615407C2DDDB6240099D412 /* XCRemoteSwiftPackageReference "RxDataSources" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxDataSources.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -651,6 +866,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 149B2D142DDC355E005EA674 /* XCRemoteSwiftPackageReference "Then" */;
 			productName = Then;
+		};
+		8615407D2DDDB6240099D412 /* RxDataSources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8615407C2DDDB6240099D412 /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = RxDataSources;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
