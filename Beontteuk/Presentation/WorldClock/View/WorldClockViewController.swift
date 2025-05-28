@@ -123,7 +123,7 @@ final class WorldClockViewController: BaseViewController {
         
         headerView.addButton.rx.tap
             .bind(with: self) { owner, _ in
-                let vc = SelectCityViewController()
+                let vc = SelectCityViewController(selectCityViewModel: owner.diContainer.makeWorldCityViewModel())
                 let nav = UINavigationController(rootViewController: vc)
                 vc.modalPresentationStyle = .pageSheet
                 vc.onCitySelected = { [weak self] selectedCity in

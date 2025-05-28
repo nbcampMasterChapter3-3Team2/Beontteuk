@@ -12,4 +12,5 @@ protocol BeontteukDIContainerInerface {
     func makeTimerViewModel() -> TimerViewModel
     func makeStopWatchViewModel() -> StopWatchViewModel
     func makeWorldClockViewModel() -> WorldClockViewModel
+    func makeWorldCityViewModel() -> SelectCityViewModel
 }

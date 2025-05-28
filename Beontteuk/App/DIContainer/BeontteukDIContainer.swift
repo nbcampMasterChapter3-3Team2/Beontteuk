@@ -16,6 +16,14 @@ final class BeontteukDIContainer: BeontteukDIContainerInerface {
         return alarmViewModel
     }
     
+    func makeBottomSheetViewModel() -> AlarmBottomSheetViewModel {
+        let alarmRepository = CoreDataAlarmRepository()
+        let alarmUseCase = AlarmUseImp(repository: alarmRepository)
+        let alarmBottomSheetViewModel = AlarmBottomSheetViewModel(useCase: alarmUseCase)
+        
+        return alarmBottomSheetViewModel
+    }
+    
     func makeTimerViewModel() -> TimerViewModel {
         let timerRepository = CoreDataCDTimerRepository()
         let notificationService = NotificationService()
@@ -40,5 +48,13 @@ final class BeontteukDIContainer: BeontteukDIContainerInerface {
         let worldClockViewModel = WorldClockViewModel(useCase: worldClockUseCase)
         
         return worldClockViewModel
+    }
+    
+    func makeWorldCityViewModel() -> SelectCityViewModel {
+        let worldCityRepository = WorldCityRepository()
+        let worldCityUseCase = WorldCityUseCase(repository: worldCityRepository)
+        let worldCityViewModel = SelectCityViewModel(useCase: worldCityUseCase)
+        
+        return worldCityViewModel
     }
 }

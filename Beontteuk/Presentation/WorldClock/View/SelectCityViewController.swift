@@ -16,16 +16,26 @@ final class SelectCityViewController: BaseViewController {
     //MARK: UI Components
     private lazy var searchController = UISearchController().then {
         $0.searchBar.placeholder = "검색"
-//        $0.isActive = true
         $0.obscuresBackgroundDuringPresentation = false
         $0.searchResultsUpdater = self
     }
     
     //MARK: Instances
     private let selectCityView = SelectCityView()
-    private let viewModel = SelectCityViewModel(useCase: WorldCityUseCase(repository: WorldCityRepository()))
+    private let selectCityViewModel: SelectCityViewModel
     
     var onCitySelected: ((SelectCityEntity) -> Void)?
+    
+    init(selectCityViewModel: SelectCityViewModel,
+         onCitySelected: ((SelectCityEntity) -> Void)? = nil) {
+        self.selectCityViewModel = selectCityViewModel
+        self.onCitySelected = onCitySelected
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = selectCityView
@@ -51,13 +61,13 @@ final class SelectCityViewController: BaseViewController {
     }
     
     private func bindAction() {
-        self.viewModel.action.onNext(.viewDidLoad)
+        self.selectCityViewModel.action.onNext(.viewDidLoad)
     }
     
     override func bindViewModel() {
         super.bindViewModel()
         
-        viewModel.state.items
+        selectCityViewModel.state.items
             .bind(to: selectCityView.cityTableView.rx.items(cellIdentifier: SelectCityTableViewCell.className, cellType: SelectCityTableViewCell.self)) { row, item, cell in
                 cell.configureCell(with: item)
             }
@@ -75,6 +85,6 @@ final class SelectCityViewController: BaseViewController {
 extension SelectCityViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let query = searchController.searchBar.text else { return }
-        viewModel.action.onNext(.searchQuery(query))
+        selectCityViewModel.action.onNext(.searchQuery(query))
     }
 }
