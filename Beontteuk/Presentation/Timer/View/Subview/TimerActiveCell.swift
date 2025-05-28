@@ -8,8 +8,14 @@
 import UIKit
 import SnapKit
 import Then
+import RxSwift
+import RxCocoa
 
 final class TimerActiveCell: BaseTableViewCell {
+
+    // MARK: - Properties
+
+    let didTapControlButton = PublishRelay<Void>()
 
     // MARK: - UI Components
 
@@ -20,20 +26,20 @@ final class TimerActiveCell: BaseTableViewCell {
 
     private let timeLabel = UILabel().then {
         $0.textColor = .neutral1000
-        $0.font = .systemFont(ofSize: 50, weight: .medium)
+        $0.font = .lightFont()
     }
 
     private let timeKRLabel = UILabel().then {
         $0.textColor = .neutral1000
-        $0.font = .systemFont(ofSize: 20, weight: .medium)
+        $0.font = .systemFont(ofSize: 20, weight: .light)
     }
 
     private let controlButton = UIButton().then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 35, weight: .regular)
         let playImage = UIImage(systemName: "play.fill", withConfiguration: imageConfig)
         let pauseImage = UIImage(systemName: "pause.fill", withConfiguration: imageConfig)
-        $0.setImage(playImage, for: .normal)
-        $0.setImage(pauseImage, for: .selected)
+        $0.setImage(pauseImage, for: .normal)
+        $0.setImage(playImage, for: .selected)
         $0.tintColor = .primary500
     }
 
@@ -49,19 +55,26 @@ final class TimerActiveCell: BaseTableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        updateState(to: .running)
+        bind()
     }
     
     required init?(coder: NSCoder) {
         fatalError()
     }
-    
+
     // MARK: - Layout Cycles
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        setProgressPath()
+        DispatchQueue.main.async {
+            self.setProgressPath()
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        bind()
     }
 
     // MARK: - Style Helper
@@ -81,15 +94,24 @@ final class TimerActiveCell: BaseTableViewCell {
         controlButton.layer.addSublayer(progressLayer)
 
         labelStackView.snp.makeConstraints {
-            $0.verticalEdges.leading.equalToSuperview().inset(20)
+            $0.verticalEdges.equalToSuperview().inset(8)
+            $0.leading.equalToSuperview().inset(16)
         }
 
         controlButton.snp.makeConstraints {
             $0.leading.equalTo(labelStackView.snp.trailing).offset(20)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(16)
             $0.centerY.equalTo(labelStackView)
             $0.size.equalTo(70)
         }
+    }
+
+    // MARK: - Bind
+
+    private func bind() {
+        controlButton.rx.tap
+            .bind(to: didTapControlButton)
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Methods
@@ -116,11 +138,12 @@ final class TimerActiveCell: BaseTableViewCell {
     func updateState(to state: TimerState) {
         timeLabel.textColor = state.labelColor
         timeKRLabel.textColor = state.labelColor
-        controlButton.isSelected = state == .running
+        controlButton.isSelected = state == .pause
     }
 
     /// value: 0~1 사이의 값으로 진행도를 나타냄
     func updateProgress(value: CGFloat) {
+        CATransaction.setDisableActions(true)
         progressLayer.strokeEnd = value
     }
 }

@@ -24,8 +24,16 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
         return (try? context.fetch(request)) ?? []
     }
     
+    /// 특정 id 항목 조회
+    func fetchWorldClock(by id: UUID) -> WorldClock? {
+        let request: NSFetchRequest<WorldClock> = WorldClock.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+    
     /// 특정 시간대 식별자를 가진 항목 조회
-    func fetch(by timeZoneIdentifier: String) -> WorldClock? {
+    func fetchTimeZone(by timeZoneIdentifier: String) -> WorldClock? {
         let request: NSFetchRequest<WorldClock> = WorldClock.fetchRequest()
         request.predicate = NSPredicate(format: "timeZoneIdentifier == %@", timeZoneIdentifier)
         request.fetchLimit = 1
@@ -42,10 +50,11 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
     
     // MARK: - 추가 및 삭제
     /// 새 도시 항목 추가
-    func createCity(cityName: String, timeZoneIdentifier: String) -> WorldClock {
+    func createCity(cityName: String, cityNameKR: String, timeZoneIdentifier: String) -> WorldClock {
         let clock = WorldClock(context: context)
         clock.id = UUID()
         clock.cityName = cityName
+        clock.cityNameKR = cityNameKR
         clock.timeZoneIdentifier = timeZoneIdentifier
         clock.createdAt = Date()
         clock.orderIndex = Int16(fetchAll().count)
@@ -54,8 +63,8 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
     }
     
     /// 도시 항목 삭제
-    func deleteCity(clock: WorldClock) {
-        context.delete(clock)
+    func deleteCity(_ city: WorldClock) {
+        context.delete(city)
         do {
             try context.save()
         } catch {
@@ -76,8 +85,8 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
     
     // MARK: - 정렬 및 순서
     /// 주어진 항목의 정렬 순서를 업데이트
-    func updateOrder(for clock: WorldClock, to newIndex: Int16) {
-        clock.orderIndex = newIndex
+    func updateOrder(for city: WorldClock, to newIndex: Int16) {
+        city.orderIndex = newIndex
         do {
             try context.save()
         } catch {
@@ -86,8 +95,8 @@ final class CoreDataWorldClockRepository: WorldClockRepositoryInterface {
     }
     
     /// 전체 orderIndex를 재정렬 (예: 드래그 reorder 이후)
-    func reorder(clocks: [WorldClock]) {
-        for (index, clock) in clocks.enumerated() {
+    func reorder(citys: [WorldClock]) {
+        for (index, clock) in citys.enumerated() {
             clock.orderIndex = Int16(index)
         }
         do {

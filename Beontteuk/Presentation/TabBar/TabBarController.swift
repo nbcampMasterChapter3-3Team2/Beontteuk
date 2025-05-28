@@ -38,6 +38,8 @@ final class TabBarController: UITabBarController {
     }
 
     private func setTabBarItems() {
+        let diContainer = BeontteukDIContainer()
+        
         let alarmRepository = CoreDataAlarmRepository()
         let alarmUseCase = AlarmUseImp(repository: alarmRepository)
         let alarmViewModel = AlarmViewModel(useCase: alarmUseCase)
@@ -52,11 +54,12 @@ final class TabBarController: UITabBarController {
         let stopWatchViewController = StopWatchViewController(viewModel: stopWatchViewModel)
 
         let timerRepository = CoreDataCDTimerRepository()
-        let timerUseCase = TimerUseImp(repository: timerRepository)
+        let notificationService = NotificationService()
+        let timerUseCase = TimerUseImp(repository: timerRepository, notificationService: notificationService)
         let timerViewModel = TimerViewModel(useCase: timerUseCase)
         let timerViewController = UINavigationController(rootViewController: TimerViewController(viewModel: timerViewModel))
         
-        let worldClockViewController = UINavigationController(rootViewController: WorldClockViewController())
+        let worldClockViewController = WorldClockViewController(diContainer: diContainer)
 
         let tabControllers = [
             alarmViewController,

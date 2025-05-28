@@ -26,12 +26,22 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         return (try? context.fetch(request)) ?? []
     }
 
+    /// 알람 불러오기
+    func fetchAlarm(by id: UUID) -> CDAlarm? {
+        let request: NSFetchRequest<CDAlarm> = CDAlarm.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try? context.fetch(request).first
+    }
+
     /// 알람 생성
     func createAlarm(hour: Int,
                      minute: Int,
                      repeatDays: String?,
                      label: String?,
-                     soundName: String?) -> CDAlarm {
+                     soundName: String?,
+                     snooze: Bool
+    ) -> CDAlarm {
         let alarm = CDAlarm(context: context)
         alarm.id = UUID()
         alarm.hour = Int16(hour)
@@ -40,7 +50,7 @@ final class CoreDataAlarmRepository: AlarmRepositoryInterface {
         alarm.label = label
         alarm.isEnabled = true
         alarm.soundName = soundName
-        alarm.isSnoozeEnabled = false
+        alarm.isSnoozeEnabled = snooze
         return alarm
     }
 

@@ -14,4 +14,6 @@ protocol TimerUseInt {
     func addTimer(fromRecentTimerID id: UUID) -> CDTimerEntity?
     func addRecentTimer(_ h: Int, _ m: Int, _ s: Int) -> CDTimerEntity?
     func deleteTimer(by id: UUID)
+    func pauseTimer(for timerID: UUID?, remainTime: Double)
+    func resumeTimer(for timerID: UUID?)
 }

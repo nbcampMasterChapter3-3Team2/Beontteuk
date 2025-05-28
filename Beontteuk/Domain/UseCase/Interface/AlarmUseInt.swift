@@ -9,13 +9,15 @@ import Foundation
 
 protocol AlarmUseInt {
     func createAlarm(hour: Int,
-                  minute: Int,
-                  repeatDays: String?,
-                  label: String?,
-                  soundName: String?) -> CDAlarm
+        minute: Int,
+        repeatDays: String?,
+        label: String?,
+        soundName: String?,
+        snooze: Bool
+    ) -> CDAlarmEntity
 
-    func readAlarms() -> [CDAlarm]
-    func updateAlarm(_ alarm: CDAlarm)
-    func deleteAlarm(_ alarm: CDAlarm)
-    func toggleAlarm(_ alarm: CDAlarm)
+    func readAlarms() -> [CDAlarmEntity]
+    func updateAlarm(_ alarm: CDAlarmEntity)
+    func deleteAlarm(by id: UUID)
+    func toggleAlarm(by id: UUID)
 }

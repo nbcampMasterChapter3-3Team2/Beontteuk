@@ -11,6 +11,7 @@ import RxRelay
 
 final class AlarmViewModel: ViewModelProtocol {
 
+    // MARK: - Action
     enum Action {
         /// usecase
         case readAlarm
@@ -20,24 +21,27 @@ final class AlarmViewModel: ViewModelProtocol {
         case setEditingMode(isEditing: Bool)
     }
 
+    // MARK: - State
     struct State {
-        let alarmsRelay = BehaviorRelay<[CDAlarm]>(value: [])
+        let alarmsRelay = BehaviorRelay<[CDAlarmEntity]>(value: [])
         let nextAlarmRelay = BehaviorRelay<Bool>(value: false)
         let isEditingRelay = BehaviorRelay<Bool>(value: false)
     }
 
+    // MARK: - Properties
     private let useCase: AlarmUseInt
     private let actionSubject = PublishSubject<Action>()
     var action: AnyObserver<Action> { actionSubject.asObserver() }
     let state = State()
     let disposeBag = DisposeBag()
 
-
+    // MARK: - Initializer
     init(useCase: AlarmUseInt) {
         self.useCase = useCase
         bind()
     }
 
+    // MARK: - Bind
     private func bind() {
         actionSubject
             .subscribe(with: self) { owner, action in
@@ -48,36 +52,36 @@ final class AlarmViewModel: ViewModelProtocol {
                 list = self.useCase.readAlarms()
 
             case .deleteAlarm(let index):
-                guard index < list.count else { return }
+                guard index < list.count
+                    else { return }
                 let target = list.remove(at: index)
-                self.useCase.deleteAlarm(target)
+                guard let id = target.id else { return }
+
+                self.useCase.deleteAlarm(by: id)
 
                 /// fileprivate
             case .toggle(let index, let isOn):
                 guard index < list.count else { return }
-                // 1) 메모리 배열 업데이트
-                let alarm = list[index]
+                var alarm = list[index]
                 alarm.isEnabled = isOn
-                self.useCase.updateAlarm(alarm)
+                list[index] = alarm
+                owner.useCase.updateAlarm(alarm)
+
             case .setEditingMode(let isEditing):
                 owner.state.isEditingRelay.accept(isEditing)
             }
+
             owner.state.alarmsRelay.accept(list)
+
             let hasNext = owner.isNextAlarm(from: list)
             owner.state.nextAlarmRelay.accept(hasNext)
         }.disposed(by: disposeBag)
     }
 
-    private func isNextAlarm(from alarms: [CDAlarm]) -> Bool {
+    // MARK: - Methods
+    private func isNextAlarm(from alarms: [CDAlarmEntity]) -> Bool {
         let enabled = alarms.filter { $0.isEnabled }
         return !enabled.isEmpty
     }
 }
 
-
-// 다음 알람 정보 구조체
-struct NextAlarmInfo {
-    let alarm: CDAlarm
-    let hours: Int
-    let minutes: Int
-}

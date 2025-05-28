@@ -119,4 +119,34 @@ extension UIFont {
     static func lightFont() -> UIFont {
         return UIFont.systemFont(ofSize: 55, weight: .light)
     }
+    static func labelLightFont() -> UIFont {
+        return UIFont.systemFont(ofSize: 20, weight: .light)
+    }
+    static func ampmLightFont() -> UIFont {
+        return UIFont.systemFont(ofSize: 25, weight: .light)
+    }
+}
+
+extension Date {
+    func convert(to timeZone: TimeZone) -> Date {
+        let currentOffset = TimeZone.current.secondsFromGMT(for: self)
+        let targetOffset = timeZone.secondsFromGMT(for: self)
+        let timeInterval = TimeInterval(targetOffset - currentOffset)
+        return addingTimeInterval(timeInterval)
+    }
+}
+
+extension Double {
+    func convertToTimeString() -> String {
+        let totalSeconds = Int(self)
+            let h = totalSeconds / 3600
+            let m = (totalSeconds % 3600) / 60
+            let s = totalSeconds % 60
+
+            if h > 0 {
+                return String(format: "%d:%02d:%02d", h, m, s)
+            } else {
+                return String(format: "%d:%02d", m, s)
+            }
+    }
 }
