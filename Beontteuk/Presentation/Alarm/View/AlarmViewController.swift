@@ -148,10 +148,26 @@ final class AlarmViewController: BaseViewController {
         alarmView.editingToggle
             .withLatestFrom(viewModel.state.isEditingRelay)
             .map { !$0 }
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] isEditing in
+                guard
+                    let self = self,
+                    let navBar = self.alarmView.getNavigationBar().items?.first,
+                    let barItem = navBar.leftBarButtonItem as? CustomUIBarButtonItem
+                else { return }
+
+                // 테이블 뷰 편집 모드 토글
+                DispatchQueue.main.async {
+                    self.alarmView.getTableView().setEditing(isEditing, animated: true)
+                }
+                // 아이콘 타입 변경
+                let newType: CustomUIBarButtonItem.NavigationButtonType =
+                    isEditing ? .check : .edit
+                    barItem.updateType(newType)
+            })
             .map(AlarmViewModel.Action.setEditingMode(isEditing:))
             .bind(to: viewModel.action)
             .disposed(by: disposeBag)
-
     }
 
     /// 모달 띄우기
