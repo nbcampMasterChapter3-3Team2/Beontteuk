@@ -177,15 +177,33 @@ Trouble Shooting
 
 ### 이세준
 - **문제**
-   - ?
+   - 알람 Notificatoin에서 길게 소리가 재생되지 않는 현상 (Notification에다가 알람 소리를 넣게 되면 6초 가량 소리만 남)
 - **원인**
-  - ?
+  - 공식 문서상 30초 내의 음원 파일을 재생이 가능하다라고 나와 있지만, 알림이 떠있는 시간 동안만 소리가 발생
+  - 알람 속성은 개발단이 아닌 사용자 입장에서 설정해야하기 떄문에 사용자 의존성 필요
 - **해결**
-  - ?
+  - UNUserNotificationCenterDelegate에서 아래 코드를 사용하고 foreground에서의 이벤트 처리 때 AVPlayer로 음원 무한 루프 실행
 
-```swift
-Trouble Shooting
-```
+  ```
+    func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) 
+  ```
+
+  ```
+      do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.numberOfLoops = -1 // 무한루프
+            audioPlayer?.play()
+        } catch {
+            print("[NotificationService] AudioPlayer error: \(error)")
+        }
+  ```
+
+  또한 해당 방식을 사용하면 background에서는 소리가 재생되지 않는 문제가 발생합니다.
+  때문에 해당 Notification을 받을때 AVPlayer를 재생해야 하는 방식을 고려중입니다.
 
 ---
 
@@ -207,7 +225,6 @@ Dependency Injection
 
 - 사용 방식
 ```swift
-Dependency Injection
 ```
 
 ### 손하경
@@ -221,12 +238,55 @@ Dependency Injection
 ```
 
 ### 이세준
-### ✅ 의존성 역전 원칙
-- ?
-  - ?
-
+### 알람 기능 (UNUserNotificationCenter)
+- 앱의 알림 기능을 구현하고, 반복 재생을 구현하는 방법을 공유합니다.
 - 사용 방식
 ```swift
-Dependency Injection
+/// 알람 스케줄 요청
+    /// - Parameters:
+    ///   - date: 알람이 발생할 정확한 날짜/시간
+    ///   - snooze: 스누즈 여부 (true면 저장된 시간부터 1분 뒤에 자동 재알림)
+    ///   - title: 알림 제목
+    ///   - notificationId: 고유 식별자
+    func scheduleAlarm(
+        at date: Date,
+        snooze: Bool,
+        title: String,
+        notificationId: String
+    ) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.categoryIdentifier = NotificationService.alarmCategoryIdentifier
+
+        let center = UNUserNotificationCenter.current()
+
+        // 1) 원래 알람 스케줄
+        let comps = Calendar.current.dateComponents([.hour, .minute,.second], from: date)
+        let originalTrigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+        let originalRequest = UNNotificationRequest(
+            identifier: notificationId,
+            content: content,
+            trigger: originalTrigger
+        )
+        center.removePendingNotificationRequests(withIdentifiers: [notificationId])
+        center.add(originalRequest)
+
+        // 2) 스누즈 자동 재알림 (1분 뒤)
+        if snooze {
+            let snoozeDate = date.addingTimeInterval(15)
+            let snoozeComps = Calendar.current.dateComponents([.hour, .minute, .second], from: snoozeDate)
+            let snoozeTrigger = UNCalendarNotificationTrigger(dateMatching: snoozeComps, repeats: false)
+            let snoozeId = "\(notificationId)_snooze"
+            content.title = "다시알림  \(title)"
+            let snoozeRequest = UNNotificationRequest(
+                identifier: snoozeId,
+                content: content,
+                trigger: snoozeTrigger
+            )
+            center.removePendingNotificationRequests(withIdentifiers: [snoozeId])
+            center.add(snoozeRequest)
+        }
+    }
+
 ```
 ---
