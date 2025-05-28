@@ -388,16 +388,6 @@ final class LiveActivityManager: ObservableObject {
 ```
 `[UUID: Activity<CustomAttributes>]` 타입인 `activityMap`로 업데이트 또는 멈출 Activity를 찾아 작업을 수행합니다.
 
-### 손하경
-### ✅ 의존성 역전 원칙
-- ?
-  - ?
-
-- 사용 방식
-```swift
-Dependency Injection
-```
-
 ### 이세준
 #### 알람 기능 (UNUserNotificationCenter)
 - 앱의 알림 기능을 구현하고, 반복 재생을 구현하는 방법을 공유합니다.
