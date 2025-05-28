@@ -143,6 +143,7 @@ final class TimerViewModel: ViewModelProtocol {
                     owner.deleteTimer(for: IndexPath(row: row, section: 0))
                 } else {
                     owner.state.tick.accept(())
+                    LiveActivityManager.shared.update(for: timer.id, remainTime: timer.remainTime)
                 }
             }
 

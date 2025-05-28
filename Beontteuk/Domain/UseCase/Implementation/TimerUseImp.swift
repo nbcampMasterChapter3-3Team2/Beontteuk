@@ -34,6 +34,7 @@ final class TimerUseImp: TimerUseInt {
         )
         repository.saveTimer(newTimer)
         notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
+        LiveActivityManager.shared.start(for: newTimer.id, endAfter: newTimer.remainSecond)
         return newTimer.toEntity()
     }
 
@@ -42,6 +43,7 @@ final class TimerUseImp: TimerUseInt {
         let newTimer = repository.duplicateRecentItemAndStart(recentTimer)
         repository.saveTimer(newTimer)
         notificationService.scheduleTimer(after: newTimer.totalSecond, timerID: newTimer.id)
+        LiveActivityManager.shared.start(for: newTimer.id, endAfter: newTimer.remainSecond)
         return newTimer.toEntity()
     }
 
@@ -54,6 +56,7 @@ final class TimerUseImp: TimerUseInt {
 
     func deleteTimer(by id: UUID) {
         guard let timer = repository.fetchTimer(by: id) else { return }
+        LiveActivityManager.shared.stop(for: timer.id)
         repository.deleteTimer(timer)
         notificationService.cancelTimerNotification(id: timer.id)
     }
@@ -62,11 +65,13 @@ final class TimerUseImp: TimerUseInt {
         guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
         repository.stopTimer(timer, remain: remainTime)
         notificationService.cancelTimerNotification(id: timer.id)
+        LiveActivityManager.shared.stop(for: timer.id)
     }
 
     func resumeTimer(for timerID: UUID?) {
         guard let timerID, let timer = repository.fetchTimer(by: timerID) else { return }
         repository.resumeTimer(timer)
         notificationService.scheduleTimer(after: timer.remainSecond, timerID: timer.id)
+        LiveActivityManager.shared.start(for: timer.id, endAfter: timer.remainSecond)
     }
 }
