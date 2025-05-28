@@ -9,7 +9,7 @@
 
 ---
 
-## 📸 화면 미리보기
+## 📸 화면 미리보기 [영상](https://www.youtube.com/shorts/52VOri7DYiE)
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/bc55aed7-b0f5-45f4-addd-bd1a5c5379fc"/>
