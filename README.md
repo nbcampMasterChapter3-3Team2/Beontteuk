@@ -250,15 +250,38 @@ typealias WorldClockSection = AnimatableSectionModel<String, WorldClockEntity>
 
 ### 손하경
 - **문제**
-   - ?
+   - Action-State 패턴 사용 중 action이 두 번 호출되는 현상 발생
 - **원인**
-  - ?
+  - 공통 부모 클래스에서 viewDidLoad에 bindViewModel()을 이미 호출 중이었으나, 하위 클래스에서 불필요하게 중복 오버라이드 함
 - **해결**
-  - ?
+  - 상속받은 클래스의 viewDidLoad에서 작성한 bindViewModel()을 제거하여 중복 호출 문제 해결
 
-```swift
-Trouble Shooting
-```
+  ```swift
+  final class StopWatchViewController: BaseViewController {
+    // ...
+    override func viewDidLoad() {
+      super.viewDidLoad()
+      setDataSource()
+      viewModel.action.viewDidLoad.accept(())
+    }
+    // ...
+  }
+  
+  // BaseViewController
+  class BaseViewController: UIViewController {
+    // ...
+    override func viewDidLoad() {
+      super.viewDidLoad()
+      self.view.applyGradient()
+      bindViewModel()
+      setStyles()
+      setLayout()
+      setDelegates()
+      setRegister()
+    }
+    // ...
+  }
+  ```
 
 ### 이세준
 - **문제**
