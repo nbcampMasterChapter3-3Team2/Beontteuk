@@ -71,7 +71,7 @@ final class TimerView: BaseView {
                     cell.configureCell(
                         time: timer.timeString,
                         timeKR: timer.localizedTimeString,
-                        progress: timer.progress,
+                        progress: timer.progress
                     )
                     cell.updateState(to: timer.isRunning ? .running : .pause)
 

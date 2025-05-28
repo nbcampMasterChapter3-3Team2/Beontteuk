@@ -26,7 +26,12 @@ final class BeontteukDIContainer: BeontteukDIContainerInerface {
     }
     
     func makeStopWatchViewModel() -> StopWatchViewModel {
-        return StopWatchViewModel()
+        let stopWatchRepository = CoreDataStopWatchRepository()
+        let lapRecordRepository = CoreDataLapRecordRepository()
+        let stopWatchUseCase = StopWatchUseImp(repository: stopWatchRepository)
+        let lapRecordUseCase = LapRecordUseImp(repository: lapRecordRepository)
+        let stopWatchViewModel = StopWatchViewModel(stopWatchUseCase: stopWatchUseCase, lapRecordUseCase: lapRecordUseCase)
+        return stopWatchViewModel
     }
     
     func makeWorldClockViewModel() -> WorldClockViewModel {

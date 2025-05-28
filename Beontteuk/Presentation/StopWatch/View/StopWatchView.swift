@@ -60,7 +60,7 @@ final class StopWatchView: BaseView {
 
     override func setLayout() {
         super.setLayout()
-        
+
         addSubviews(iconImageView, timerLabel, stackView, tableView)
         stackView.addArrangedSubviews(leftButton, rightButton)
 

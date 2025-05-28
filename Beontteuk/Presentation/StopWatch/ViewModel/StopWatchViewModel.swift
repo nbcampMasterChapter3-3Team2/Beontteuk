@@ -103,9 +103,6 @@ final class StopWatchViewModel {
         action.buttonAction
             .bind { [weak self] action in
                 guard let self else { return }
-                handleButtonAction(action)
-            }
-            .disposed(by: mainDisposeBag)
 
                 let timeState = state.stopWatchButtonRelay.value
 
@@ -168,6 +165,10 @@ final class StopWatchViewModel {
                         let formattedTime = makeFormattedString(with: startTime)
                         state.stopWatchTimeLabelRelay.accept(formattedTime)
 
+                    }, onCompleted: {
+                        print("❗️구독이 완료되었습니다 (예상치 못한 완료)")
+                    }, onDisposed: {
+                        print("♻️ 구독이 dispose 되었습니다")
                     }).disposed(by: stopWatchDisposeBag)
 
 
@@ -192,13 +193,13 @@ final class StopWatchViewModel {
 
                     let formattedTime = makeFormattedString(with: Date())
                     state.stopWatchTimeLabelRelay.accept(formattedTime)
-                    
+
                     /// 기존 Session 삭제
                     guard let session else { return }
                     stopWatchUseCase.deleteSession(by: session.id)
 
                     state.stopWatchTimeLabelRelay.accept("00:00.00")
-
+                    state.currentLapTimeRelay.accept([])
                     state.lapsRelay.accept([])
                     updateSnapshot()
 
@@ -217,6 +218,7 @@ final class StopWatchViewModel {
 
                     /// LapRecord 추가
                     guard let session else { return }
+                    let count = state.currentLapTimeRelay.value.count
                     guard let newLap = lapRecordUseCase.createLap(
                         for: session.id,
                         lapIndex: state.currentLapTimeRelay.value.count,
@@ -231,8 +233,7 @@ final class StopWatchViewModel {
                     // 삭제할 것
                     print("Created LAp: \(newLap)")
                 }
-            }
-            .disposed(by: mainDisposeBag)
+            }.disposed(by: mainDisposeBag)
     }
 
     // MARK: - Methods
@@ -271,4 +272,5 @@ final class StopWatchViewModel {
             minute, second, sentiSecond
         )
     }
+
 }
