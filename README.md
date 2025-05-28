@@ -46,7 +46,7 @@
  │   │       └── Interface  
  │   ├── Domain                              # 외부 데이터 소스와의 연결 및 구체적인 비즈니스 로직 구현 담당
  │   │   ├── Entity  
- │   │   └── Repository  
+ │   │   ├── Repository  
  │   │   │   └── Interface  
  │   │   ├── UseCase  
  │   │   │   ├── Implementation  
@@ -139,7 +139,43 @@
 
 ## 🧩 Trouble Shooting
 
-### 🔍 SearchController를 통한 API 다중 구독 이슈
+### 백래훈
+- **문제**
+   - ?
+- **원인**
+  - ?
+- **해결**
+  - ?
+
+```swift
+Trouble Shooting
+```
+
+### 곽다은
+- **문제**
+   - ?
+- **원인**
+  - ?
+- **해결**
+  - ?
+
+```swift
+Trouble Shooting
+```
+
+### 손하경
+- **문제**
+   - ?
+- **원인**
+  - ?
+- **해결**
+  - ?
+
+```swift
+Trouble Shooting
+```
+
+### 이세준
 - **문제**
    - ?
 - **원인**
@@ -153,12 +189,9 @@ Trouble Shooting
 
 ---
 
-## 📝 클린 아키텍처를 적용해본 내용
-### ✅ 모듈화 (Modularity)
-- ?
-  - ?
-
-### ✅ 의존성 주입 (Dependency Injection)
+## 📝 공유하고 싶은 개발 내용
+### 백래훈
+#### ✅ 모듈화 (Modularity)
 - ?
   - ?
 
@@ -167,19 +200,33 @@ Trouble Shooting
 Dependency Injection
 ```
 
+### 곽다은
+#### ✅ 의존성 주입 (Dependency Injection)
 - ?
+  - ?
 
+- 사용 방식
+```swift
+Dependency Injection
+```
+
+### 손하경
 ### ✅ 의존성 역전 원칙
 - ?
   - ?
 
----
+- 사용 방식
+```swift
+Dependency Injection
+```
 
-## 💦 메모리 이슈 디버깅 및 경험
-###  사용 경험
+### 이세준
+### ✅ 의존성 역전 원칙
 - ?
+  - ?
 
-<p align="center">
-</p>
-
+- 사용 방식
+```swift
+Dependency Injection
+```
 ---
